@@ -25,11 +25,17 @@ Mini-Wiki 是一个 [skills.sh](https://skills.sh) 兼容的技能包，帮助 A
 
 ## 安装
 
-### 方式 1：下载技能包
+### 方式 1：使用 npx（推荐）
+
+```bash
+npx skills add trsoliu/mini-wiki
+```
+
+### 方式 2：下载技能包
 
 从 [Releases](https://github.com/trsoliu/mini-wiki/releases) 下载 `wiki-generator.skill` 文件。
 
-### 方式 2：克隆仓库
+### 方式 3：克隆仓库
 
 ```bash
 git clone https://github.com/trsoliu/mini-wiki.git

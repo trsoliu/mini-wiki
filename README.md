@@ -25,11 +25,17 @@ Inspired by:
 
 ## Installation
 
-### Option 1: Download .skill file
+### Option 1: Using npx (Recommended)
+
+```bash
+npx skills add trsoliu/mini-wiki
+```
+
+### Option 2: Download .skill file
 
 Download `wiki-generator.skill` from [Releases](https://github.com/trsoliu/mini-wiki/releases).
 
-### Option 2: Clone repository
+### Option 3: Clone repository
 
 ```bash
 git clone https://github.com/trsoliu/mini-wiki.git
