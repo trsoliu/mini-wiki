@@ -1,0 +1,19 @@
+# Mini-Wiki Plugins Registry
+# 扩展注册表
+
+# Installed plugins / 已安装的扩展
+plugins: []
+
+# Example:
+# plugins:
+#   - name: api-doc-enhancer
+#     enabled: true
+#     priority: 10
+#   
+#   - name: diagram-plus
+#     enabled: true
+#     priority: 20
+#   
+#   - name: docusaurus-exporter
+#     enabled: false
+#     priority: 30

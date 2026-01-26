@@ -1,0 +1,19 @@
+# Mini-Wiki 配置文件
+
+generation:
+  language: zh          # zh / en / both
+  include_diagrams: true
+  include_examples: true
+  link_to_source: true
+  max_file_size: 100000
+
+exclude:
+  - node_modules
+  - .git
+  - dist
+  - build
+  - coverage
+  - __pycache__
+  - venv
+  - "*.test.ts"
+  - "*.spec.js"
