@@ -1,109 +1,230 @@
-# Mini-Wiki
+<div align="center">
 
-> 🤖 AI-Powered Project Wiki Generator Skill
+<img src="assets/banner.png" alt="Mini-Wiki Banner" width="100%">
 
-[![skills.sh](https://img.shields.io/badge/skills.sh-compatible-blue)](https://skills.sh)
-[![Version](https://img.shields.io/badge/version-2.0.0-green)](#)
+<br>
 
-## Introduction
+[![skills.sh compatible](https://img.shields.io/badge/skills.sh-compatible-blue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0wIDE4Yy00LjQxIDAtOC0zLjU5LTgtOHMzLjU5LTggOC04IDggMy41OSA4IDgtMy41OSA4LTggOHoiLz48L3N2Zz4=)](https://skills.sh)
+[![Version](https://img.shields.io/badge/version-2.0.0-06B6D4?style=for-the-badge)](https://github.com/trsoliu/mini-wiki/releases)
+[![License](https://img.shields.io/badge/license-Apache--2.0-green?style=for-the-badge)](LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/trsoliu/mini-wiki?style=for-the-badge&color=yellow)](https://github.com/trsoliu/mini-wiki)
 
-Mini-Wiki is a [skills.sh](https://skills.sh) compatible skill package that helps AI Agents automatically analyze project structure and generate structured Wiki documentation.
+**Transform your codebase into beautiful, structured documentation with AI** 🚀
 
-Inspired by:
-- [DeepWiki](https://github.com/AsyncFuncAI/deepwiki-open)
-- [OpenRepoWiki](https://github.com/daeisbae/open-repo-wiki)
-- [Qoder Repo Wiki](https://docs.qoder.com/user-guide/repo-wiki)
+[📖 中文文档](README.zh.md) · [🐛 Report Bug](https://github.com/trsoliu/mini-wiki/issues) · [✨ Request Feature](https://github.com/trsoliu/mini-wiki/issues)
 
-## Features
+</div>
 
-- 🔍 **Smart Analysis** - Auto-detect tech stack and module structure
-- 🔄 **Incremental Update** - Only update docs for changed files
-- 📊 **Architecture Diagrams** - Auto-generate Mermaid dependency graphs
-- 🔗 **Code Links** - Code blocks link directly to source
-- 🌐 **Multi-language** - Support Chinese and English Wiki generation
-- 🔌 **Plugin System** - Extend with custom plugins
+---
 
-## Installation
+## ✨ What is Mini-Wiki?
 
-### Option 1: Using npx (Recommended)
+Mini-Wiki is a [skills.sh](https://skills.sh) compatible skill package that empowers AI Agents to **automatically analyze your project structure** and generate comprehensive, structured Wiki documentation — effortlessly.
+
+<table>
+<tr>
+<td width="50%">
+
+### 💡 Before Mini-Wiki
+- Writing docs manually is tedious 📝
+- Documentation gets outdated quickly 😩
+- No architecture diagrams 📊
+- Code references are disconnected 🔗
+
+</td>
+<td width="50%">
+
+### 🎉 After Mini-Wiki
+- AI generates docs automatically ✨
+- Incremental updates keep docs fresh 🔄
+- Beautiful Mermaid diagrams 📈
+- Code blocks link to source 🎯
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🎯 Features
+
+<table>
+<tr>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/48/search.png" alt="Smart Analysis"/>
+<br><b>🔍 Smart Analysis</b>
+<br><sub>Auto-detect tech stack and module structure</sub>
+</td>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/48/synchronize.png" alt="Incremental Update"/>
+<br><b>🔄 Incremental Update</b>
+<br><sub>Only update docs for changed files</sub>
+</td>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/48/flow-chart.png" alt="Architecture"/>
+<br><b>📊 Architecture Diagrams</b>
+<br><sub>Auto-generate Mermaid dependency graphs</sub>
+</td>
+</tr>
+<tr>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/48/link.png" alt="Code Links"/>
+<br><b>🔗 Code Links</b>
+<br><sub>Code blocks link directly to source</sub>
+</td>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/48/globe.png" alt="Multi-language"/>
+<br><b>🌐 Multi-language</b>
+<br><sub>Support Chinese and English Wiki</sub>
+</td>
+<td align="center" width="33%">
+<img src="https://img.icons8.com/fluency/48/plugin.png" alt="Plugin System"/>
+<br><b>🔌 Plugin System</b>
+<br><sub>Extend with custom plugins</sub>
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
+
+### Installation
+
+Choose your preferred method:
+
+<details open>
+<summary><b>📦 Option 1: Using npx (Recommended)</b></summary>
 
 ```bash
 npx skills add trsoliu/mini-wiki
 ```
 
-### Option 2: Download .skill file
+</details>
 
-Download `mini-wiki.skill` from [Releases](https://github.com/trsoliu/mini-wiki/releases).
+<details>
+<summary><b>📥 Option 2: Download .skill file</b></summary>
 
-### Option 3: Clone repository
+Download `mini-wiki.skill` from [Releases](https://github.com/trsoliu/mini-wiki/releases) and place it in your skills directory.
+
+</details>
+
+<details>
+<summary><b>📂 Option 3: Clone repository</b></summary>
 
 ```bash
 git clone https://github.com/trsoliu/mini-wiki.git
 ```
 
-## Usage
+</details>
 
-After installation, tell the AI Agent:
+### Usage
+
+Simply tell your AI Agent:
 
 ```
-generate wiki
-create project docs
-update wiki
+🤖 "generate wiki"
+🤖 "create project docs"  
+🤖 "update wiki"
 ```
 
 ### Plugin Commands
 
 ```
-list plugins
-install plugin <path/url>
-enable plugin <name>
-disable plugin <name>
+📋 list plugins
+📦 install plugin <path/url>
+✅ enable plugin <name>
+❌ disable plugin <name>
 ```
 
-## Output Structure
+---
+
+## 📁 Output Structure
 
 All content is generated to `.mini-wiki/` directory:
 
 ```
 .mini-wiki/
-├── config.yaml              # Configuration
-├── cache/                   # Incremental cache
-├── wiki/                    # Wiki content
+├── 📄 config.yaml           # Configuration
+├── 📂 cache/                 # Incremental cache
+├── 📂 wiki/                  # Wiki content
 │   ├── index.md
 │   ├── architecture.md
 │   ├── modules/
 │   └── api/
-└── i18n/                    # Multi-language
+└── 📂 i18n/                  # Multi-language support
     ├── en/
     └── zh/
 ```
 
-## Skill Structure
+---
+
+## 🏗️ Skill Structure
 
 ```
 mini-wiki/
-├── SKILL.md           # Main instructions (English)
-├── scripts/           # Python scripts
-├── references/        # Prompts, templates, Chinese docs
-├── assets/            # Config template
-└── plugins/           # Plugin directory
+├── 📄 SKILL.md              # Main instructions (English)
+├── 📂 scripts/              # Python utilities
+├── 📂 references/           # Prompts, templates, i18n
+├── 📂 assets/               # Config templates
+└── 📂 plugins/              # Plugin directory
     ├── _registry.yaml
     └── _example/
 ```
 
-## Related Projects
+---
 
-- [DeepWiki](https://github.com/AsyncFuncAI/deepwiki-open)
-- [OpenRepoWiki](https://github.com/daeisbae/open-repo-wiki)
-- [Qoder](https://docs.qoder.com/user-guide/repo-wiki)
+## 🙏 Inspired By
 
-## License
+<table>
+<tr>
+<td align="center">
+<a href="https://github.com/AsyncFuncAI/deepwiki-open">
+<img src="https://img.icons8.com/color/48/book-shelf.png" alt="DeepWiki"/>
+<br><b>DeepWiki</b>
+</a>
+</td>
+<td align="center">
+<a href="https://github.com/daeisbae/open-repo-wiki">
+<img src="https://img.icons8.com/color/48/repository.png" alt="OpenRepoWiki"/>
+<br><b>OpenRepoWiki</b>
+</a>
+</td>
+<td align="center">
+<a href="https://docs.qoder.com/user-guide/repo-wiki">
+<img src="https://img.icons8.com/color/48/code.png" alt="Qoder"/>
+<br><b>Qoder Repo Wiki</b>
+</a>
+</td>
+</tr>
+</table>
 
-MIT
+---
 
-## Author
+## 📄 License
 
-- WeChat: trsoliu
-- QR Code:
+This project is licensed under the [Apache-2.0 License](LICENSE).
 
-![WeChat QR](assets/wechat-qr.png)
+---
+
+<div align="center">
+
+## 💬 Contact
+
+<img src="assets/logo.png" alt="Mini-Wiki Logo" width="80">
+
+**Made with ❤️ by trsoliu**
+
+<a href="https://github.com/trsoliu/mini-wiki">
+<img src="https://img.shields.io/badge/GitHub-trsoliu/mini--wiki-181717?style=for-the-badge&logo=github" alt="GitHub">
+</a>
+
+### WeChat: `trsoliu`
+
+<img src="assets/wechat-qr.png" alt="WeChat QR" width="180">
+
+---
+
+⭐ **Star this repo if you find it helpful!** ⭐
+
+</div>
