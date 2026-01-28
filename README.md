@@ -75,7 +75,7 @@ Mini-Wiki is a [skills.sh](https://skills.sh) compatible skill package that empo
 <br><sub>Code blocks link directly to source</sub>
 </td>
 <td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/globe.png" alt="Multi-language"/>
+<img src="https://img.icons8.com/fluency/48/language.png" alt="Multi-language"/>
 <br><b>🌐 Multi-language</b>
 <br><sub>Support Chinese and English Wiki</sub>
 </td>

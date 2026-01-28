@@ -75,7 +75,7 @@ Mini-Wiki 是一个 [skills.sh](https://skills.sh) 兼容的技能包，让 AI A
 <br><sub>文档代码块直接链接源码</sub>
 </td>
 <td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/globe.png" alt="多语言"/>
+<img src="https://img.icons8.com/fluency/48/language.png" alt="多语言"/>
 <br><b>🌐 多语言</b>
 <br><sub>支持中英文 Wiki 生成</sub>
 </td>
