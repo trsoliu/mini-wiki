@@ -130,6 +130,35 @@ git clone https://github.com/trsoliu/mini-wiki.git
 🤖 "更新 wiki"
 ```
 
+### 更新
+
+已安装？更新到最新版本：
+
+<details open>
+<summary><b>📦 npx（推荐）</b></summary>
+
+```bash
+npx skills update trsoliu/mini-wiki
+```
+
+</details>
+
+<details>
+<summary><b>📂 Git clone</b></summary>
+
+```bash
+cd mini-wiki && git pull origin main
+```
+
+</details>
+
+<details>
+<summary><b>📥 .skill 文件</b></summary>
+
+从 [Releases](https://github.com/trsoliu/mini-wiki/releases/latest) 重新下载
+
+</details>
+
 ### 插件命令
 
 ```bash

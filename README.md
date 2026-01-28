@@ -130,6 +130,35 @@ Simply tell your AI Agent:
 🤖 "update wiki"
 ```
 
+### Update
+
+Already installed? Update to the latest version:
+
+<details open>
+<summary><b>📦 npx (Recommended)</b></summary>
+
+```bash
+npx skills update trsoliu/mini-wiki
+```
+
+</details>
+
+<details>
+<summary><b>📂 Git clone</b></summary>
+
+```bash
+cd mini-wiki && git pull origin main
+```
+
+</details>
+
+<details>
+<summary><b>📥 .skill file</b></summary>
+
+Re-download from [Releases](https://github.com/trsoliu/mini-wiki/releases/latest)
+
+</details>
+
 ### Plugin Commands
 
 ```bash
