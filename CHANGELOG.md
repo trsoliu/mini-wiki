@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.1] - 2026-01-28
+
+### 📝 Documentation Improvements
+
+- **Update Instructions**: Added update section to README with npx, git, and .skill file methods
+- **FAQ Section**: Added FAQ addressing common questions:
+  - Will updating delete existing docs? (No)
+  - How to upgrade low-quality docs? (Commands & quality levels)
+  - Will custom content be preserved? (Yes, with `<!-- user-content -->`)
+  - How to check doc quality? (`check wiki quality` command)
+- **UI Fix**: All `<details>` sections now expanded by default for better readability
+
+---
+
 ## [3.0.0] - 2026-01-28
 
 ### 🚀 Major Release: Professional-Grade Documentation
