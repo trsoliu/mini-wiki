@@ -104,14 +104,14 @@ npx skills add trsoliu/mini-wiki
 
 </details>
 
-<details>
+<details open>
 <summary><b>📥 方式 2：下载 .skill 文件</b></summary>
 
 从 [Releases](https://github.com/trsoliu/mini-wiki/releases) 下载 `mini-wiki.skill` 文件。
 
 </details>
 
-<details>
+<details open>
 <summary><b>📂 方式 3：克隆仓库</b></summary>
 
 ```bash
@@ -143,7 +143,7 @@ npx skills update trsoliu/mini-wiki
 
 </details>
 
-<details>
+<details open>
 <summary><b>📂 Git clone</b></summary>
 
 ```bash
@@ -152,7 +152,7 @@ cd mini-wiki && git pull origin main
 
 </details>
 
-<details>
+<details open>
 <summary><b>📥 .skill 文件</b></summary>
 
 从 [Releases](https://github.com/trsoliu/mini-wiki/releases/latest) 重新下载
@@ -241,7 +241,7 @@ mini-wiki/
 
 ## ❓ 常见问题
 
-<details>
+<details open>
 <summary><b>更新 Mini-Wiki 会删除已有的文档吗？</b></summary>
 
 **不会。** 更新 Mini-Wiki（技能/插件本身）只会更新生成规则和模板，**不会**自动删除或修改任何已生成的文档。
@@ -252,7 +252,7 @@ npx skills update trsoliu/mini-wiki  # 只更新 Mini-Wiki 代码
 
 </details>
 
-<details>
+<details open>
 <summary><b>如何升级旧版本生成的低质量文档？</b></summary>
 
 使用以下命令升级现有文档：
@@ -270,7 +270,7 @@ npx skills update trsoliu/mini-wiki  # 只更新 Mini-Wiki 代码
 
 </details>
 
-<details>
+<details open>
 <summary><b>升级时会保留我自定义的内容吗？</b></summary>
 
 **会的。** 使用 `<!-- user-content -->` 标记的内容会被保留：
@@ -286,7 +286,7 @@ npx skills update trsoliu/mini-wiki  # 只更新 Mini-Wiki 代码
 
 </details>
 
-<details>
+<details open>
 <summary><b>如何检查现有文档的质量？</b></summary>
 
 告诉你的 AI Agent：
