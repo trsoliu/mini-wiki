@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.3] - 2026-01-28
+
+### 🔍 Quality Check System
+
+新增文档质量自动检查系统：
+
+- **新增 `scripts/check_quality.py`**：自动化质量检查脚本
+  - 检查行数、章节数、图表数、代码示例数
+  - 检查 classDiagram、源码追溯、必需章节
+  - 输出质量评估报告（Professional/Standard/Basic）
+  - 支持 `--verbose` 详细报告和 `--json` 导出
+
+**使用方法**：
+```bash
+python scripts/check_quality.py /path/to/.mini-wiki --verbose
+```
+
+---
+
 ## [3.0.2] - 2026-01-28
 
 ### 🚀 Documentation Quality Enhancement

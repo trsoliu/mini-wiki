@@ -374,7 +374,7 @@ progressive:
 
 ```json
 {
-  "generator_version": "3.0.2",  // 用于 {{ MINI_WIKI_VERSION }}
+  "generator_version": "3.0.3",  // 用于 {{ MINI_WIKI_VERSION }}
   "quality_standard": "professional-v2",
   "generated_at": "2026-01-28T21:15:00Z",
   "modules": {
@@ -558,6 +558,36 @@ python scripts/plugin_manager.py disable <name>
 | `scripts/extract_docs.py <file>` | 提取代码注释 |
 | `scripts/generate_toc.py <wiki-dir>` | 生成目录 |
 | `scripts/plugin_manager.py <cmd>` | 管理插件 |
+| `scripts/check_quality.py <wiki-dir>` | **文档质量检查（v3.0.3 新增）** |
+
+### 质量检查脚本
+
+```bash
+# 基本检查
+python scripts/check_quality.py /path/to/.mini-wiki
+
+# 详细报告
+python scripts/check_quality.py /path/to/.mini-wiki --verbose
+
+# 导出 JSON 报告
+python scripts/check_quality.py /path/to/.mini-wiki --json report.json
+```
+
+**检查项目**:
+- 行数 (≥200)
+- 章节数 (≥9)
+- 图表数 (≥2-3)
+- classDiagram 类图
+- 代码示例 (≥3)
+- 源码追溯 (Section sources)
+- 必需章节 (最佳实践、性能优化、错误处理)
+
+**质量等级**:
+| 等级 | 说明 |
+|------|------|
+| 🟢 Professional | 完全符合 v3.0.3 标准 |
+| 🟡 Standard | 基本合格，可优化 |
+| 🔴 Basic | 需要升级 |
 
 ## 参考资料
 
