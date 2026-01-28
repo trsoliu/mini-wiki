@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2026-01-28
+
+### Added
+- **7 个内置插件**:
+  - `code-complexity` (分析器)
+  - `paper-drafter` (生成器) - **NEW**
+  - `repo-analytics` (分析器) - **NEW**
+  - `patent-generator` (生成器) - **NEW**
+  - `api-doc-enhancer` (生成器)
+  - `changelog-generator` (生成器)
+  - `diagram-plus` (增强器)
+  - `i18n-sync` (增强器)
+  - `docusaurus-exporter` (格式/导出器)
+  - `gitbook-exporter` (格式/导出器)
+- **Skills.sh 兼容性增强**:
+  - 支持通过 `owner/repo` 简写安装 GitHub 上的插件
+  - 自动将通用 Skills (无 PLUGIN.md) 包装为 mini-wiki 插件
+  - 支持直接安装 skills.sh 上的任何 skill 作为增强能力
+- **插件管理增强**:
+  - 新增 `update` 命令支持插件版本更新
+  - Registry 支持记录插件来源元数据 (GitHub/URL)
+
+### Changed
+- **SKILL.md**: 增加了 `Plugin Execution Protocol`，强制 AI 在工作流中加载并执行插件指令
+- **README**: 增加了对插件运行机制的说明
+
 ## [2.0.0] - 2026-01-26
 
 ### Added

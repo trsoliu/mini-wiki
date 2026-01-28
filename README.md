@@ -130,12 +130,46 @@ Simply tell your AI Agent:
 
 ### Plugin Commands
 
+```bash
+# Natural Language
+📋 "list plugins"
+📦 "install plugin <source>"
+📦 "install <owner/repo>"  (GitHub shorthand)
+🔄 "update plugin <name>"
+✅ "enable plugin <name>"
+❌ "disable plugin <name>"
+
+# CLI Direct Usage
+python scripts/plugin_manager.py list
+python scripts/plugin_manager.py install <source>
+python scripts/plugin_manager.py update <name>
+python scripts/plugin_manager.py enable <name>
 ```
-📋 list plugins
-📦 install plugin <path/url>
-✅ enable plugin <name>
-❌ disable plugin <name>
-```
+
+**Installation Sources:**
+- **GitHub**: `owner/repo` (e.g., `vercel-labs/agent-skills`)
+- **URL**: `https://example.com/plugin.zip`
+- **Local**: `./plugins/my-plugin`
+
+### How Plugins Work
+
+Mini-Wiki uses an **Instruction-based Plugin System**. When you run a task:
+1. AI reads `plugins/_registry.yaml`
+2. AI reads instructions from `PLUGIN.md` of enabled plugins
+3. AI executes plugin logic at specific **Hooks** (e.g., `before_generate`, `on_export`)
+
+### Built-in Plugins
+
+- `code-complexity`: Code health & complexity analysis
+- `paper-drafter`: Generate academic paper drafts (LaTeX/IMRaD)
+- `repo-analytics`: Git stats, contributors & churn
+- `patent-generator`: Generate patent draft from code & wiki
+- `api-doc-enhancer`: Auto-extract comments & types
+- `changelog-generator`: Generate changelog from git
+- `diagram-plus`: Enhanced Mermaid diagrams
+- `i18n-sync`: Multi-language sync
+- `docusaurus-exporter`: Export to Docusaurus
+- `gitbook-exporter`: Export to GitBook
 
 ---
 

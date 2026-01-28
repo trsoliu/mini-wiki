@@ -43,6 +43,20 @@ Generate structured project Wiki to `.mini-wiki/` directory.
     └── zh/
 ```
 
+## 🔌 Plugin Execution Protocol
+
+**CRITICAL**: As an AI executing this skill, you **MUST** follow this protocol to activate installed plugins.
+
+1.  **Load Registry**: Read `plugins/_registry.yaml` to see enabled plugins.
+2.  **Read Manifests**: For each enabled plugin, read its `PLUGIN.md` to understand its **Hooks** and **Instructions**.
+3.  **Execute Hooks**:
+    *   **Pre-Analysis**: If plugin has `on_init`, follow its instructions before starting.
+    *   **Post-Analysis**: If plugin has `after_analyze`, apply its logic after analyzing structure.
+    *   **Pre-Generation**: If plugin has `before_generate`, modify your generation plan/prompts.
+    *   **Post-Generation**: If plugin has `after_generate` or `on_export`, execute those tasks after wiki creation.
+
+> **Example**: If `api-doc-enhancer` is enabled, you MUST read its `PLUGIN.md` and follow its specific rules for generating API docs.
+
 ## Workflow
 
 ### 1. Initialization Check
@@ -109,17 +123,25 @@ Add source links to code blocks:
 |---------|-------|
 | `list plugins` | Show installed plugins |
 | `install plugin <path/url>` | Install from path or URL |
+| `update plugin <name>` | Update plugin to latest version |
 | `enable plugin <name>` | Enable plugin |
 | `disable plugin <name>` | Disable plugin |
 | `uninstall plugin <name>` | Remove plugin |
+
+**Installation Sources:**
+- **Local**: `/path/to/plugin`
+- **GitHub**: `owner/repo` (e.g., `trsoliu/mini-wiki-extras`)
+- **Skills.sh**: Any compatible skill repo
+- **URL**: `https://example.com/plugin.zip`
+
+> **Note**: Generic skills (SKILL.md) will be automatically wrapped as plugins.
 
 ### Plugin Script
 
 ```bash
 python scripts/plugin_manager.py list
-python scripts/plugin_manager.py install <source>
-python scripts/plugin_manager.py enable <name>
-python scripts/plugin_manager.py disable <name>
+python scripts/plugin_manager.py install owner/repo
+python scripts/plugin_manager.py install ./my-plugin
 ```
 
 ### Creating Plugins
@@ -143,7 +165,7 @@ Plugins support hooks:
 | `scripts/generate_diagram.py <wiki-dir>` | Generate Mermaid diagrams |
 | `scripts/extract_docs.py <file>` | Extract code comments |
 | `scripts/generate_toc.py <wiki-dir>` | Generate table of contents |
-| `scripts/plugin_manager.py <cmd>` | Manage plugins |
+| `scripts/plugin_manager.py <cmd>` | Manage plugins (install/list/etc) |
 
 ## References
 

@@ -130,12 +130,46 @@ git clone https://github.com/trsoliu/mini-wiki.git
 
 ### 插件命令
 
+```bash
+# 自然语言指令
+📋 "列出插件"
+📦 "安装插件 <source>"
+📦 "安装 <owner/repo>"  (GitHub 简写)
+🔄 "更新插件 <name>"
+✅ "启用插件 <name>"
+❌ "禁用插件 <name>"
+
+# 命令行高级用法
+python scripts/plugin_manager.py list
+python scripts/plugin_manager.py install <source>
+python scripts/plugin_manager.py update <name>
+python scripts/plugin_manager.py enable <name>
 ```
-📋 列出插件
-📦 安装插件 <路径/URL>
-✅ 启用插件 <名称>
-❌ 禁用插件 <名称>
-```
+
+**安装来源:**
+- **GitHub**: `owner/repo` (例如 `vercel-labs/agent-skills`)
+- **URL**: `https://example.com/plugin.zip`
+- **本地**: `./plugins/my-plugin`
+
+### 插件工作原理
+
+Mini-Wiki 采用 **指令型插件系统**。当你运行任务时：
+1. AI 读取 `plugins/_registry.yaml`
+2. AI 读取启用插件的 `PLUGIN.md` 指令
+3. AI 在特定的 **Hooks**（如 `before_generate`, `on_export`）执行插件逻辑
+
+### 内置插件
+
+- `code-complexity`: 代码健康度与复杂度分析
+- `paper-drafter`: 专家级学术论文生成 (LaTeX/IMRaD)
+- `repo-analytics`: Git 提交统计、贡献者与活跃度分析
+- `patent-generator`: 基于代码和Wiki生成专利交底书草稿
+- `api-doc-enhancer`: 自动提取注释与类型
+- `changelog-generator`: 从 Git 生成变更日志
+- `diagram-plus`: 增强型 Mermaid 图表
+- `i18n-sync`: 多语言同步工具
+- `docusaurus-exporter`: 导出为 Docusaurus 格式
+- `gitbook-exporter`: 导出为 GitBook 格式
 
 ---
 

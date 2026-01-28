@@ -1,19 +1,55 @@
-# Mini-Wiki Plugins Registry
-# 扩展注册表
-
-# Installed plugins / 已安装的扩展
-plugins: []
-
-# Example:
-# plugins:
-#   - name: api-doc-enhancer
-#     enabled: true
-#     priority: 10
-#   
-#   - name: diagram-plus
-#     enabled: true
-#     priority: 20
-#   
-#   - name: docusaurus-exporter
-#     enabled: false
-#     priority: 30
+plugins:
+- builtin: true
+  enabled: true
+  name: code-complexity
+  priority: 10
+  type: analyzer
+- builtin: true
+  enabled: true
+  name: paper-drafter
+  priority: 13
+  type: generator
+- builtin: true
+  enabled: true
+  name: repo-analytics
+  priority: 12
+  type: analyzer
+- builtin: true
+  enabled: true
+  name: patent-generator
+  priority: 15
+  type: generator
+- builtin: true
+  enabled: true
+  name: api-doc-enhancer
+  priority: 20
+  type: generator
+- builtin: true
+  enabled: true
+  name: changelog-generator
+  priority: 25
+  type: generator
+- builtin: true
+  enabled: true
+  name: diagram-plus
+  priority: 30
+  type: enhancer
+- builtin: true
+  enabled: true
+  name: i18n-sync
+  priority: 35
+  type: enhancer
+- builtin: true
+  enabled: true
+  name: docusaurus-exporter
+  priority: 40
+  type: formatter
+- builtin: true
+  enabled: true
+  name: gitbook-exporter
+  priority: 45
+  type: formatter
+- enabled: true
+  name: agent-skills-main
+  priority: 80
+  source: /Users/admin/work/mini-wiki/plugins/_temp.zip
