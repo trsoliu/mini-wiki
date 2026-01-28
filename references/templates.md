@@ -523,6 +523,26 @@ flowchart TB
 | **{{ FEATURE_2 }}** | {{ FEATURE_2_DESC }} | [`{{ FEATURE_2_API }}`](#{{ FEATURE_2_API }}) |
 | **{{ FEATURE_3 }}** | {{ FEATURE_3_DESC }} | [`{{ FEATURE_3_API }}`](#{{ FEATURE_3_API }}) |
 
+### 核心类/接口
+
+\`\`\`mermaid
+classDiagram
+class {{ CLASS_NAME }} {
+  +{{ PROP_1 }} : {{ PROP_1_TYPE }}
+  +{{ PROP_2 }} : {{ PROP_2_TYPE }}
+  -{{ PRIVATE_PROP }} : {{ PRIVATE_TYPE }}
+  +{{ METHOD_1 }}({{ PARAM }}: {{ PARAM_TYPE }}) : {{ RETURN_TYPE }}
+  +{{ METHOD_2 }}() : void
+}
+class {{ RELATED_CLASS }} {
+  +{{ RELATED_PROP }} : {{ RELATED_TYPE }}
+}
+{{ CLASS_NAME }} --> {{ RELATED_CLASS }} : 依赖
+\`\`\`
+
+**Diagram sources**
+- [{{ CLASS_FILE }}](file://{{ CLASS_FILE_PATH }}#L{{ START }}-L{{ END }})
+
 ---
 
 ## 📁 文件结构

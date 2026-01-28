@@ -20,14 +20,58 @@
 - 流程用 **Mermaid 图表**可视化
 - 文档间通过**交叉链接**建立关联
 
-### 图表要求（每个文档至少 1-2 个）
+### 图表要求（每个文档至少 2-3 个）
 | 内容类型 | 图表类型 |
 |---------|----------|
 | 架构 | `flowchart TB` + subgraph |
 | 数据/调用流 | `sequenceDiagram` |
 | 状态变化 | `stateDiagram-v2` |
-| 类关系 | `classDiagram` |
+| **类/接口** | `classDiagram` 含属性+方法 |
 | 依赖关系 | `flowchart LR` |
+
+### 🔴 强制要求：源码追溯
+
+**每个章节末尾必须包含源码引用**：
+
+```markdown
+**Section sources**
+- [filename.ts](file://path/to/file.ts#L1-L50)
+- [another.ts](file://path/to/another.ts#L20-L80)
+
+**Diagram sources**
+- [architecture.ts](file://src/architecture.ts#L1-L100)
+```
+
+### 🔴 强制要求：模块文档结构
+
+每个模块文档必须包含以下章节（最少 200+ 行）：
+
+| 章节 | 必需内容 |
+|------|----------|
+| **概述** | 完整介绍、核心价值、在架构中的位置图 |
+| **核心功能** | 功能表格 + classDiagram 类图（含属性+方法） |
+| **目录结构** | 文件树 + 文件职责说明表 |
+| **使用示例** | 3+ 个完整可运行代码示例 |
+| **最佳实践** | 推荐做法 + 应避免做法 + 原因 |
+| **性能优化** | 性能技巧、优化建议 |
+| **错误处理/调试** | 常见错误、调试技巧 |
+| **依赖关系** | 依赖图 + 被依赖说明 |
+| **相关文档** | 交叉链接 |
+
+### 🔴 强制要求：核心类的 classDiagram
+
+对每个核心类/接口，生成详细的类图：
+
+```mermaid
+classDiagram
+class ClassName {
+  +property1 : Type
+  +property2 : Type
+  -privateField : Type
+  +method1(param : Type) : ReturnType
+  +method2() : void
+}
+```
 
 ### 文档关联
 - 每个文档必须有**"相关文档"**章节

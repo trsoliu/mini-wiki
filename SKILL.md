@@ -44,14 +44,58 @@ Generate **professional-grade** structured project Wiki to `.mini-wiki/` directo
 - Processes visualized with **Mermaid diagrams**
 - **Cross-links** between related documents
 
-### Diagram Requirements (minimum 1-2 per document)
+### Diagram Requirements (minimum 2-3 per document)
 | Content Type | Diagram Type |
 |--------------|--------------|
 | Architecture | `flowchart TB` with subgraphs |
 | Data/Call flow | `sequenceDiagram` |
 | State changes | `stateDiagram-v2` |
-| Class relations | `classDiagram` |
+| **Class/Interface** | `classDiagram` with properties + methods |
 | Dependencies | `flowchart LR` |
+
+### 🔴 MANDATORY: Source Code Traceability
+
+**Every section MUST include source references** at the end:
+
+```markdown
+**Section sources**
+- [filename.ts](file://path/to/file.ts#L1-L50)
+- [another.ts](file://path/to/another.ts#L20-L80)
+
+**Diagram sources**
+- [architecture.ts](file://src/architecture.ts#L1-L100)
+```
+
+### 🔴 MANDATORY: Module Document Structure
+
+Every module document MUST include these sections (minimum 200+ lines):
+
+| Section | Required Content |
+|---------|------------------|
+| **概述/Overview** | 完整介绍、核心价值、在架构中的位置图 |
+| **核心功能** | 功能表格 + classDiagram 类图（含属性+方法） |
+| **目录结构** | 文件树 + 文件职责说明表 |
+| **使用示例** | 3+ 个完整可运行代码示例 |
+| **最佳实践** | 推荐做法 + 应避免做法 + 原因 |
+| **性能优化** | 性能技巧、优化建议 |
+| **错误处理/调试** | 常见错误、调试技巧 |
+| **依赖关系** | 依赖图 + 被依赖说明 |
+| **相关文档** | 交叉链接 |
+
+### 🔴 MANDATORY: classDiagram for Core Classes
+
+For every core class/interface, generate detailed classDiagram:
+
+```mermaid
+classDiagram
+class ClassName {
+  +property1 : Type
+  +property2 : Type
+  -privateField : Type
+  +method1(param : Type) : ReturnType
+  +method2() : void
+}
+```
 
 ### Document Relationships
 - Every document must have **"Related Documents"** section
