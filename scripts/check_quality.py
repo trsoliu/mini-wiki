@@ -172,40 +172,86 @@ def evaluate_quality_level(m: QualityMetrics) -> str:
         return "basic"
 
 
+def calculate_expected_metrics(file_path: str) -> Dict[str, int]:
+    """基于模块复杂度动态计算期望指标"""
+    # 默认期望值（用于无法分析源码的情况）
+    expected = {
+        "min_lines": 100,
+        "min_sections": 6,
+        "min_diagrams": 1,
+        "min_examples": 2,
+    }
+    
+    # 尝试推断模块复杂度
+    file_name = os.path.basename(file_path).replace('.md', '')
+    
+    # 核心模块检测
+    core_keywords = ['core', 'agent', 'editor', 'store', 'main', 'client']
+    is_core = any(kw in file_name.lower() for kw in core_keywords)
+    
+    # 工具/配置模块检测
+    util_keywords = ['util', 'helper', 'common', 'shared', 'constant', 'config', 'type']
+    is_util = any(kw in file_name.lower() for kw in util_keywords)
+    
+    # 索引文件检测
+    is_index = file_name in ['index', '_index', 'TOC', 'doc-map']
+    
+    if is_core:
+        expected["min_lines"] = 200
+        expected["min_sections"] = 8
+        expected["min_diagrams"] = 2
+        expected["min_examples"] = 3
+    elif is_util:
+        expected["min_lines"] = 80
+        expected["min_sections"] = 5
+        expected["min_diagrams"] = 1
+        expected["min_examples"] = 2
+    elif is_index:
+        expected["min_lines"] = 50
+        expected["min_sections"] = 3
+        expected["min_diagrams"] = 1
+        expected["min_examples"] = 0
+    
+    return expected
+
+
 def generate_issues(m: QualityMetrics) -> List[str]:
-    """生成问题列表"""
+    """生成问题列表（基于动态期望值）"""
     issues = []
     
-    # 基于 v3.0.5 标准检查
-    if m.line_count < 400:
-        issues.append(f"行数不足: {m.line_count}/400")
+    # 动态计算期望指标
+    expected = calculate_expected_metrics(m.file_path)
     
-    if m.section_count < 12:
-        issues.append(f"章节数不足: {m.section_count}/12 (缺少必需章节)")
+    # 基于动态期望值检查
+    if m.line_count < expected["min_lines"]:
+        issues.append(f"行数不足: {m.line_count}/{expected['min_lines']} (基于模块复杂度)")
     
-    if m.diagram_count < 3:
-        issues.append(f"图表数不足: {m.diagram_count}/3+")
+    if m.section_count < expected["min_sections"]:
+        issues.append(f"章节数不足: {m.section_count}/{expected['min_sections']}")
     
-    if m.class_diagram_count < 1:
-        issues.append("缺少 classDiagram 类图")
+    if m.diagram_count < expected["min_diagrams"]:
+        issues.append(f"图表数不足: {m.diagram_count}/{expected['min_diagrams']}")
     
-    if m.code_example_count < 5:
-        issues.append(f"代码示例不足: {m.code_example_count}/5+ (需基础/配置/错误/高级/集成)")
+    if m.class_diagram_count < 1 and expected["min_diagrams"] >= 2:
+        issues.append("核心模块缺少 classDiagram 类图")
     
-    if not m.has_source_tracing:
-        issues.append("缺少源码追溯 (Section sources / Diagram sources)")
+    if m.code_example_count < expected["min_examples"]:
+        issues.append(f"代码示例不足: {m.code_example_count}/{expected['min_examples']}")
     
-    if not m.has_best_practices:
-        issues.append("缺少「最佳实践」章节")
+    if not m.has_source_tracing and expected["min_lines"] >= 150:
+        issues.append("缺少源码追溯 (Section sources)")
     
-    if not m.has_performance:
-        issues.append("缺少「性能优化」章节")
+    # 核心模块需要更多章节
+    if expected["min_sections"] >= 8:
+        if not m.has_best_practices:
+            issues.append("核心模块缺少「最佳实践」章节")
+        if not m.has_performance:
+            issues.append("核心模块缺少「性能优化」章节")
+        if not m.has_troubleshooting:
+            issues.append("核心模块缺少「错误处理」章节")
     
-    if not m.has_troubleshooting:
-        issues.append("缺少「错误处理/调试」章节")
-    
-    if m.cross_link_count < 2:
-        issues.append(f"交叉链接不足: {m.cross_link_count}/2+")
+    if m.cross_link_count < 1:
+        issues.append("缺少相关文档交叉链接")
     
     return issues
 

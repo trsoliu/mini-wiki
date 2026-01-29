@@ -5,7 +5,7 @@
 ![Mini-Wiki Banner](https://raw.githubusercontent.com/trsoliu/mini-wiki/main/assets/banner.png)
 
 [![skills.sh compatible](https://img.shields.io/badge/skills.sh-compatible-blue?style=for-the-badge)](https://skills.sh)
-[![Version](https://img.shields.io/badge/version-3.0.5-06B6D4?style=for-the-badge)](https://github.com/trsoliu/mini-wiki/releases)
+[![Version](https://img.shields.io/badge/version-3.0.6-06B6D4?style=for-the-badge)](https://github.com/trsoliu/mini-wiki/releases)
 [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](https://github.com/trsoliu/mini-wiki/blob/main/LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/trsoliu/mini-wiki?style=for-the-badge&color=yellow)](https://github.com/trsoliu/mini-wiki)
 
@@ -14,7 +14,7 @@
 | **GitHub** | [https://github.com/trsoliu/mini-wiki](https://github.com/trsoliu/mini-wiki) |
 | **作者** | trsoliu |
 | **微信** | `trsoliu` |
-| **版本** | 3.0.5 |
+| **版本** | 3.0.6 |
 | **协议** | MIT |
 
 ---
@@ -599,7 +599,7 @@ python scripts/plugin_manager.py install ./my-local-plugin
 
 ## 七、十一大内置插件完全指南
 
-Mini-Wiki 3.0.5 内置了 **11 个开箱即用的插件**，覆盖分析、生成、增强、格式化四大类别。
+Mini-Wiki 3.0.6 内置了 **11 个开箱即用的插件**，覆盖分析、生成、增强、格式化四大类别。
 
 ```mermaid
 flowchart TB
