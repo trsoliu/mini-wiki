@@ -68,19 +68,73 @@ Generate **professional-grade** structured project Wiki to `.mini-wiki/` directo
 
 ### 🔴 MANDATORY: Module Document Structure
 
-Every module document MUST include these sections (minimum 200+ lines):
+Every module document MUST include these sections (**minimum 400+ lines**):
 
-| Section | Required Content |
-|---------|------------------|
-| **概述/Overview** | 完整介绍、核心价值、在架构中的位置图 |
-| **核心功能** | 功能表格 + classDiagram 类图（含属性+方法） |
-| **目录结构** | 文件树 + 文件职责说明表 |
-| **使用示例** | 3+ 个完整可运行代码示例 |
-| **最佳实践** | 推荐做法 + 应避免做法 + 原因 |
-| **性能优化** | 性能技巧、优化建议 |
-| **错误处理/调试** | 常见错误、调试技巧 |
-| **依赖关系** | 依赖图 + 被依赖说明 |
-| **相关文档** | 交叉链接 |
+| Section | Required Content | Min Lines |
+|---------|------------------|-----------|
+| **概述/Overview** | 完整介绍、核心价值、在架构中的位置图 | 40+ |
+| **核心功能** | 功能表格 + classDiagram 类图（含属性+方法） | 60+ |
+| **目录结构** | 文件树 + 文件职责说明表 | 30+ |
+| **核心代码示例** | **5+ 个完整可运行代码示例**（见下方要求） | 100+ |
+| **最佳实践** | 推荐做法 + 应避免做法 + 原因 | 40+ |
+| **性能优化** | 性能技巧、优化建议、基准数据 | 30+ |
+| **错误处理/调试** | 常见错误、调试技巧、错误码说明 | 40+ |
+| **依赖关系** | 依赖图 + 被依赖说明 | 30+ |
+| **相关文档** | 交叉链接 | 10+ |
+
+### 🔴 MANDATORY: Code Examples (Target: AI & Architecture Review)
+
+**文档主要受众是 AI 和架构评审**，代码示例必须：
+
+1. **完整可运行**：包含 import、初始化、调用、结果处理
+2. **覆盖核心场景**：至少 5 个示例
+3. **包含注释说明**：解释关键步骤
+4. **展示边界情况**：错误处理、边界条件
+
+```typescript
+// ✅ 好的示例：完整、可运行、有注释
+import { AgentClient } from '@editverse/agent-core';
+import { z } from 'zod';
+
+// 1. 初始化客户端
+const agent = await AgentClient.create({
+  provider: 'openai',
+  model: 'gpt-4',
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// 2. 定义工具
+const searchTool = {
+  name: 'search',
+  description: '搜索网络内容',
+  parameters: z.object({
+    query: z.string().describe('搜索关键词'),
+  }),
+  execute: async ({ query }) => {
+    const results = await fetch(`/api/search?q=${query}`);
+    return results.json();
+  },
+};
+
+// 3. 执行对话（带工具调用）
+const response = await agent.chat({
+  messages: [{ role: 'user', content: '搜索 AI 最新进展' }],
+  tools: [searchTool],
+});
+
+// 4. 处理结果
+console.log(response.content);
+// 输出: "根据搜索结果，AI 最新进展包括..."
+```
+
+**每个模块必须包含的示例类型**：
+| 示例类型 | 说明 |
+|----------|------|
+| **基础用法** | 最简单的使用方式 |
+| **完整配置** | 所有配置项的示例 |
+| **错误处理** | try-catch、错误恢复 |
+| **高级用法** | 组合使用、扩展场景 |
+| **与其他模块集成** | 跨模块调用示例 |
 
 ### 🔴 MANDATORY: classDiagram for Core Classes
 
@@ -106,27 +160,86 @@ class ClassName {
 
 ## Output Structure
 
+### 🔴 MANDATORY: Business Domain Hierarchy (Not Flat!)
+
+**按业务领域分层组织，而不是扁平的 modules/ 目录**
+
 ```
 .mini-wiki/
-├── config.yaml              # Configuration
-├── meta.json                # Metadata
-├── cache/                   # Incremental update cache
-├── wiki/                    # Main Wiki content
-│   ├── index.md             # Project homepage with overview
-│   ├── architecture.md      # System architecture with diagrams
-│   ├── getting-started.md   # Quick start guide
-│   ├── doc-map.md           # Documentation relationship map
-│   ├── modules/             # Module documentation
-│   │   ├── _index.md        # Module index
-│   │   └── <module>.md      # Individual module docs
-│   ├── api/                 # API reference
-│   │   ├── _index.md        # API index
-│   │   └── <module>.md      # Module API docs
-│   └── assets/              # Images and diagrams
-└── i18n/                    # Multi-language versions
-    ├── en/
-    └── zh/
+├── config.yaml
+├── meta.json
+├── cache/
+├── wiki/
+│   ├── index.md                    # 项目首页
+│   ├── architecture.md             # 系统架构
+│   ├── getting-started.md          # 快速开始
+│   ├── doc-map.md                  # 文档关系图
+│   │
+│   ├── AI系统/                      # 业务领域 1
+│   │   ├── _index.md               # 领域概述
+│   │   ├── Agent核心/              # 子领域
+│   │   │   ├── _index.md
+│   │   │   ├── 客户端.md           # 400+ 行
+│   │   │   └── 工具系统.md         # 400+ 行
+│   │   ├── MCP协议/
+│   │   │   ├── _index.md
+│   │   │   └── 配置管理.md
+│   │   └── 对话流程/
+│   │       ├── 状态管理.md
+│   │       └── 响应处理.md
+│   │
+│   ├── 存储系统/                    # 业务领域 2
+│   │   ├── _index.md
+│   │   ├── 状态管理/
+│   │   │   └── Zustand.md
+│   │   └── 持久化/
+│   │       └── 存储适配.md
+│   │
+│   ├── 编辑器/                      # 业务领域 3
+│   │   ├── _index.md
+│   │   ├── 核心/
+│   │   └── 扩展/
+│   │
+│   ├── 跨平台/                      # 业务领域 4
+│   │   ├── _index.md
+│   │   ├── Electron/
+│   │   └── Web/
+│   │
+│   └── api/                        # API 参考
+└── i18n/
 ```
+
+### Domain Auto-Detection
+
+分析代码后，自动识别业务领域：
+
+```yaml
+# 自动识别的业务领域映射
+domain_mapping:
+  AI系统:
+    keywords: [agent, ai, llm, chat, mcp, tool]
+    packages: [agent-core, agent, mcp-core, agent-bridge]
+  存储系统:
+    keywords: [store, storage, persist, state]
+    packages: [store, storage, electron-secure-storage]
+  编辑器:
+    keywords: [editor, tiptap, markdown, document]
+    packages: [editor-core, markdown, docx2tiptap-core]
+  跨平台:
+    keywords: [electron, desktop, web, app]
+    packages: [apps/*, browser-core, electron-*]
+  组件库:
+    keywords: [component, ui, shadcn]
+    packages: [shadcn-ui, chat-ui, media-viewer]
+```
+
+### 🔴 每个业务领域必须包含
+
+| 文件 | 说明 |
+|------|------|
+| `_index.md` | 领域概述、架构图、子模块列表 |
+| 子领域目录 | 相关模块按功能分组 |
+| 每个文档 | **400+ 行、5+ 代码示例** |
 
 ## 🔌 Plugin Execution Protocol
 
@@ -334,24 +447,26 @@ flowchart TB
 
 #### Step 2: 批次划分
 
-**🔴 关键：每批最多 2-3 个模块，确保每个文档 200+ 行**
+**🔴 关键：每批最多 1-2 个模块，确保每个文档 400+ 行**
 
 ```yaml
 batch_config:
-  batch_size: 2              # 每批处理 2-3 个模块（确保质量）
-  min_lines_per_doc: 200     # 每个文档最少 200 行
+  batch_size: 1              # 每批处理 1-2 个模块（确保深度）
+  min_lines_per_doc: 400     # 每个文档最少 400 行
+  min_code_examples: 5       # 每个文档最少 5 个代码示例
   pause_between_batches: true # 批次间暂停确认
   auto_continue: false        # 是否自动继续下一批
 ```
 
-**批次分配示例**（35 个模块的项目）:
+**批次分配示例**（按业务领域组织）:
 | 批次 | 内容 | 预期行数 |
 |------|------|----------|
-| 1 | `index.md`, `architecture.md` | 500+ |
-| 2 | `getting-started.md`, `doc-map.md` | 400+ |
-| 3 | `agent-core.md`, `agent.md` | 500+ |
-| 4 | `store.md`, `editor-core.md` | 500+ |
-| ... | 每批 2-3 个模块 | 200+/模块 |
+| 1 | `index.md` | 300+ |
+| 2 | `architecture.md` | 400+ |
+| 3 | `AI系统/_index.md` | 200+ |
+| 4 | `AI系统/Agent核心/客户端.md` | 500+ |
+| 5 | `AI系统/Agent核心/工具系统.md` | 500+ |
+| ... | **每批 1 个深度文档** | 400+/文档 |
 
 #### Step 3: 进度跟踪
 在 `cache/progress.json` 中记录：
@@ -385,9 +500,10 @@ python scripts/check_quality.py .mini-wiki --verbose
 **质量门槛**：
 | 指标 | 最低要求 | 未达标处理 |
 |------|----------|-----------|
-| 行数 | ≥200 | 重新生成该文档 |
-| 章节数 | ≥9 | 补充缺失章节 |
-| 图表数 | ≥2 | 添加 classDiagram |
+| 行数 | **≥400** | 重新生成该文档 |
+| 章节数 | ≥12 | 补充缺失章节 |
+| 图表数 | ≥3 | 添加 classDiagram、flowchart |
+| 代码示例 | **≥5** | 补充示例（基础/配置/错误/高级/集成） |
 | 源码追溯 | 每章节 | 添加 Section sources |
 
 ### 用户交互提示
@@ -416,10 +532,17 @@ python scripts/check_quality.py .mini-wiki --verbose
 # .mini-wiki/config.yaml
 progressive:
   enabled: auto               # auto / always / never
-  batch_size: 2               # 每批模块数（2-3 确保质量）
-  min_lines_per_doc: 200      # 每个文档最少行数
+  batch_size: 1               # 每批模块数（1-2 确保深度）
+  min_lines_per_doc: 400      # 每个文档最少行数
+  min_code_examples: 5        # 每个文档最少代码示例数
   quality_check: true         # 每批后自动检查质量
   auto_continue: false        # 自动继续无需确认
+  
+# 业务领域分层配置
+domain_hierarchy:
+  enabled: true               # 启用业务领域分层
+  auto_detect: true           # 自动识别业务领域
+  language: zh                # 目录名语言 (zh/en)
   priority_weights:           # 自定义优先级权重
     entry_point: 5
     dependency_count: 4
@@ -445,7 +568,7 @@ progressive:
 
 ```json
 {
-  "generator_version": "3.0.4",  // 用于 {{ MINI_WIKI_VERSION }}
+  "generator_version": "3.0.5",  // 用于 {{ MINI_WIKI_VERSION }}
   "quality_standard": "professional-v2",
   "generated_at": "2026-01-28T21:15:00Z",
   "modules": {

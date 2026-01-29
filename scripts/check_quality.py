@@ -115,20 +115,20 @@ def evaluate_quality_level(m: QualityMetrics) -> str:
     """评估质量等级"""
     score = 0
     
-    # 行数评分 (200+ 为专业级)
-    if m.line_count >= 200:
+    # 行数评分 (400+ 为专业级)
+    if m.line_count >= 400:
         score += 3
-    elif m.line_count >= 100:
+    elif m.line_count >= 250:
         score += 2
-    elif m.line_count >= 50:
+    elif m.line_count >= 150:
         score += 1
     
     # 章节数评分
-    if m.section_count >= 9:
+    if m.section_count >= 12:
         score += 3
-    elif m.section_count >= 6:
+    elif m.section_count >= 8:
         score += 2
-    elif m.section_count >= 3:
+    elif m.section_count >= 5:
         score += 1
     
     # 图表评分
@@ -144,7 +144,9 @@ def evaluate_quality_level(m: QualityMetrics) -> str:
         score += 2
     
     # 代码示例评分
-    if m.code_example_count >= 3:
+    if m.code_example_count >= 5:
+        score += 3
+    elif m.code_example_count >= 3:
         score += 2
     elif m.code_example_count >= 1:
         score += 1
@@ -174,21 +176,21 @@ def generate_issues(m: QualityMetrics) -> List[str]:
     """生成问题列表"""
     issues = []
     
-    # 基于 v3.0.2 标准检查
-    if m.line_count < 200:
-        issues.append(f"行数不足: {m.line_count}/200")
+    # 基于 v3.0.5 标准检查
+    if m.line_count < 400:
+        issues.append(f"行数不足: {m.line_count}/400")
     
-    if m.section_count < 9:
-        issues.append(f"章节数不足: {m.section_count}/9 (缺少必需章节)")
+    if m.section_count < 12:
+        issues.append(f"章节数不足: {m.section_count}/12 (缺少必需章节)")
     
-    if m.diagram_count < 2:
-        issues.append(f"图表数不足: {m.diagram_count}/2-3")
+    if m.diagram_count < 3:
+        issues.append(f"图表数不足: {m.diagram_count}/3+")
     
     if m.class_diagram_count < 1:
         issues.append("缺少 classDiagram 类图")
     
-    if m.code_example_count < 3:
-        issues.append(f"代码示例不足: {m.code_example_count}/3+")
+    if m.code_example_count < 5:
+        issues.append(f"代码示例不足: {m.code_example_count}/5+ (需基础/配置/错误/高级/集成)")
     
     if not m.has_source_tracing:
         issues.append("缺少源码追溯 (Section sources / Diagram sources)")

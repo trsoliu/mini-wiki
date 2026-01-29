@@ -407,7 +407,7 @@ progressive:
 
 ```json
 {
-  "generator_version": "3.0.4",  // 用于 {{ MINI_WIKI_VERSION }}
+  "generator_version": "3.0.5",  // 用于 {{ MINI_WIKI_VERSION }}
   "quality_standard": "professional-v2",
   "generated_at": "2026-01-28T21:15:00Z",
   "modules": {
