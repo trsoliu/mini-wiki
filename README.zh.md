@@ -187,7 +187,11 @@ python scripts/plugin_manager.py enable <name>
 Mini-Wiki 采用 **指令型插件系统**。当你运行任务时：
 1. AI 读取 `plugins/_registry.yaml`
 2. AI 读取启用插件的 `PLUGIN.md` 指令
-3. AI 在特定的 **Hooks**（如 `before_generate`, `on_export`）执行插件逻辑
+3. AI 在特定的 **Hooks**（如 `before_generate`, `on_export`）**应用插件指令（仅文本）**
+
+**执行模型（安全说明）**：
+- 插件为**纯指令**，Agent **不会执行**插件代码或脚本。
+- `PLUGIN.md` 中的 CLI 命令仅供人工操作，Agent 不应执行。
 
 ### 内置插件
 

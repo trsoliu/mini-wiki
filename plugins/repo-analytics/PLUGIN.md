@@ -188,7 +188,7 @@ flowchart TB
 
 ### after_analyze (深度数据挖掘)
 
-执行全面统计分析：
+进行全面统计分析：
 
 1. **提交历史解析**：
    - `git log --numstat --all` 获取完整历史
@@ -592,40 +592,9 @@ repo_analytics:
 
 ---
 
-## 命令 / Commands
+## 手动命令（仅供人工参考）
 
-```bash
-# 生成完整统计报告
-python scripts/plugin_manager.py run repo-analytics report
-
-# 仅分析指定时间范围
-python scripts/plugin_manager.py run repo-analytics report --days 90
-
-# 增量分析（仅新提交）
-python scripts/plugin_manager.py run repo-analytics report --incremental
-
-# 继续未完成的分析
-python scripts/plugin_manager.py run repo-analytics continue
-
-# 检查报告质量
-python scripts/plugin_manager.py run repo-analytics check-quality
-
-# 升级旧版报告
-python scripts/plugin_manager.py run repo-analytics upgrade
-
-# 导出原始数据
-python scripts/plugin_manager.py run repo-analytics export --format json
-python scripts/plugin_manager.py run repo-analytics export --format csv
-
-# 生成贡献者报告
-python scripts/plugin_manager.py run repo-analytics contributors
-
-# 生成热点文件报告
-python scripts/plugin_manager.py run repo-analytics churn --threshold high
-
-# 计算健康度评分
-python scripts/plugin_manager.py run repo-analytics health
-```
+出于安全模型（指令型插件，不执行代码），此处不包含命令示例。如需 CLI 用法，请参考项目 README。
 
 ## 最佳实践 / Best Practices
 

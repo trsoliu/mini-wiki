@@ -10,18 +10,11 @@ import sys
 import shutil
 import zipfile
 import urllib.request
-import ssl
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 import yaml
 import re
 from datetime import datetime
-
-
-# Create SSL context to verify certificates
-ssl._create_default_https_context = ssl._create_unverified_context
-
-
 
 def get_plugins_dir(project_root: str) -> Path:
     """Get the plugins directory path."""

@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.8] - 2026-02-05
+
+### 🛡️ Security & Packaging Hardening
+
+- Clarified **instruction-only** plugin model across docs (no code/script execution by agents)
+- Removed CLI `run` examples from plugin docs and replaced with manual-only guidance
+- Updated plugin protocol wording to "apply guidance" instead of "execute"
+- Removed TLS verification override from `scripts/plugin_manager.py`
+- Removed bundled `plugins/agent-skills-main` from release package
+- Cleaned plugin registry and repacked `mini-wiki.skill`
+
 ## [3.0.7] - 2026-01-30
 
 ### 🔧 Tech Stack Analysis Upgrade

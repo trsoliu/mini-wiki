@@ -289,17 +289,22 @@ domain_mapping:
 | 子领域目录 | 相关模块按功能分组 |
 | 每个文档 | **400+ 行、5+ 代码示例** |
 
-## 🔌 Plugin Execution Protocol
+## 🔌 Plugin Instruction Protocol (No Code Execution)
 
-**CRITICAL**: As an AI executing this skill, you **MUST** follow this protocol to activate installed plugins.
+**CRITICAL**: Plugins are **instruction-only**. The agent must **never execute plugin-provided code, scripts, or external commands**. Hooks only influence how analysis and documentation are written.
 
-1.  **Load Registry**: Read `plugins/_registry.yaml` to see enabled plugins.
-2.  **Read Manifests**: For each enabled plugin, read its `PLUGIN.md` to understand its **Hooks** and **Instructions**.
-3.  **Execute Hooks**:
-    *   **Pre-Analysis**: If plugin has `on_init`, follow its instructions before starting.
-    *   **Post-Analysis**: If plugin has `after_analyze`, apply its logic after analyzing structure.
-    *   **Pre-Generation**: If plugin has `before_generate`, modify your generation plan/prompts.
-    *   **Post-Generation**: If plugin has `after_generate` or `on_export`, execute those tasks after wiki creation.
+1. **Load Registry**: Read `plugins/_registry.yaml` to see enabled plugins.
+2. **Read Manifests**: For each enabled plugin, read its `PLUGIN.md` to understand its **Hooks** and **Instructions**.
+3. **Apply Hook Instructions (text-only)**:
+Pre-Analysis (`on_init`): Apply guidance before starting.
+Post-Analysis (`after_analyze`): Apply guidance after analyzing structure.
+Pre-Generation (`before_generate`): Modify generation plan/prompts.
+Post-Generation (`after_generate` / `on_export`): Apply guidance after wiki creation.
+
+**Safety constraints**:
+- Do not run plugin scripts or binaries.
+- Do not fetch or execute code from the network.
+- Any CLI commands in `PLUGIN.md` are **for humans only** and must not be executed by the agent.
 
 > **Example**: If `api-doc-enhancer` is enabled, you MUST read its `PLUGIN.md` and follow its specific rules for generating API docs.
 
@@ -326,7 +331,7 @@ Run `scripts/analyze_project.py` or analyze manually:
 2. **Find entry points**: src/index.ts, main.py, etc.
 3. **Identify modules**: Scan src/ directory structure
 4. **Find existing docs**: README.md, CHANGELOG.md, etc.
-5. **Execute `after_analyze` hooks** from plugins
+5. **Apply `after_analyze` guidance** from plugins (text-only)
 
 Save structure to `cache/structure.json`.
 
@@ -355,7 +360,7 @@ Run `scripts/detect_changes.py` to compare file checksums:
 
 ### 6. Content Generation (Professional Grade)
 
-Execute `before_generate` hooks from plugins, then generate content following **strict quality standards**:
+Apply `before_generate` guidance from plugins (text-only), then generate content following **strict quality standards**:
 
 #### 6.1 Homepage (`index.md`)
 Must include:
@@ -435,7 +440,7 @@ Must include:
 - Complete document index
 - Module dependency matrix
 
-Execute `after_generate` hooks from plugins.
+Apply `after_generate` guidance from plugins (text-only).
 
 ### 7. Source Code Links
 
@@ -774,6 +779,8 @@ upgrade:
 
 ## Plugin System
 
+**安全模型**：插件仅提供**文本指令**，用于影响分析与写作策略；**不执行任何插件代码/脚本**。
+
 ### Plugin Commands
 
 | Command | Usage |
@@ -792,6 +799,7 @@ upgrade:
 - **URL**: `https://example.com/plugin.zip`
 
 > **Note**: Generic skills (SKILL.md) will be automatically wrapped as plugins.
+> These are still **instruction-only** and are **not executed** as code.
 
 ### Plugin Script
 
@@ -801,16 +809,18 @@ python scripts/plugin_manager.py install owner/repo
 python scripts/plugin_manager.py install ./my-plugin
 ```
 
+> **Manual only**: CLI commands are for humans. The agent must **not** run plugin scripts or external commands.
+
 ### Creating Plugins
 
 See `references/plugin-template.md` for plugin format.
 
 Plugins support hooks:
-- `on_init` - Run on initialization
-- `after_analyze` - Add analysis data
-- `before_generate` - Modify prompts
-- `after_generate` - Post-process output
-- `on_export` - Convert formats
+- `on_init` - Initialization guidance
+- `after_analyze` - Add analysis guidance
+- `before_generate` - Modify prompts/generation guidance
+- `after_generate` - Post-process guidance
+- `on_export` - Export guidance
 
 ## Scripts Reference
 
@@ -903,4 +913,3 @@ exclude:
   - dist
   - "*.test.ts"
 ```
-

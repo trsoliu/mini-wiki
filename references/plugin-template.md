@@ -2,6 +2,10 @@
 
 This document describes the PLUGIN.md format for creating mini-wiki plugins.
 
+## Security Note / 安全说明
+
+Plugins are **instruction-only**. Do not include steps that require executing code, scripts, or external commands. Any CLI commands are for **manual** use only and must not be executed by the agent.
+
 ## PLUGIN.md Format
 
 ```yaml

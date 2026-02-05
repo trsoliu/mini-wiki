@@ -74,7 +74,7 @@ module.exports = {
 
 ### on_export
 
-导出时执行：
+导出时应用：
 
 1. 读取 `.mini-wiki/wiki/` 目录
 2. 转换 Markdown 格式

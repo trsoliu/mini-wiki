@@ -101,7 +101,7 @@ gitbook-docs/
 
 ### on_export
 
-导出时执行：
+导出时应用：
 
 1. 读取 `.mini-wiki/wiki/` 目录
 2. 转换文件名（index.md → README.md）

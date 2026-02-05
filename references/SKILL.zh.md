@@ -127,7 +127,7 @@ class ClassName {
 2. **发现入口文件**: src/index.ts, main.py 等
 3. **识别模块**: 扫描 src/ 目录结构
 4. **发现现有文档**: README.md, CHANGELOG.md 等
-5. **执行 `after_analyze` 钩子**
+5. **应用 `after_analyze` 指引（仅文本）**
 
 保存结构到 `cache/structure.json`。
 
@@ -156,7 +156,7 @@ class ClassName {
 
 ### 6. 内容生成（专业级）
 
-执行 `before_generate` 钩子，然后按照**严格的质量标准**生成内容：
+应用 `before_generate` 指引（仅文本），然后按照**严格的质量标准**生成内容：
 
 #### 6.1 首页 (`index.md`)
 必须包含：
@@ -236,7 +236,7 @@ class ClassName {
 - 完整文档索引
 - 模块依赖矩阵
 
-执行 `after_generate` 钩子。
+应用 `after_generate` 指引（仅文本）。
 
 ### 7. 代码链接
 
@@ -550,6 +550,8 @@ upgrade:
 
 ## 插件系统
 
+**安全模型**：插件仅提供**文本指令**，用于影响分析与写作策略；**不执行任何插件代码/脚本**。
+
 ### 插件命令
 
 | 命令 | 说明 |
@@ -569,16 +571,18 @@ python scripts/plugin_manager.py enable <name>
 python scripts/plugin_manager.py disable <name>
 ```
 
+> **仅限人工**：CLI 命令仅供人类手动执行，Agent 不应执行。
+
 ### 创建插件
 
 见 `references/plugin-template.md` 了解插件格式。
 
 支持的钩子：
-- `on_init` - 初始化时运行
-- `after_analyze` - 添加分析数据
-- `before_generate` - 修改提示词
-- `after_generate` - 后处理输出
-- `on_export` - 格式转换
+- `on_init` - 初始化指引
+- `after_analyze` - 添加分析指引
+- `before_generate` - 修改提示词/生成指引
+- `after_generate` - 后处理指引
+- `on_export` - 导出指引
 
 ## 脚本参考
 

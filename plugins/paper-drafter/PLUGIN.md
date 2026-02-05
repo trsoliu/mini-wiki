@@ -107,17 +107,11 @@ In this paper, we propose Mini-Wiki, an agent-driven framework...
 \subsection{Plugin Architecture}
 The system employs a hook-based lifecycle management...
 \begin{algorithm}
-\caption{Plugin Execution Protocol}
+\caption{Plugin Instruction Protocol}
 ...
 \end{algorithm}
 ```
 
-## 命令 / Commands
+## 手动命令（仅供人工参考）
 
-```bash
-# 生成论文草稿
-python scripts/plugin_manager.py run paper-drafter generate
-
-# 仅生成大纲
-python scripts/plugin_manager.py run paper-drafter outline
-```
+出于安全模型（指令型插件，不执行代码），此处不包含命令示例。如需 CLI 用法，请参考项目 README。

@@ -185,7 +185,7 @@ flowchart TB
 | **排除产品细节** | 仅关注方法步骤和原理 |
 
 **步骤描述内容**：
-- **操作流程**：具体执行过程、顺序、逻辑关系
+- **操作流程**：具体实施过程、顺序、逻辑关系
 - **数据处理**：获取、输入、预处理、分析、计算、输出
 - **参数设定**：设定依据、调整方式、范围或类型
 - **决策逻辑**：判断依据或条件
@@ -239,7 +239,7 @@ flowchart TB
 
 | 要求 | 说明 |
 |------|------|
-| **具象化** | 将通用步骤转化为具体可执行细节 |
+| **具象化** | 将通用步骤转化为具体可落地细节 |
 | **可重复性** | 技术人员可根据描述重复实施 |
 | **体现效果** | 展示发明目的和有益效果 |
 | **多个实施例** | 2-3个不同场景的实施例，扩大保护范围 |
@@ -315,7 +315,7 @@ flowchart TB
 
 ---
 
-## 🔌 Hooks 执行协议
+## 🔌 Hooks 指引协议
 
 ### after_analyze
 
@@ -401,29 +401,9 @@ plugins:
 
 ---
 
-## 🚀 命令 / Commands
+## 手动命令（仅供人工参考）
 
-```bash
-# 生成完整专利技术交底书
-python scripts/plugin_manager.py run patent-generator generate
-
-# 快速模式（跳过所属技术领域和有益效果的独立生成）
-python scripts/plugin_manager.py run patent-generator generate --mode quick
-
-# 仅生成指定要素
-python scripts/plugin_manager.py run patent-generator generate --element title
-python scripts/plugin_manager.py run patent-generator generate --element solution
-python scripts/plugin_manager.py run patent-generator generate --element embodiments
-
-# 从实施案例文件生成
-python scripts/plugin_manager.py run patent-generator generate --input case.md
-
-# 形式审查
-python scripts/plugin_manager.py run patent-generator review
-
-# 导出为 Word 格式
-python scripts/plugin_manager.py run patent-generator export --format docx
-```
+出于安全模型（指令型插件，不执行代码），此处不包含命令示例。如需 CLI 用法，请参考项目 README。
 
 ---
 

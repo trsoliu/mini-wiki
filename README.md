@@ -187,7 +187,11 @@ python scripts/plugin_manager.py enable <name>
 Mini-Wiki uses an **Instruction-based Plugin System**. When you run a task:
 1. AI reads `plugins/_registry.yaml`
 2. AI reads instructions from `PLUGIN.md` of enabled plugins
-3. AI executes plugin logic at specific **Hooks** (e.g., `before_generate`, `on_export`)
+3. AI **applies plugin guidance (text-only)** at specific **Hooks** (e.g., `before_generate`, `on_export`)
+
+**Execution model (safety)**:
+- Plugins are **instruction-only**; the agent does **not** execute plugin code or scripts.
+- Any CLI commands in `PLUGIN.md` are for humans only and must not be executed by the agent.
 
 ### Built-in Plugins
 

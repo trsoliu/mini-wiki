@@ -47,7 +47,7 @@ classDiagram
     class Plugin {
         <<interface>>
         +name: string
-        +execute()
+        +apply()
     }
     WikiGenerator --> Plugin : uses
 ```
@@ -166,7 +166,7 @@ classDiagram
         <<interface>>
         +name: string
         +hooks: string[]
-        +execute(context): void
+        +apply(context): void
     }
     
     class ApiDocEnhancer {

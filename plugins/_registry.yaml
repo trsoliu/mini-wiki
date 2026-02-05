@@ -49,7 +49,3 @@ plugins:
   name: gitbook-exporter
   priority: 45
   type: formatter
-- enabled: true
-  name: agent-skills-main
-  priority: 80
-  source: /Users/admin/work/mini-wiki/plugins/_temp.zip

@@ -132,7 +132,7 @@ flowchart LR
 
 ### after_analyze (深度代码分析)
 
-分析阶段后，执行深度源代码扫描：
+分析阶段后，进行深度源代码扫描：
 
 1. **AST 解析**：构建完整的抽象语法树
 2. **符号提取**：识别所有导出的函数、类、接口、类型
@@ -439,7 +439,7 @@ try {
 **⚠️ 注意事项**
 
 - 首次调用会创建 `.mini-wiki/` 目录结构
-- 如果已存在 Wiki，将执行增量更新
+- 如果已存在 Wiki，将进行增量更新
 - 插件按 `priority` 顺序加载
 
 **📎 相关 API**
@@ -481,7 +481,7 @@ const wiki = await createWiki({
 
 ### Q: 插件加载顺序重要吗？
 
-A: 是的，插件按 `priority` 数值从小到大执行。建议保持默认顺序。
+A: 是的，插件按 `priority` 数值从小到大应用指引。建议保持默认顺序。
 
 ---
 
@@ -573,7 +573,7 @@ api_doc_enhancer:
 👉 输入 "升级 API 文档" 开始升级
 ```
 
-### 升级执行
+### 升级流程
 
 ```
 🔄 正在升级 API: createUser (1/15)
@@ -591,30 +591,9 @@ api_doc_enhancer:
 
 ---
 
-## 命令 / Commands
+## 手动命令（仅供人工参考）
 
-```bash
-# 重新分析 API
-python scripts/plugin_manager.py run api-doc-enhancer analyze
-
-# 生成 API 文档
-python scripts/plugin_manager.py run api-doc-enhancer generate
-
-# 继续未完成的 API 文档生成
-python scripts/plugin_manager.py run api-doc-enhancer continue
-
-# 检查 API 文档质量
-python scripts/plugin_manager.py run api-doc-enhancer check-quality
-
-# 升级低质量 API 文档
-python scripts/plugin_manager.py run api-doc-enhancer upgrade
-
-# 验证 API 注释完整性
-python scripts/plugin_manager.py run api-doc-enhancer lint
-
-# 导出 API 清单
-python scripts/plugin_manager.py run api-doc-enhancer export --format json
-```
+出于安全模型（指令型插件，不执行代码），此处不包含命令示例。如需 CLI 用法，请参考项目 README。
 
 ## 最佳实践 / Best Practices
 
