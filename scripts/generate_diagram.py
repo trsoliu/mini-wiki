@@ -5,9 +5,9 @@ Mermaid 图表生成脚本
 """
 
 import json
-from pathlib import Path
-from typing import Dict, List, Any, Optional
 import re
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 
 def generate_architecture_diagram(structure: Dict[str, Any]) -> str:
