@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.1.0] - 2026-05-02
+
+### 🏗️ Project Modernization
+
+**Major infrastructure upgrade bringing Mini-Wiki to 2026 Python ecosystem standards.**
+
+#### 1. Modern Python Toolchain
+- Added `pyproject.toml` with project metadata, dependencies, and tool configuration
+- Configured **Ruff** (linter + formatter) with 11 rule sets (E, F, W, I, N, UP, B, A, SIM, TCH, RUF)
+- Configured **mypy** for static type checking
+- Added **pre-commit hooks** for automated code quality checks
+
+#### 2. CI/CD Pipeline
+- Added **GitHub Actions** workflow with lint and test jobs
+- Matrix testing across **Python 3.10, 3.11, 3.12**
+- Code coverage reporting via Codecov
+
+#### 3. Comprehensive Test Suite
+- **150 test cases** across all 8 core modules (100% module coverage)
+- **2,193 lines** of test code using pytest
+- Shared fixtures in `conftest.py` for test isolation
+
+| Module | Tests |
+|--------|-------|
+| detect_changes.py | 15 |
+| check_quality.py | 4 |
+| generate_toc.py | 5 |
+| extract_docs.py | 26 |
+| generate_diagram.py | 20 |
+| init_wiki.py | 24 |
+| analyze_project.py | 37 |
+| plugin_manager.py | 19 |
+
+#### 4. Code Quality Improvements
+- Sorted imports across all scripts (isort convention)
+- Replaced broad `Exception` catches with specific `OSError`
+- Fixed type annotations (`Optional[T]` instead of `T = None`)
+- Removed debug `print()` statements from plugin_manager.py
+- Removed redundant internal imports
+- Fixed single-line `if` statements (PEP 8)
+
 ## [3.0.8] - 2026-02-05
 
 ### 🛡️ Security & Packaging Hardening
