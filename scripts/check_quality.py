@@ -4,14 +4,14 @@ Mini-Wiki 文档质量检查脚本
 检查生成的文档是否符合 v3.0.2 质量标准
 """
 
+import argparse
+import json
 import os
 import re
-import json
-import argparse
-from pathlib import Path
 from dataclasses import dataclass, field
-from typing import List, Dict, Optional
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional
 
 
 @dataclass

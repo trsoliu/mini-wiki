@@ -6,15 +6,16 @@ Manage mini-wiki plugins: list, install, enable, disable.
 """
 
 import os
-import sys
-import shutil
-import zipfile
-import urllib.request
-from pathlib import Path
-from typing import Dict, List, Optional, Any
-import yaml
 import re
+import shutil
+import sys
+import zipfile
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+import urllib.request
+import yaml
 
 def get_plugins_dir(project_root: str) -> Path:
     """Get the plugins directory path."""
@@ -229,19 +230,14 @@ hooks:
         target_name = re.sub(r'[^a-zA-Z0-9_-]', '-', target_name).lower()
             
         target_dir = plugins_dir / target_name
-        print(f"Installing to: {target_dir}")
-        print(f"Source path is: {source_path}")
-        
+
         # Copy plugin
         if target_dir.exists():
             shutil.rmtree(target_dir)
         shutil.copytree(source_path, target_dir)
-        
-        print(f"Directory contents: {list(target_dir.iterdir())}")
 
         # Update registry
         registry = load_registry(project_root)
-        print(f"Registry loaded, plugins count: {len(registry.get('plugins', []))}")
         plugins = registry.get('plugins', [])
         
         # Remove existing entry if exists
@@ -285,9 +281,7 @@ hooks:
         })
         
         registry['plugins'] = plugins
-        print(f"Saving registry with {len(plugins)} plugins...")
         save_registry(project_root, registry)
-        print("Registry saved.")
         
         # Cleanup
         temp_zip = plugins_dir / '_temp.zip'
@@ -303,8 +297,6 @@ hooks:
         
     except Exception as e:
         result['message'] = f'Installation failed: {str(e)}'
-        import traceback
-        traceback.print_exc()
     
     return result
 

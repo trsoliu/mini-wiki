@@ -4,11 +4,11 @@ Mini-Wiki 初始化脚本
 创建 .mini-wiki 目录结构和默认配置
 """
 
-import os
 import json
+import os
 import shutil
-from pathlib import Path
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Optional
 
 

@@ -4,10 +4,10 @@
 为 wiki 生成导航目录
 """
 
+import json
 import os
 from pathlib import Path
-from typing import List, Dict, Any
-import re
+from typing import Any, Dict, List
 
 
 def extract_title_from_markdown(file_path: str) -> str:
@@ -20,7 +20,7 @@ def extract_title_from_markdown(file_path: str) -> str:
                     return line[2:].strip()
         # 如果没有找到标题，使用文件名
         return Path(file_path).stem.replace('-', ' ').replace('_', ' ').title()
-    except Exception:
+    except OSError:
         return Path(file_path).stem
 
 
@@ -117,7 +117,6 @@ def generate_sidebar(wiki_dir: str) -> str:
             sidebar['/modules/'] = module_items
     
     # 生成 JSON 格式
-    import json
     return json.dumps(sidebar, indent=2, ensure_ascii=False)
 
 

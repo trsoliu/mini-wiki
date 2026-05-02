@@ -5,11 +5,12 @@
 输出适配 .mini-wiki 目录结构
 """
 
-import os
 import json
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Set
+import os
+import re
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set
 
 # 忽略的目录
 IGNORE_DIRS = {
@@ -79,15 +80,18 @@ def detect_monorepo_tools(root_path: Path) -> List[str]:
     # workspace configs
     if (root_path / 'pnpm-workspace.yaml').exists():
         tools.append('pnpm-workspaces')
-        if 'monorepo' not in tools: tools.append('monorepo')
-        
+        if 'monorepo' not in tools:
+            tools.append('monorepo')
+
     if (root_path / 'lerna.json').exists():
         tools.append('lerna')
-        if 'monorepo' not in tools: tools.append('monorepo')
-        
+        if 'monorepo' not in tools:
+            tools.append('monorepo')
+
     if (root_path / 'turbo.json').exists():
         tools.append('turborepo')
-        if 'monorepo' not in tools: tools.append('monorepo')
+        if 'monorepo' not in tools:
+            tools.append('monorepo')
         
     # check package.json for workspaces
     pkg_path = root_path / 'package.json'
@@ -96,8 +100,9 @@ def detect_monorepo_tools(root_path: Path) -> List[str]:
             with open(pkg_path, 'r', encoding='utf-8') as f:
                 pkg = json.load(f)
                 if 'workspaces' in pkg:
-                    tools.append('npm-workspaces') # or yarn/bun workspaces, generic term
-                    if 'monorepo' not in tools: tools.append('monorepo')
+                    tools.append('npm-workspaces')
+                    if 'monorepo' not in tools:
+                        tools.append('monorepo')
         except Exception:
             pass
             
@@ -162,8 +167,6 @@ def detect_project_types(root_path: Path) -> List[str]:
                     if isinstance(deps, dict):
                         all_deps.update(deps.keys())
                     if isinstance(deps_std, list):
-                        # Simple parsing for "package>=1.0"
-                        import re
                         for d in deps_std:
                             match = re.match(r'^([a-zA-Z0-9_-]+)', d)
                             if match:
@@ -251,7 +254,7 @@ def find_entry_points(root_path: Path, project_types: List[str]) -> List[str]:
     return entries
 
 
-def discover_modules(root_path: Path, exclude_dirs: Set[str] = None) -> List[Dict[str, Any]]:
+def discover_modules(root_path: Path, exclude_dirs: Optional[Set[str]] = None) -> List[Dict[str, Any]]:
     """发现项目模块"""
     if exclude_dirs is None:
         exclude_dirs = IGNORE_DIRS

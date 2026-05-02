@@ -4,12 +4,12 @@
 对比文件校验和，检测项目变更以支持增量更新
 """
 
-import os
 import json
 import hashlib
-from pathlib import Path
-from typing import Dict, List, Set, Tuple, Any
+import os
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, Optional, Set
 
 # 默认排除规则
 DEFAULT_EXCLUDES = {
@@ -39,7 +39,7 @@ def calculate_file_hash(file_path: str) -> str:
             for chunk in iter(lambda: f.read(8192), b''):
                 sha256.update(chunk)
         return sha256.hexdigest()[:16]  # 只取前16位
-    except Exception:
+    except OSError:
         return ""
 
 
@@ -58,7 +58,7 @@ def should_include_file(file_path: Path, excludes: Set[str]) -> bool:
     return file_path.suffix in CODE_EXTENSIONS or file_path.suffix in DOC_EXTENSIONS
 
 
-def scan_project_files(project_root: str, excludes: Set[str] = None) -> Dict[str, str]:
+def scan_project_files(project_root: str, excludes: Optional[Set[str]] = None) -> Dict[str, str]:
     """
     扫描项目文件并计算校验和
     
@@ -96,7 +96,7 @@ def save_checksums(wiki_dir: str, checksums: Dict[str, Dict[str, str]]):
         json.dump(checksums, f, indent=2, ensure_ascii=False)
 
 
-def detect_changes(project_root: str, excludes: Set[str] = None) -> Dict[str, Any]:
+def detect_changes(project_root: str, excludes: Optional[Set[str]] = None) -> Dict[str, Any]:
     """
     检测项目变更
     
@@ -159,8 +159,8 @@ def detect_changes(project_root: str, excludes: Set[str] = None) -> Dict[str, An
     }
 
 
-def update_checksums_cache(project_root: str, current_checksums: Dict[str, str], 
-                           doc_mapping: Dict[str, str] = None):
+def update_checksums_cache(project_root: str, current_checksums: Dict[str, str],
+                           doc_mapping: Optional[Dict[str, str]] = None) -> None:
     """
     更新校验和缓存
     
