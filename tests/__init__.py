@@ -1,0 +1,1 @@
+"""Mini-Wiki test suite."""
