@@ -1,6 +1,6 @@
 [project]
 name = "mini-wiki"
-version = "3.1.0"
+version = "3.2.0"
 description = "AI Agent skill package for automatic project documentation generation"
 authors = [
     { name = "trsoliu" }
@@ -9,8 +9,13 @@ license = { text = "Apache-2.0" }
 requires-python = ">=3.10"
 dependencies = [
     "PyYAML>=6.0",
+    "click>=8.1",
+    "rich>=13.0",
     "tomli>=2.0; python_version<'3.11'",
 ]
+
+[project.scripts]
+mini-wiki = "cli:main"
 
 [project.optional-dependencies]
 dev = [
