@@ -253,6 +253,8 @@ def test_homepages_use_the_vitepress_style_product_structure() -> None:
         assert 'className="mw-hero-visual"' in body
         assert 'className="mw-feature-grid"' in body
         assert 'className="mw-ai-links"' in body
+        assert 'src="/mini-wiki/logo.svg"' in body
+        assert 'src="/logo.svg"' not in body
         assert "mw-knowledge-graph" not in body
         assert "mw-proof-strip" not in body
         assert "mw-workflow" not in body

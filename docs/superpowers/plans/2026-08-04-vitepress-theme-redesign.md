@@ -219,7 +219,7 @@ Keep the current frontmatter and replace its body with this structure and final 
     </div>
     <div className="mw-install" aria-label="安装 Mini-Wiki"><span aria-hidden="true">$</span><code>npx skills add trsoliu/mini-wiki</code></div>
   </div>
-  <div className="mw-hero-visual" aria-hidden="true"><div className="mw-logo-halo"><img src="/logo.svg" alt="" /></div></div>
+  <div className="mw-hero-visual" aria-hidden="true"><div className="mw-logo-halo"><img src="/mini-wiki/logo.svg" alt="" /></div></div>
 </section>
 
 <section className="mw-feature-grid" aria-label="Mini-Wiki 核心能力">
@@ -266,7 +266,7 @@ Keep the current English frontmatter and replace its body with:
     </div>
     <div className="mw-install" aria-label="Install Mini-Wiki"><span aria-hidden="true">$</span><code>npx skills add trsoliu/mini-wiki</code></div>
   </div>
-  <div className="mw-hero-visual" aria-hidden="true"><div className="mw-logo-halo"><img src="/logo.svg" alt="" /></div></div>
+  <div className="mw-hero-visual" aria-hidden="true"><div className="mw-logo-halo"><img src="/mini-wiki/logo.svg" alt="" /></div></div>
 </section>
 
 <section className="mw-feature-grid" aria-label="Mini-Wiki core capabilities">
