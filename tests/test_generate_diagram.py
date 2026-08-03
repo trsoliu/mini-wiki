@@ -1,5 +1,6 @@
 """Tests for scripts/generate_diagram.py."""
 
+import json
 import re
 from pathlib import Path
 

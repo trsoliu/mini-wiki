@@ -159,6 +159,26 @@ Re-download from [Releases](https://github.com/trsoliu/mini-wiki/releases/latest
 
 </details>
 
+### Project-level Patent Skill
+
+This repository also carries
+[`patent-disclosure-skill`](https://skills.sh/handsomestWei/patent-disclosure-skill/patent-disclosure-skill)
+as a project-level Agent Skill under `.agents/skills/patent-disclosure-skill`.
+`skills-lock.json` records its upstream source and content hash.
+
+To refresh it manually:
+
+```bash
+DISABLE_TELEMETRY=1 npx -y skills@1.5.21 update patent-disclosure-skill --project --yes
+```
+
+The `Update external skills` workflow checks upstream every Monday and opens or
+refreshes a review pull request when files change. Updates are deliberately not
+auto-merged: this third-party Skill includes executable tools and should be
+reviewed before the project starts using a new revision. Forks must enable
+**Settings → Actions → General → Allow GitHub Actions to create and approve pull
+requests** for the workflow to create its pull request.
+
 ### Plugin Commands
 
 ```bash

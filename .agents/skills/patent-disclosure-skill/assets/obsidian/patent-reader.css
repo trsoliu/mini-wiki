@@ -1,0 +1,69 @@
+/* 专利通俗解读笔记样式 — 复制到库 .obsidian/snippets/ 并在 外观→CSS 代码片段 中启用 */
+
+.patent-reader .callout[data-callout="patent-meta"] {
+  --callout-color: 99, 102, 241;
+  --callout-icon: file-badge;
+  border-width: 1px;
+}
+
+.patent-reader .callout[data-callout="grounding"] {
+  --callout-color: 16, 185, 129;
+  --callout-icon: map-pin;
+}
+
+.patent-reader .callout[data-callout="speculative"],
+.patent-reader .callout[data-callout="warning"] {
+  --callout-color: 245, 158, 11;
+  --callout-icon: alert-triangle;
+}
+
+.patent-reader .callout[data-callout="patent-claim"] {
+  --callout-color: 88, 86, 214;
+  --callout-icon: scroll-text;
+}
+
+.patent-reader .callout[data-callout="figure"] {
+  --callout-color: 14, 165, 233;
+  --callout-icon: image;
+}
+
+.patent-reader h2 {
+  border-bottom: 1px solid var(--background-modifier-border);
+  padding-bottom: 0.25em;
+}
+
+.patent-reader .mermaid {
+  margin: 1em 0;
+}
+
+/* 权项一览表：窄列 + 可读行高 */
+.patent-reader h3 {
+  margin-top: 1.25em;
+}
+
+.patent-reader table {
+  font-size: 0.92em;
+}
+
+.patent-reader table td:nth-child(1),
+.patent-reader table th:nth-child(1) {
+  white-space: nowrap;
+  width: 3em;
+}
+
+.patent-reader table td:nth-child(2),
+.patent-reader table th:nth-child(2),
+.patent-reader table td:nth-child(3),
+.patent-reader table th:nth-child(3) {
+  white-space: nowrap;
+  width: 4.5em;
+}
+
+.patent-reader .callout[data-callout="tip"] {
+  --callout-color: 14, 165, 233;
+}
+
+.patent-index .dataview-error,
+.patent-index .block-language-dataview {
+  font-size: 0.9em;
+}

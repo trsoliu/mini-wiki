@@ -159,6 +159,25 @@ cd mini-wiki && git pull origin main
 
 </details>
 
+### 项目级专利 Skill
+
+本仓库已将
+[`patent-disclosure-skill`](https://skills.sh/handsomestwei/patent-disclosure-skill/patent-disclosure-skill)
+作为项目级 Agent Skill 放在 `.agents/skills/patent-disclosure-skill`，并由
+`skills-lock.json` 记录上游来源与内容哈希。
+
+需要立即手动同步时执行：
+
+```bash
+DISABLE_TELEMETRY=1 npx -y skills@1.5.21 update patent-disclosure-skill --project --yes
+```
+
+`Update external skills` 工作流每周一检查上游；发现变化后会自动创建或刷新
+更新 PR。工作流不会自动合并，因为该第三方 Skill 含可执行工具，项目启用新版本前
+应先审查 `SKILL.md`、提示词、依赖锁文件和 `tools/` 的差异。Fork 后还需在
+**Settings → Actions → General** 中启用 **Allow GitHub Actions to create and
+approve pull requests**，工作流才能创建 PR。
+
 ### 插件命令
 
 ```bash

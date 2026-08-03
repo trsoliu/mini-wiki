@@ -1,0 +1,127 @@
+# IPC/CPC 前缀 → 行业坐标与应用场景提示（离线，供专利解读「技术落地线索」）
+# 匹配：manifest.ipc_codes 前缀优先，否则在标题+摘要+技术领域文本中搜关键词
+
+hints:
+  - ipc_prefix: H01M
+    keywords: [电池, 电芯, 隔膜, 储能, 锂离子]
+    industry: 电化学储能
+    typical_modules:
+      - 电芯内部的隔膜/正负极/电解液
+      - 电池模组与热管理
+      - BMS 与充放电管理
+    user_scenarios:
+      - 新能源车动力电池包
+      - 储能电站集装箱
+    search_hints:
+      - 电池材料 技术白皮书
+      - 电芯结构 拆解
+
+  - ipc_prefix: G06F
+    keywords: [软件, 操作系统, 调度, 内存, 处理器, 数据库]
+    industry: 计算机软件与系统
+    typical_modules:
+      - 操作系统内核/驱动
+      - 应用服务与中间件
+      - 数据库与存储引擎
+    user_scenarios:
+      - 服务器/云主机上的后台服务
+      - 终端设备上的系统或 App
+    search_hints:
+      - 技术架构 白皮书
+      - 开发者文档
+
+  - ipc_prefix: G06Q
+    keywords: [电商, 支付, 金融, 风控, 推荐]
+    industry: 商业方法与应用软件
+    typical_modules:
+      - 交易与结算模块
+      - 风控与反欺诈
+      - 推荐与排序服务
+    user_scenarios:
+      - 线上购物/支付 App
+      - 企业 ERP/财务系统
+    search_hints:
+      - 解决方案 产品介绍
+
+  - ipc_prefix: H04L
+    keywords: [通信, 网络, 协议, 5G, 路由]
+    industry: 通信与网络
+    typical_modules:
+      - 基站/终端协议栈
+      - 路由与交换设备
+      - 网络安全模块
+    user_scenarios:
+      - 手机/路由器联网
+      - 数据中心互联
+    search_hints:
+      - 通信技术 白皮书
+
+  - ipc_prefix: H04
+    keywords: [天线, 射频, 基站, 调制]
+    industry: 通信与电子
+    typical_modules:
+      - 射频前端
+      - 天线与波束成形
+    user_scenarios:
+      - 移动通信终端
+      - 基站设备
+    search_hints:
+      - 无线通信 产品
+
+  - ipc_prefix: G06N
+    keywords: [神经网络, 深度学习, 机器学习, 大模型]
+    industry: 人工智能
+    typical_modules:
+      - 模型训练与推理引擎
+      - 特征提取与嵌入层
+    user_scenarios:
+      - 云端 AI 服务
+      - 端侧智能应用
+    search_hints:
+      - AI 模型 技术博客
+
+  - ipc_prefix: B23
+    keywords: [加工, 机床, 焊接, 切削]
+    industry: 机械制造与加工
+    typical_modules:
+      - 机床主轴/刀具
+      - 焊接/切割工位
+    user_scenarios:
+      - 汽车零部件产线
+      - 通用机械加工车间
+    search_hints:
+      - 加工工艺 设备
+
+  - ipc_prefix: A61
+    keywords: [医药, 医疗, 器械, 诊断, 临床]
+    industry: 生物医药与医疗器械
+    typical_modules:
+      - 给药装置/植入物
+      - 体外诊断试剂与仪器
+    user_scenarios:
+      - 医院诊疗流程
+      - 家用医疗器械
+    search_hints:
+      - 医疗器械 注册 产品
+
+  - ipc_prefix: C08
+    keywords: [聚合物, 树脂, 涂料, 复合材料]
+    industry: 高分子材料与化工
+    typical_modules:
+      - 基材与涂层配方
+      - 复合层压结构
+    user_scenarios:
+      - 工业涂料与胶粘剂
+      - 轻量化结构件
+    search_hints:
+      - 材料 技术参数
+
+  - ipc_prefix: DEFAULT
+    keywords: []
+    industry: 通用技术
+    typical_modules:
+      - 按权利要求中的功能模块理解
+    user_scenarios:
+      - 结合说明书实施例与背景技术推断
+    search_hints:
+      - 技术 解决方案

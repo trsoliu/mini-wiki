@@ -1,0 +1,31 @@
+# 用户产出（整目录不提交）
+outputs/
+disclosures/
+tmp/
+*.tmp
+~$*
+
+# 示例专利材料（仅提交 README 中的镜像链接；PDF/TXT 等本地自备）
+examples/example_patent_reader/**
+!examples/example_patent_reader/README.md
+
+# 国知局抓取结果缓存（tools/）
+tools/_last_result*.html
+
+# Python / tools
+tools/node_modules/
+__pycache__/
+*.py[cod]
+.pyo
+.venv/
+venv/
+*.egg-info/
+
+# math_render 联调产物（tests/test_math_render.py 运行时生成）
+tests/_math_test_figures/
+tests/_math_test_out.md
+tests/_math_test_bad.md
+
+# OS
+.DS_Store
+Thumbs.db

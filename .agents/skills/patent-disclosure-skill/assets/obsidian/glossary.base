@@ -1,0 +1,31 @@
+filters:
+  and:
+    - 'file.hasTag("glossary")'
+
+properties:
+  title:
+    displayName: 术语
+  source_pub:
+    displayName: 来源公开号
+  seen_in:
+    displayName: 出现于
+
+views:
+  - type: table
+    name: 全部术语
+    order:
+      - file.name
+      - title
+      - source_pub
+    filters:
+      and:
+        - 'file.inFolder("{{GLOSSARY_DIR}}")'
+        - 'file.name != "_术语索引"'
+  - type: cards
+    name: 术语卡片
+    order:
+      - title
+      - source_pub
+    filters:
+      and:
+        - 'file.hasTag("glossary")'

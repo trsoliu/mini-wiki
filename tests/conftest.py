@@ -11,13 +11,16 @@ import pytest
 def tmp_project(tmp_path: Path) -> Path:
     """Create a temporary project directory structure."""
     # Create basic project structure
-    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "core").mkdir(parents=True)
+    (tmp_path / "src" / "utils").mkdir()
     (tmp_path / "tests").mkdir()
     (tmp_path / "docs").mkdir()
 
     # Create some sample files
-    (tmp_path / "src" / "main.py").write_text("def main():\n    pass\n")
-    (tmp_path / "src" / "utils.py").write_text("def helper():\n    return True\n")
+    (tmp_path / "src" / "core" / "app.py").write_text("def main():\n    pass\n")
+    (tmp_path / "src" / "core" / "main.ts").write_text("export const main = () => true;\n")
+    (tmp_path / "src" / "utils" / "helpers.js").write_text("export const helper = () => true;\n")
+    (tmp_path / "docs" / "readme.md").write_text("# Test Documentation\n")
     (tmp_path / "README.md").write_text("# Test Project\n")
 
     return tmp_path

@@ -1,0 +1,62 @@
+name: Update external skills
+
+on:
+  schedule:
+    # Mondays at 09:17 Asia/Shanghai (01:17 UTC).
+    - cron: "17 1 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-patent-disclosure-skill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the default branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Update patent-disclosure-skill
+        env:
+          DISABLE_TELEMETRY: "1"
+        run: >-
+          npx --yes skills@1.5.21 update patent-disclosure-skill
+          --project --yes
+
+      - name: Verify the managed skill
+        shell: bash
+        run: |
+          test -f .agents/skills/patent-disclosure-skill/SKILL.md
+          node -e '
+            const lock = require("./skills-lock.json");
+            const skill = lock.skills?.["patent-disclosure-skill"];
+            if (!skill || skill.source !== "handsomestWei/patent-disclosure-skill") {
+              throw new Error("Unexpected patent-disclosure-skill source");
+            }
+          '
+
+      - name: Create or refresh the review pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          add-paths: |
+            .agents/skills/patent-disclosure-skill
+            skills-lock.json
+          branch: automation/update-patent-disclosure-skill
+          delete-branch: true
+          commit-message: "chore(skills): update patent-disclosure-skill"
+          title: "chore(skills): update patent-disclosure-skill"
+          body: |
+            Automated upstream refresh from `handsomestWei/patent-disclosure-skill`.
+
+            Review is required before merging because this third-party skill includes executable tools and runs with agent permissions. Check the upstream diff, especially `SKILL.md`, `prompts/`, dependency lockfiles, and `tools/`.
+
+            Source: https://github.com/handsomestWei/patent-disclosure-skill

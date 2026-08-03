@@ -1,0 +1,51 @@
+# 专利解读笔记领域路由（库内 Research/Patents/ 下的一级子目录）
+# 匹配顺序：application 关键词优先，再 ipc_prefix
+
+domains:
+  - label: 软件与互联网
+    ipc_prefixes: ["G06F", "G06Q", "H04L"]
+    keywords:
+      - 软件
+      - 数据库
+      - 神经网络
+      - 大语言模型
+      - 调度
+      - 分布式
+
+  - label: 通信与电子
+    ipc_prefixes: ["H04", "H03", "G06N"]
+    keywords:
+      - 通信
+      - 基站
+      - 天线
+      - 芯片
+      - 电路
+
+  - label: 机械与制造
+    ipc_prefixes: ["B23", "B25", "F16", "B65"]
+    keywords:
+      - 机械
+      - 加工
+      - 模具
+      - 传动
+
+  - label: 化工与材料
+    ipc_prefixes: ["C01", "C08", "C09", "H01M"]
+    keywords:
+      - 电池
+      - 隔膜
+      - 涂层
+      - 聚合物
+      - 催化
+
+  - label: 生物医药
+    ipc_prefixes: ["A61", "C12", "C07K"]
+    keywords:
+      - 医药
+      - 抗体
+      - 基因
+      - 临床
+
+  - label: 未分类
+    ipc_prefixes: []
+    keywords: []
