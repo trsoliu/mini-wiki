@@ -7,6 +7,7 @@ import json
 from click.testing import CliRunner
 
 from cli import main
+from mini_wiki_core.obsidian import ObsidianStatus, vault_uri
 
 runner = CliRunner()
 
@@ -29,6 +30,7 @@ def test_help():
     assert "doctor" in result.output
     assert "migrate" in result.output
     assert "search" in result.output
+    assert "obsidian" in result.output
     assert "plugins" in result.output
 
 
@@ -171,6 +173,33 @@ def test_search_cli_requires_a_built_index(v3_project):
     assert result.exit_code == 1
     assert "mini-wiki build" in result.output
     assert not database.exists()
+
+
+def test_obsidian_status_without_probe_never_starts_external_process(v3_project, monkeypatch):
+    calls = []
+    monkeypatch.setattr("subprocess.run", lambda *args, **kwargs: calls.append(args))
+
+    result = runner.invoke(main, ["obsidian", "status", "--json", str(v3_project)])
+
+    assert result.exit_code == 0
+    assert json.loads(result.output)["core_blocked"] is False
+    assert calls == []
+
+
+def test_obsidian_open_is_the_only_command_that_invokes_uri_opener(v3_project, monkeypatch):
+    calls: list[str] = []
+    monkeypatch.setattr(
+        "mini_wiki_core.obsidian.detect_obsidian",
+        lambda: ObsidianStatus(False, None, True, False, None),
+    )
+    monkeypatch.setattr("mini_wiki_core.obsidian.open_platform_uri", lambda uri: calls.append(uri) or 0)
+
+    status = runner.invoke(main, ["obsidian", "status", "--json", str(v3_project)])
+    opened = runner.invoke(main, ["obsidian", "open", str(v3_project)])
+
+    assert status.exit_code == 0
+    assert calls == [vault_uri(v3_project / "wiki")]
+    assert opened.exit_code == 0
 
 
 def test_plugins_list(tmp_path):

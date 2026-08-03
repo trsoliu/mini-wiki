@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from mini_wiki_core.doctor import doctor_project
+from mini_wiki_core.obsidian import ObsidianStatus
 
 
 def test_doctor_reports_missing_initialization_with_remediation(tmp_path: Path):
@@ -23,7 +24,10 @@ def test_doctor_warns_when_durable_vault_is_gitignored(v3_project: Path):
 
 
 def test_doctor_treats_missing_obsidian_as_informational(v3_project: Path, monkeypatch):
-    monkeypatch.setattr("mini_wiki_core.doctor.find_obsidian", lambda: None)
+    monkeypatch.setattr(
+        "mini_wiki_core.doctor.detect_obsidian",
+        lambda: ObsidianStatus(False, None, False, False, None),
+    )
 
     report = doctor_project(v3_project)
     finding = next(item for item in report.findings if item.code == "OBSIDIAN_NOT_FOUND")

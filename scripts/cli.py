@@ -9,6 +9,8 @@ Usage:
     mini-wiki check [PATH]
     mini-wiki changes [PATH]
     mini-wiki doctor [PATH]
+    mini-wiki obsidian status [PATH]
+    mini-wiki obsidian open [PATH]
     mini-wiki plugins list [PATH]
     mini-wiki plugins enable NAME [PATH]
     mini-wiki plugins disable NAME [PATH]
@@ -30,6 +32,7 @@ from analyze_project import analyze_project, print_analysis
 from check_quality import check_wiki_quality
 from detect_changes import detect_changes, print_changes
 from init_wiki import init_mini_wiki, print_result
+from mini_wiki_core import obsidian as obsidian_integration
 from mini_wiki_core.builder import BuildOptions, TransactionError, build_project
 from mini_wiki_core.config import ConfigError, load_config
 from mini_wiki_core.doctor import doctor_project
@@ -282,6 +285,68 @@ def search(
         click.echo(f"{hit.title} [{hit.node_type}] {hit.path}")
         if hit.snippet:
             click.echo(f"  {hit.snippet}")
+
+
+# --- obsidian ---
+
+
+@main.group("obsidian")
+def obsidian_group():
+    """Inspect or explicitly open the optional Obsidian integration."""
+
+
+@obsidian_group.command("status")
+@click.option("--json", "json_output", is_flag=True, help="Print a machine-readable status.")
+@click.option(
+    "--probe",
+    is_flag=True,
+    help="Explicitly run `obsidian version`; this may launch the Obsidian app.",
+)
+@click.argument("path", required=False)
+def obsidian_status(json_output: bool, probe: bool, path: str | None):
+    """Detect Obsidian without launching it unless --probe is requested."""
+    _resolve_project(path)
+    status = obsidian_integration.detect_obsidian()
+    probe_warning = ""
+    if probe:
+        probe_warning = "Obsidian CLI requires installer 1.12.7+ and may launch the app for this probe."
+        try:
+            status = obsidian_integration.probe_obsidian_version(status)
+        except obsidian_integration.ObsidianIntegrationError as exc:
+            click.echo(str(exc))
+            raise click.exceptions.Exit(1) from exc
+    payload = {**status.to_dict(), "probe_requested": probe, "probe_warning": probe_warning}
+    if json_output:
+        click.echo(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+        return
+    click.echo(f"Obsidian CLI: {'available' if status.cli_available else 'not found'}")
+    click.echo(f"Obsidian URI: {'supported' if status.uri_available else 'unsupported'}")
+    click.echo("Mini-Wiki core blocked: no")
+    if probe_warning:
+        click.echo(probe_warning)
+    if status.version:
+        click.echo(f"Obsidian version: {status.version}")
+
+
+@obsidian_group.command("open")
+@click.argument("path", required=False)
+def obsidian_open(path: str | None):
+    """Explicitly open the configured Markdown directory as an Obsidian Vault."""
+    project = _resolve_project(path)
+    try:
+        config = load_config(project)
+    except ConfigError as exc:
+        click.echo(str(exc))
+        raise click.exceptions.Exit(1) from exc
+    status = obsidian_integration.detect_obsidian()
+    result = obsidian_integration.open_vault(
+        config,
+        status,
+        uri_opener=obsidian_integration.open_platform_uri,
+    )
+    click.echo(result.message)
+    if not result.success:
+        raise click.exceptions.Exit(1)
 
 
 # --- plugins ---

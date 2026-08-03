@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import shutil
 import sqlite3
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -12,6 +11,7 @@ from typing import Any
 from pathspec import GitIgnoreSpec
 
 from mini_wiki_core.config import ConfigError, load_config
+from mini_wiki_core.obsidian import detect_obsidian
 from mini_wiki_core.scanner import scan_sources
 
 
@@ -42,20 +42,6 @@ class DoctorReport:
             "search_mode": self.search_mode,
             "findings": [asdict(finding) for finding in self.findings],
         }
-
-
-def find_obsidian() -> str | None:
-    """Locate the optional Obsidian executable without invoking it."""
-    command = shutil.which("obsidian")
-    if command:
-        return command
-    for candidate in (
-        Path("/Applications/Obsidian.app"),
-        Path.home() / "Applications" / "Obsidian.app",
-    ):
-        if candidate.exists():
-            return str(candidate)
-    return None
 
 
 def _gitignored(root: Path, target: Path) -> bool:
@@ -203,8 +189,24 @@ def doctor_project(project_root: str | Path) -> DoctorReport:
             )
         )
 
-    obsidian = find_obsidian()
-    if obsidian is None:
+    obsidian = detect_obsidian()
+    if obsidian.cli_available:
+        findings.append(
+            DoctorFinding(
+                "OBSIDIAN_CLI_FOUND",
+                "info",
+                "Optional Obsidian CLI is registered; it was not invoked.",
+            )
+        )
+    elif obsidian.uri_available:
+        findings.append(
+            DoctorFinding(
+                "OBSIDIAN_URI_SUPPORTED",
+                "info",
+                "This platform can open an Obsidian URI after an explicit `obsidian open` command.",
+            )
+        )
+    else:
         findings.append(
             DoctorFinding(
                 "OBSIDIAN_NOT_FOUND",
@@ -213,8 +215,5 @@ def doctor_project(project_root: str | Path) -> DoctorReport:
                 "Install Obsidian only if desktop graph and Canvas workflows are desired.",
             )
         )
-    else:
-        findings.append(DoctorFinding("OBSIDIAN_FOUND", "info", "Optional Obsidian integration is available."))
-
     findings.sort(key=lambda finding: (finding.severity, finding.code, finding.message))
     return DoctorReport(findings, "fts5" if fts5_available else "fallback")
