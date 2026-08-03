@@ -17,9 +17,9 @@ jobs:
       - name: Install dependencies
         run: pip install -e ".[dev]"
       - name: Ruff lint
-        run: ruff check scripts/
+        run: ruff check scripts/ tests/
       - name: Ruff format check
-        run: ruff format --check scripts/
+        run: ruff format --check scripts/ tests/
       - name: Mypy
         run: mypy scripts/ --ignore-missing-imports
 
@@ -37,6 +37,9 @@ jobs:
         run: pip install -e ".[dev]"
       - name: Run tests
         run: pytest --cov=scripts --cov-report=xml -v
+      - name: Run P0 workflow smoke test
+        if: matrix.python-version == '3.12'
+        run: pytest tests/test_p0_workflow.py -v
       - name: Upload coverage
         if: matrix.python-version == '3.12'
         uses: codecov/codecov-action@v4
