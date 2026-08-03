@@ -268,3 +268,16 @@ def test_analyze_project_empty(tmp_path):
     result = analyze_project(str(tmp_path), save_to_cache=False)
     assert result["stats"]["total_files"] == 0
     assert result["modules"] == []
+
+
+def test_analyze_project_excludes_project_agent_skills(tmp_path):
+    source = tmp_path / "src" / "app.py"
+    source.parent.mkdir()
+    source.write_text("pass\n")
+    agent_source = tmp_path / ".agents" / "skills" / "vendor" / "tool.py"
+    agent_source.parent.mkdir(parents=True)
+    agent_source.write_text("pass\n")
+
+    result = analyze_project(str(tmp_path), save_to_cache=False)
+
+    assert result["stats"]["total_files"] == 1

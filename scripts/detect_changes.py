@@ -11,6 +11,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
 
+from mini_wiki_core.config import DEFAULT_EXCLUDES as CORE_DEFAULT_EXCLUDES
+from mini_wiki_core.scanner import CODE_EXTENSIONS as CORE_CODE_EXTENSIONS
+
 # 默认排除规则
 DEFAULT_EXCLUDES = {
     "node_modules",
@@ -27,31 +30,10 @@ DEFAULT_EXCLUDES = {
     ".venv",
     "env",
     ".mini-wiki",
-}
+} | set(CORE_DEFAULT_EXCLUDES)
 
 # 支持的代码文件扩展名
-CODE_EXTENSIONS = {
-    ".ts",
-    ".tsx",
-    ".js",
-    ".jsx",
-    ".mjs",
-    ".cjs",
-    ".py",
-    ".pyi",
-    ".go",
-    ".rs",
-    ".java",
-    ".kt",
-    ".scala",
-    ".rb",
-    ".php",
-    ".cs",
-    ".fs",
-    ".vue",
-    ".svelte",
-    ".astro",
-}
+CODE_EXTENSIONS = set(CORE_CODE_EXTENSIONS)
 
 # 文档扩展名
 DOC_EXTENSIONS = {".md", ".mdx", ".rst", ".txt"}

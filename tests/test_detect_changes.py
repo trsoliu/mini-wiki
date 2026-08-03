@@ -134,6 +134,16 @@ def test_scan_project_files_excludes_pycache(tmp_project):
         assert "__pycache__" not in key
 
 
+def test_scan_project_files_excludes_agent_skills(tmp_project):
+    agent_source = tmp_project / ".agents" / "skills" / "vendor" / "tool.py"
+    agent_source.parent.mkdir(parents=True)
+    agent_source.write_text("pass\n")
+
+    result = scan_project_files(str(tmp_project))
+
+    assert not any(path.startswith(".agents/") for path in result)
+
+
 def test_scan_project_files_skips_binary(tmp_project):
     """Binary / non-code files like .png should not appear."""
     result = scan_project_files(str(tmp_project))

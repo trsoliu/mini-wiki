@@ -12,6 +12,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from mini_wiki_core.config import DEFAULT_EXCLUDES
+from mini_wiki_core.scanner import CODE_EXTENSIONS as CORE_CODE_EXTENSIONS
+
 # 忽略的目录
 IGNORE_DIRS = {
     "node_modules",
@@ -36,7 +39,7 @@ IGNORE_DIRS = {
     ".mypy_cache",
     ".mini-wiki",
     ".agent",
-}
+} | set(DEFAULT_EXCLUDES)
 
 # 忽略的文件
 IGNORE_FILES = {
@@ -69,28 +72,7 @@ PROJECT_INDICATORS = {
 }
 
 # 代码文件扩展名
-CODE_EXTENSIONS = {
-    ".ts",
-    ".tsx",
-    ".js",
-    ".jsx",
-    ".mjs",
-    ".cjs",
-    ".py",
-    ".pyi",
-    ".go",
-    ".rs",
-    ".java",
-    ".kt",
-    ".scala",
-    ".rb",
-    ".php",
-    ".cs",
-    ".fs",
-    ".vue",
-    ".svelte",
-    ".astro",
-}
+CODE_EXTENSIONS = set(CORE_CODE_EXTENSIONS)
 
 
 def detect_package_manager(root_path: Path) -> list[str]:
