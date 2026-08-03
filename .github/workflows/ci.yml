@@ -37,9 +37,9 @@ jobs:
         run: pip install -e ".[dev]"
       - name: Run tests
         run: pytest --cov=scripts --cov-report=xml -v
-      - name: Run P0 workflow smoke test
+      - name: Run full Mini-Wiki workflow smoke test
         if: matrix.python-version == '3.12'
-        run: pytest tests/test_p0_workflow.py -v
+        run: pytest tests/test_p0_workflow.py tests/test_p1_workflow.py tests/test_p2_workflow.py -v
       - name: Upload coverage
         if: matrix.python-version == '3.12'
         uses: codecov/codecov-action@v4

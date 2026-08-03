@@ -4,6 +4,8 @@
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+.coverage
+coverage.xml
 *.egg-info/
 node_modules/
 __pycache__/
