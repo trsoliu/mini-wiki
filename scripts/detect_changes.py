@@ -11,8 +11,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, cast
 
-from mini_wiki_core.config import DEFAULT_EXCLUDES as CORE_DEFAULT_EXCLUDES
+from mini_wiki_core.config import (
+    DEFAULT_EXCLUDES as CORE_DEFAULT_EXCLUDES,
+)
+from mini_wiki_core.config import (
+    ConfigError,
+    load_config,
+)
 from mini_wiki_core.scanner import CODE_EXTENSIONS as CORE_CODE_EXTENSIONS
+from mini_wiki_core.scanner import scan_sources
 
 # 默认排除规则
 DEFAULT_EXCLUDES = {
@@ -121,15 +128,43 @@ def detect_changes(project_root: str, excludes: set[str] | None = None) -> dict[
     root = Path(project_root)
     wiki_dir = root / ".mini-wiki"
 
+    manifest_path = wiki_dir / "manifest.json"
+    if manifest_path.is_file():
+        try:
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            manifest = None
+        if isinstance(manifest, dict) and manifest.get("schema_version") == 3:
+            try:
+                config = load_config(root)
+            except ConfigError:
+                pass
+            else:
+                sources = scan_sources(config)
+                current = {source.path.as_posix(): source.sha256 for source in sources}
+                raw_cached = manifest.get("sources", {})
+                cached: dict[str, str] = {}
+                if isinstance(raw_cached, dict):
+                    for path, record in raw_cached.items():
+                        digest = record.get("sha256", record.get("hash", "")) if isinstance(record, dict) else record
+                        if isinstance(path, str) and isinstance(digest, str):
+                            cached[path] = digest
+                return _classify_checksums(current, cached)
+
     # 获取当前文件校验和
     current_checksums = scan_project_files(project_root, excludes)
 
     # 加载缓存的校验和
-    cached = load_cached_checksums(str(wiki_dir))
-    cached_checksums = {k: v.get("hash", "") for k, v in cached.items()}
+    legacy_cached = load_cached_checksums(str(wiki_dir))
+    cached_checksums = {k: v.get("hash", "") for k, v in legacy_cached.items()}
 
-    current_files = set(current_checksums.keys())
-    cached_files = set(cached_checksums.keys())
+    return _classify_checksums(current_checksums, cached_checksums)
+
+
+def _classify_checksums(current_checksums: dict[str, str], cached_checksums: dict[str, str]) -> dict[str, Any]:
+    """Classify two checksum mappings using the legacy public result shape."""
+    current_files = set(current_checksums)
+    cached_files = set(cached_checksums)
 
     # 分类变更
     added = list(current_files - cached_files)

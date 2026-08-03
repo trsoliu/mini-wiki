@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 from click.testing import CliRunner
 
 from cli import main
@@ -23,6 +25,7 @@ def test_help():
     assert "analyze" in result.output
     assert "check" in result.output
     assert "changes" in result.output
+    assert "build" in result.output
     assert "plugins" in result.output
 
 
@@ -58,6 +61,26 @@ def test_changes(tmp_path):
     (tmp_path / "app.py").write_text("pass")
     result = runner.invoke(main, ["changes", str(tmp_path)])
     assert result.exit_code == 0
+
+
+def test_build(tmp_path):
+    runner.invoke(main, ["init", str(tmp_path)])
+    source = tmp_path / "src" / "core" / "app.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("def run():\n    return 'ok'\n")
+
+    result = runner.invoke(main, ["build", "--json", str(tmp_path)])
+
+    assert result.exit_code == 0
+    assert json.loads(result.output)["success"] is True
+    assert (tmp_path / "wiki" / "index.md").exists()
+
+
+def test_build_requires_initialization(tmp_path):
+    result = runner.invoke(main, ["build", str(tmp_path)])
+
+    assert result.exit_code == 1
+    assert "configuration does not exist" in result.output
 
 
 def test_check_no_wiki(tmp_path):

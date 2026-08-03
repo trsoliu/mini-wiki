@@ -16,6 +16,7 @@ Usage:
 
 from __future__ import annotations
 
+import json
 import os
 import sys
 from pathlib import Path
@@ -26,6 +27,8 @@ from analyze_project import analyze_project, print_analysis
 from check_quality import check_wiki_quality
 from detect_changes import detect_changes, print_changes
 from init_wiki import init_mini_wiki, print_result
+from mini_wiki_core.builder import BuildOptions, TransactionError, build_project
+from mini_wiki_core.config import ConfigError
 from plugin_manager import (
     enable_plugin,
     install_plugin,
@@ -73,6 +76,46 @@ def analyze(no_cache: bool, path: str | None):
     project = _resolve_project(path)
     result = analyze_project(project, save_to_cache=not no_cache)
     print_analysis(result)
+
+
+# --- build ---
+
+
+@main.command()
+@click.option("--full", is_flag=True, help="Rebuild every managed document.")
+@click.option("--dry-run", is_flag=True, help="Preview changes without writing files.")
+@click.option("--json", "json_output", is_flag=True, help="Print a machine-readable result.")
+@click.argument("path", required=False)
+def build(full: bool, dry_run: bool, json_output: bool, path: str | None):
+    """Build the deterministic Markdown Vault and Manifest."""
+    project = _resolve_project(path)
+    try:
+        result = build_project(project, BuildOptions(full=full, dry_run=dry_run))
+    except (ConfigError, TransactionError) as exc:
+        if json_output:
+            click.echo(
+                json.dumps(
+                    {
+                        "success": False,
+                        "created": [],
+                        "modified": [],
+                        "archived": [],
+                        "warnings": [],
+                        "errors": [str(exc)],
+                    },
+                    ensure_ascii=False,
+                    sort_keys=True,
+                )
+            )
+        else:
+            click.echo(str(exc))
+        raise click.exceptions.Exit(1) from exc
+
+    if json_output:
+        click.echo(json.dumps(result.to_dict(), ensure_ascii=False, sort_keys=True))
+    else:
+        mode = "Dry run" if dry_run else "Build"
+        click.echo(f"{mode} complete: {len(result.changed)} changed, {len(result.warnings)} warnings")
 
 
 # --- check ---

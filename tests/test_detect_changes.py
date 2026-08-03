@@ -10,6 +10,8 @@ from detect_changes import (
     scan_project_files,
     should_include_file,
 )
+from init_wiki import init_mini_wiki
+from mini_wiki_core.builder import BuildOptions, build_project
 
 # --- calculate_file_hash ---
 
@@ -237,3 +239,18 @@ def test_detect_changes_deleted_file(tmp_project):
     assert second["has_changes"] is True
     assert "src/utils/helpers.js" in second["deleted"]
     assert "删除" in second["summary"]
+
+
+def test_detect_changes_uses_v3_manifest_after_build(tmp_path):
+    init_mini_wiki(str(tmp_path))
+    source = tmp_path / "src" / "core" / "app.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("def run():\n    return 'ok'\n")
+    build_project(tmp_path, BuildOptions())
+
+    unchanged = detect_changes(str(tmp_path))
+    source.write_text("def run():\n    return 'changed'\n")
+    changed = detect_changes(str(tmp_path))
+
+    assert unchanged["has_changes"] is False
+    assert changed["modified"] == ["src/core/app.py"]

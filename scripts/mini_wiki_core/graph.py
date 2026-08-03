@@ -132,6 +132,10 @@ def build_knowledge_graph(config: WikiConfig, sources: list[SourceFile]) -> Know
     for source in ordered_sources:
         by_module[_module_name(source.path)].append(source)
 
+    by_domain: dict[str, list[SourceFile]] = defaultdict(list)
+    for module, module_sources in by_module.items():
+        by_domain[_domain_name(module)].extend(module_sources)
+
     source_to_document: dict[str, str] = {}
     for module in sorted(by_module):
         module_sources = sorted(by_module[module], key=lambda item: item.path.as_posix())
@@ -194,6 +198,24 @@ def build_knowledge_graph(config: WikiConfig, sources: list[SourceFile]) -> Know
                 nodes[symbol_id] = Node(symbol_id, "symbol", symbol, metadata={"source": path_text})
                 edge_set.add(Edge(symbol_id, source_id, "defined_in"))
 
+    for domain in sorted(by_domain):
+        domain_id = stable_id("domain", domain)
+        document_key = f"domains/{domain}/_index"
+        document_id = stable_id("document", document_key)
+        domain_sources = tuple(sorted(source.path.as_posix() for source in by_domain[domain]))
+        nodes[document_id] = Node(
+            document_id,
+            "document",
+            f"{_title(domain)} Domain",
+            f"wiki/{document_key}.md",
+            {
+                "document_type": "domain",
+                "domain": domain,
+                "sources": domain_sources,
+            },
+        )
+        edge_set.add(Edge(document_id, domain_id, "documents"))
+
     for source in ordered_sources:
         path_text = source.path.as_posix()
         source_id = stable_id("source", path_text)
@@ -207,5 +229,10 @@ def build_knowledge_graph(config: WikiConfig, sources: list[SourceFile]) -> Know
                 target_document = source_to_document.get(target_path)
                 if source_document and target_document and source_document != target_document:
                     edge_set.add(Edge(source_document, target_document, "related_to"))
+
+    index_document_id = stable_id("document", "index")
+    for node in nodes.values():
+        if node.kind == "document" and node.id != index_document_id:
+            edge_set.add(Edge(index_document_id, node.id, "references"))
 
     return KnowledgeGraph(nodes, sorted(edge_set), tuple(sorted(set(warnings))))
