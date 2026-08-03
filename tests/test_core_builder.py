@@ -138,3 +138,21 @@ def test_build_respects_disabled_bases_configuration(v3_project: Path):
     build_project(v3_project, BuildOptions())
 
     assert list((v3_project / "wiki" / "views").glob("*.base")) == []
+
+
+def test_build_emits_three_json_canvas_files(v3_project: Path):
+    result = build_project(v3_project, BuildOptions())
+
+    canvases = {path.name for path in (v3_project / "wiki" / "canvas").glob("*.canvas")}
+
+    assert result.success is True
+    assert canvases == {"architecture.canvas", "domains.canvas", "traceability.canvas"}
+
+
+def test_build_respects_disabled_canvas_configuration(v3_project: Path):
+    config = v3_project / ".mini-wiki" / "config.yaml"
+    config.write_text(config.read_text().replace("canvas:\n  enabled: true", "canvas:\n  enabled: false"))
+
+    build_project(v3_project, BuildOptions())
+
+    assert list((v3_project / "wiki" / "canvas").glob("*.canvas")) == []

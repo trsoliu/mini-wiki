@@ -12,6 +12,7 @@ from urllib.parse import unquote
 import yaml
 
 from mini_wiki_core.bases import validate_base
+from mini_wiki_core.canvas import validate_canvas
 from mini_wiki_core.scanner import scan_sources
 from mini_wiki_core.vault import (
     CONTENT_END,
@@ -266,6 +267,25 @@ def validate_vault(config: WikiConfig) -> ValidationReport:
             issues.append(ValidationIssue("INVALID_BASE", "error", relative_base.as_posix(), str(exc)))
         else:
             issues.extend(validate_base(relative_base, base_text))
+
+    for canvas_path in sorted(path for path in vault.rglob("*.canvas") if path.is_file()):
+        relative_canvas = canvas_path.relative_to(vault)
+        try:
+            canvas_payload = json.loads(canvas_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            issues.append(
+                ValidationIssue("INVALID_CANVAS", "error", relative_canvas.as_posix(), f"Canvas JSON is invalid: {exc}")
+            )
+            continue
+        for canvas_issue in validate_canvas(relative_canvas, canvas_payload, vault):
+            issues.append(
+                ValidationIssue(
+                    canvas_issue.code,
+                    canvas_issue.severity,
+                    canvas_issue.path,
+                    canvas_issue.message,
+                )
+            )
 
     for document in sorted(documents):
         relative = _relative(document, vault)

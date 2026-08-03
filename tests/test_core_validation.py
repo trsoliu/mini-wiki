@@ -1,5 +1,6 @@
 """Tests for structural Mini-Wiki Vault validation."""
 
+import json
 from pathlib import Path
 
 from mini_wiki_core.builder import BuildOptions, build_project
@@ -88,3 +89,35 @@ def test_invalid_base_is_a_strict_validation_error(v3_project: Path):
     report = validate_vault(load_config(v3_project))
 
     assert any(issue.code == "INVALID_BASE" and issue.severity == "error" for issue in report.issues)
+
+
+def test_missing_canvas_file_target_is_strict_error(v3_project: Path):
+    canvas = {
+        "nodes": [
+            {
+                "id": "n1",
+                "type": "file",
+                "file": "missing.md",
+                "x": 0,
+                "y": 0,
+                "width": 100,
+                "height": 100,
+            }
+        ],
+        "edges": [],
+    }
+    path = v3_project / "wiki" / "canvas" / "broken.canvas"
+    path.write_text(json.dumps(canvas))
+
+    report = validate_vault(load_config(v3_project))
+
+    assert any(issue.code == "CANVAS_FILE_MISSING" for issue in report.issues)
+
+
+def test_malformed_canvas_json_is_strict_error(v3_project: Path):
+    path = v3_project / "wiki" / "canvas" / "broken.canvas"
+    path.write_text("{broken")
+
+    report = validate_vault(load_config(v3_project))
+
+    assert any(issue.code == "INVALID_CANVAS" for issue in report.issues)

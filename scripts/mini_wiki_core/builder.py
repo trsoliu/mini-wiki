@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, Any
 from analyze_project import analyze_project
 from mini_wiki_core import __version__
 from mini_wiki_core.bases import render_default_bases
+from mini_wiki_core.canvas import render_default_canvases
 from mini_wiki_core.config import ConfigError, load_config
 from mini_wiki_core.graph import build_knowledge_graph
 from mini_wiki_core.scanner import scan_sources
@@ -353,6 +354,13 @@ def build_project(project_root: str | Path, options: BuildOptions | None = None)
         for base_path, content in sorted(render_default_bases().items()):
             target = vault_relative.joinpath(*base_path.parts[1:])
             transaction.stage_text(target, content)
+    if config.canvas_enabled:
+        vault_relative = config.vault_dir.relative_to(config.project_root)
+        canvas_artifact = render_default_canvases(graph, config.canvas_max_nodes)
+        for canvas_path, content in sorted(canvas_artifact.files.items()):
+            target = vault_relative.joinpath(*canvas_path.parts[1:])
+            transaction.stage_text(target, content)
+        warnings.extend(canvas_artifact.warnings)
     if config.search_enabled:
         search_documents = _search_documents(config, graph, artifacts, document_targets)
         search_database = _build_search_database(config, search_documents)
