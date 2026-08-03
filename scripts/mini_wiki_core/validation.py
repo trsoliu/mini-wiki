@@ -11,6 +11,7 @@ from urllib.parse import unquote
 
 import yaml
 
+from mini_wiki_core.bases import validate_base
 from mini_wiki_core.scanner import scan_sources
 from mini_wiki_core.vault import (
     CONTENT_END,
@@ -256,6 +257,15 @@ def validate_vault(config: WikiConfig) -> ValidationReport:
     incoming: set[Path] = set()
     ids: dict[str, list[Path]] = {}
     issues: list[ValidationIssue] = []
+
+    for base_path in sorted(path for path in vault.rglob("*.base") if path.is_file()):
+        relative_base = base_path.relative_to(vault)
+        try:
+            base_text = base_path.read_text(encoding="utf-8")
+        except OSError as exc:
+            issues.append(ValidationIssue("INVALID_BASE", "error", relative_base.as_posix(), str(exc)))
+        else:
+            issues.extend(validate_base(relative_base, base_text))
 
     for document in sorted(documents):
         relative = _relative(document, vault)

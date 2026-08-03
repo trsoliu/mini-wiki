@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Any
 
 from analyze_project import analyze_project
 from mini_wiki_core import __version__
+from mini_wiki_core.bases import render_default_bases
 from mini_wiki_core.config import ConfigError, load_config
 from mini_wiki_core.graph import build_knowledge_graph
 from mini_wiki_core.scanner import scan_sources
@@ -337,6 +338,11 @@ def build_project(project_root: str | Path, options: BuildOptions | None = None)
     transaction.stage_json(Path(".mini-wiki/cache/graph.json"), graph.to_dict())
     transaction.stage_json(Path(".mini-wiki/cache/build-plan.json"), plan)
     transaction.stage_json(Path(".mini-wiki/manifest.json"), manifest)
+    if config.bases_enabled:
+        vault_relative = config.vault_dir.relative_to(config.project_root)
+        for base_path, content in sorted(render_default_bases().items()):
+            target = vault_relative.joinpath(*base_path.parts[1:])
+            transaction.stage_text(target, content)
     if config.search_enabled:
         search_documents = _search_documents(graph, artifacts, document_targets)
         search_database = _build_search_database(config, search_documents)

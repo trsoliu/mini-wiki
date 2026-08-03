@@ -121,3 +121,20 @@ def test_build_creates_rebuildable_search_index(v3_project: Path):
 
     assert database.exists()
     assert SearchIndex(database).search("core")
+
+
+def test_build_emits_four_native_obsidian_bases(v3_project: Path):
+    build_project(v3_project, BuildOptions())
+
+    bases = sorted(path.name for path in (v3_project / "wiki" / "views").glob("*.base"))
+
+    assert bases == ["modules.base", "orphans.base", "quality.base", "sources.base"]
+
+
+def test_build_respects_disabled_bases_configuration(v3_project: Path):
+    config = v3_project / ".mini-wiki" / "config.yaml"
+    config.write_text(config.read_text().replace("bases:\n  enabled: true", "bases:\n  enabled: false"))
+
+    build_project(v3_project, BuildOptions())
+
+    assert list((v3_project / "wiki" / "views").glob("*.base")) == []

@@ -79,3 +79,12 @@ def test_validation_reports_unbalanced_managed_regions(v3_project: Path):
     report = validate_vault(load_config(v3_project))
 
     assert "MANAGED_REGION_INVALID" in {issue.code for issue in report.issues}
+
+
+def test_invalid_base_is_a_strict_validation_error(v3_project: Path):
+    path = v3_project / "wiki" / "views" / "broken.base"
+    path.write_text("views: invalid\n")
+
+    report = validate_vault(load_config(v3_project))
+
+    assert any(issue.code == "INVALID_BASE" and issue.severity == "error" for issue in report.issues)
