@@ -32,6 +32,7 @@ from init_wiki import init_mini_wiki, print_result
 from mini_wiki_core.builder import BuildOptions, TransactionError, build_project
 from mini_wiki_core.config import ConfigError, load_config
 from mini_wiki_core.doctor import doctor_project
+from mini_wiki_core.migration import MigrationError, apply_migration, plan_migration
 from mini_wiki_core.validation import validate_vault
 from plugin_manager import (
     enable_plugin,
@@ -191,6 +192,38 @@ def doctor(json_output: bool, path: str | None):
                 click.echo(f"  {finding.remediation}")
     if not report.ok:
         raise click.exceptions.Exit(1)
+
+
+# --- migrate ---
+
+
+@main.command()
+@click.option("--apply", "apply_changes", is_flag=True, help="Apply the previewed copy-only migration.")
+@click.option("--adopt", is_flag=True, help="Wrap copied legacy Markdown in managed ownership regions.")
+@click.option("--json", "json_output", is_flag=True, help="Print a machine-readable result.")
+@click.argument("path", required=False)
+def migrate(apply_changes: bool, adopt: bool, json_output: bool, path: str | None):
+    """Preview or apply a recoverable v2-to-v3 Vault migration."""
+    plan = plan_migration(_resolve_project(path))
+    if not apply_changes:
+        if json_output:
+            click.echo(json.dumps(plan.to_dict(), ensure_ascii=False, sort_keys=True))
+        else:
+            state = "applicable" if plan.applicable else "not applicable"
+            click.echo(f"Migration preview: {state} ({', '.join(plan.reasons)})")
+        return
+    try:
+        result = apply_migration(plan, adopt=adopt)
+    except MigrationError as exc:
+        if json_output:
+            click.echo(json.dumps({"success": False, "errors": [str(exc)]}, ensure_ascii=False, sort_keys=True))
+        else:
+            click.echo(str(exc))
+        raise click.exceptions.Exit(1) from exc
+    if json_output:
+        click.echo(json.dumps(result.to_dict(), ensure_ascii=False, sort_keys=True))
+    else:
+        click.echo(f"Migration complete: {len(result.copied)} files copied; backup: {result.backup}")
 
 
 # --- changes ---

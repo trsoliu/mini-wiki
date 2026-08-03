@@ -27,6 +27,7 @@ def test_help():
     assert "changes" in result.output
     assert "build" in result.output
     assert "doctor" in result.output
+    assert "migrate" in result.output
     assert "plugins" in result.output
 
 
@@ -118,6 +119,32 @@ def test_doctor_json_is_machine_readable(v3_project):
 
     assert result.exit_code == 0
     assert "findings" in json.loads(result.output)
+
+
+def test_migrate_previews_without_writing(tmp_path):
+    legacy = tmp_path / ".mini-wiki" / "wiki"
+    legacy.mkdir(parents=True)
+    (legacy / "index.md").write_text("# Legacy\n")
+    (tmp_path / ".mini-wiki" / "config.yaml").write_text("generation:\n  language: zh\n")
+
+    result = runner.invoke(main, ["migrate", "--json", str(tmp_path)])
+
+    assert result.exit_code == 0
+    assert json.loads(result.output)["applicable"] is True
+    assert not (tmp_path / "wiki").exists()
+
+
+def test_migrate_apply_copies_legacy_vault(tmp_path):
+    legacy = tmp_path / ".mini-wiki" / "wiki"
+    legacy.mkdir(parents=True)
+    (legacy / "index.md").write_text("# Legacy\n")
+    (tmp_path / ".mini-wiki" / "config.yaml").write_text("generation:\n  language: zh\n")
+
+    result = runner.invoke(main, ["migrate", "--apply", "--json", str(tmp_path)])
+
+    assert result.exit_code == 0
+    assert json.loads(result.output)["success"] is True
+    assert (tmp_path / "wiki" / "index.md").read_text() == "# Legacy\n"
 
 
 def test_plugins_list(tmp_path):
