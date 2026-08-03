@@ -39,3 +39,14 @@ def test_doctor_reports_legacy_mode_without_migrating(tmp_path: Path):
 
     assert "LEGACY_MODE" in {item.code for item in report.findings}
     assert not (tmp_path / "wiki").exists()
+
+
+def test_doctor_reports_search_fallback_without_failing_core(v3_project: Path, monkeypatch):
+    monkeypatch.setattr("mini_wiki_core.doctor._fts5_available", lambda: False)
+
+    report = doctor_project(v3_project)
+    payload = report.to_dict()
+
+    assert payload["search_mode"] == "fallback"
+    assert next(item for item in report.findings if item.code == "FTS5_UNAVAILABLE").severity == "warning"
+    assert report.ok is True

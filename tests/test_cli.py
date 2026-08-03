@@ -28,6 +28,7 @@ def test_help():
     assert "build" in result.output
     assert "doctor" in result.output
     assert "migrate" in result.output
+    assert "search" in result.output
     assert "plugins" in result.output
 
 
@@ -145,6 +146,31 @@ def test_migrate_apply_copies_legacy_vault(tmp_path):
     assert result.exit_code == 0
     assert json.loads(result.output)["success"] is True
     assert (tmp_path / "wiki" / "index.md").read_text() == "# Legacy\n"
+
+
+def test_search_cli_outputs_filtered_json(v3_project):
+    runner.invoke(main, ["build", str(v3_project)])
+
+    result = runner.invoke(
+        main,
+        ["search", "core", "--type", "module", "--limit", "5", "--json", str(v3_project)],
+    )
+    payload = json.loads(result.output)
+
+    assert result.exit_code == 0
+    assert payload["hits"]
+    assert len(payload["hits"]) <= 5
+    assert all(hit["node_type"] == "module" for hit in payload["hits"])
+
+
+def test_search_cli_requires_a_built_index(v3_project):
+    database = v3_project / ".mini-wiki" / "cache" / "search.sqlite3"
+
+    result = runner.invoke(main, ["search", "core", str(v3_project)])
+
+    assert result.exit_code == 1
+    assert "mini-wiki build" in result.output
+    assert not database.exists()
 
 
 def test_plugins_list(tmp_path):

@@ -17,7 +17,8 @@ from mini_wiki_core import __version__
 from mini_wiki_core.config import ConfigError, load_config
 from mini_wiki_core.graph import build_knowledge_graph
 from mini_wiki_core.scanner import scan_sources
-from mini_wiki_core.vault import is_managed_document, render_document
+from mini_wiki_core.search import SearchDocument, SearchIndex
+from mini_wiki_core.vault import document_properties, is_managed_document, render_document
 
 if TYPE_CHECKING:
     from mini_wiki_core.config import WikiConfig
@@ -95,10 +96,14 @@ class FileTransaction:
 
     def stage_text(self, path: str | Path, content: str) -> None:
         """Stage one UTF-8 text file without touching its destination."""
+        self.stage_bytes(path, content.encode("utf-8"))
+
+    def stage_bytes(self, path: str | Path, content: bytes) -> None:
+        """Stage one binary file without touching its destination."""
         relative = self._relative(path)
         staged = self._stage_dir / "writes" / relative
         staged.parent.mkdir(parents=True, exist_ok=True)
-        staged.write_text(content, encoding="utf-8")
+        staged.write_bytes(content)
         self._writes[relative] = staged
 
     def stage_json(self, path: str | Path, value: Any) -> None:
@@ -247,6 +252,42 @@ def _agent_plan(graph: KnowledgeGraph, document_records: dict[str, dict[str, Any
     return {"schema_version": 3, "documents": documents, "warnings": list(graph.warnings)}
 
 
+def _search_documents(
+    graph: KnowledgeGraph,
+    artifacts: dict[Path, str],
+    targets: dict[str, Path],
+) -> list[SearchDocument]:
+    documents: list[SearchDocument] = []
+    for node in sorted(graph.nodes.values(), key=lambda item: item.id):
+        if node.kind != "document" or node.id not in targets:
+            continue
+        properties = document_properties(node, graph)
+        target = targets[node.id]
+        documents.append(
+            SearchDocument(
+                node_id=node.id,
+                title=node.title,
+                aliases=tuple(str(item) for item in properties["aliases"]),
+                tags=tuple(str(item) for item in properties["tags"]),
+                body=artifacts[target],
+                node_type=str(properties["type"]),
+                path=target.as_posix(),
+                sources=tuple(str(item) for item in properties["sources"]),
+            )
+        )
+    return documents
+
+
+def _build_search_database(config: WikiConfig, documents: list[SearchDocument]) -> bytes:
+    staging_root = config.state_dir / "staging"
+    staging_root.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="search-", dir=staging_root) as temporary:
+        database = Path(temporary) / "search.sqlite3"
+        index = SearchIndex(database)
+        index.update(documents)
+        return database.read_bytes()
+
+
 def build_project(project_root: str | Path, options: BuildOptions | None = None) -> BuildResult:
     """Build the complete Markdown Vault and rebuildable state artifacts."""
     selected_options = options or BuildOptions()
@@ -258,6 +299,7 @@ def build_project(project_root: str | Path, options: BuildOptions | None = None)
     warnings = list(graph.warnings)
 
     artifacts: dict[Path, str] = {}
+    document_targets: dict[str, Path] = {}
     document_records: dict[str, dict[str, Any]] = {}
     document_nodes = sorted(
         (node for node in graph.nodes.values() if node.kind == "document"),
@@ -272,6 +314,7 @@ def build_project(project_root: str | Path, options: BuildOptions | None = None)
         if existing is not None and not managed:
             warnings.append(f"Preserved unmarked user document: {target.as_posix()}")
         artifacts[target] = rendered
+        document_targets[node.id] = target
         source_paths = sorted(str(item) for item in node.metadata.get("sources", ()))
         document_records[target.as_posix()] = {
             "id": node.id,
@@ -294,6 +337,10 @@ def build_project(project_root: str | Path, options: BuildOptions | None = None)
     transaction.stage_json(Path(".mini-wiki/cache/graph.json"), graph.to_dict())
     transaction.stage_json(Path(".mini-wiki/cache/build-plan.json"), plan)
     transaction.stage_json(Path(".mini-wiki/manifest.json"), manifest)
+    if config.search_enabled:
+        search_documents = _search_documents(graph, artifacts, document_targets)
+        search_database = _build_search_database(config, search_documents)
+        transaction.stage_bytes(Path(".mini-wiki/cache/search.sqlite3"), search_database)
 
     old_documents = old_manifest.get("documents", {})
     if isinstance(old_documents, dict):

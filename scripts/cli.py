@@ -21,6 +21,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+from dataclasses import asdict
 from pathlib import Path
 
 import click
@@ -33,6 +34,7 @@ from mini_wiki_core.builder import BuildOptions, TransactionError, build_project
 from mini_wiki_core.config import ConfigError, load_config
 from mini_wiki_core.doctor import doctor_project
 from mini_wiki_core.migration import MigrationError, apply_migration, plan_migration
+from mini_wiki_core.search import SearchIndex
 from mini_wiki_core.validation import validate_vault
 from plugin_manager import (
     enable_plugin,
@@ -236,6 +238,50 @@ def changes(path: str | None):
     project = _resolve_project(path)
     result = detect_changes(project)
     print_changes(result)
+
+
+# --- search ---
+
+
+@main.command()
+@click.argument("query")
+@click.option("--type", "node_type", help="Filter by document type.")
+@click.option("--tag", help="Filter by an exact document tag.")
+@click.option("--limit", default=20, type=click.IntRange(1, 200), show_default=True)
+@click.option("--json", "json_output", is_flag=True, help="Print machine-readable search hits.")
+@click.argument("path", required=False)
+def search(
+    query: str,
+    node_type: str | None,
+    tag: str | None,
+    limit: int,
+    json_output: bool,
+    path: str | None,
+):
+    """Search the local Mini-Wiki index without requiring Obsidian."""
+    project = _resolve_project(path)
+    try:
+        config = load_config(project)
+    except ConfigError as exc:
+        click.echo(str(exc))
+        raise click.exceptions.Exit(1) from exc
+    database = config.state_dir / "cache" / "search.sqlite3"
+    if not database.is_file():
+        click.echo("Search index does not exist. Run `mini-wiki build` first.")
+        raise click.exceptions.Exit(1)
+    index = SearchIndex(database)
+    hits = index.search(query, node_type=node_type, tag=tag, limit=limit)
+    if json_output:
+        payload = {"query": query, "mode": index.mode, "hits": [asdict(hit) for hit in hits]}
+        click.echo(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+        return
+    if not hits:
+        click.echo("No search results.")
+        return
+    for hit in hits:
+        click.echo(f"{hit.title} [{hit.node_type}] {hit.path}")
+        if hit.snippet:
+            click.echo(f"  {hit.snippet}")
 
 
 # --- plugins ---

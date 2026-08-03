@@ -30,13 +30,18 @@ class DoctorReport:
     """Machine-readable doctor output."""
 
     findings: list[DoctorFinding]
+    search_mode: str = "fallback"
 
     @property
     def ok(self) -> bool:
         return not any(finding.severity == "error" for finding in self.findings)
 
     def to_dict(self) -> dict[str, Any]:
-        return {"ok": self.ok, "findings": [asdict(finding) for finding in self.findings]}
+        return {
+            "ok": self.ok,
+            "search_mode": self.search_mode,
+            "findings": [asdict(finding) for finding in self.findings],
+        }
 
 
 def find_obsidian() -> str | None:
@@ -185,7 +190,8 @@ def doctor_project(project_root: str | Path) -> DoctorReport:
             current_sources = {source.path.as_posix(): source.sha256 for source in scan_sources(config)}
             findings.extend(_manifest_findings(root, current_sources))
 
-    if _fts5_available():
+    fts5_available = _fts5_available()
+    if fts5_available:
         findings.append(DoctorFinding("FTS5_AVAILABLE", "info", "SQLite FTS5 is available for local search."))
     else:
         findings.append(
@@ -211,4 +217,4 @@ def doctor_project(project_root: str | Path) -> DoctorReport:
         findings.append(DoctorFinding("OBSIDIAN_FOUND", "info", "Optional Obsidian integration is available."))
 
     findings.sort(key=lambda finding: (finding.severity, finding.code, finding.message))
-    return DoctorReport(findings)
+    return DoctorReport(findings, "fts5" if fts5_available else "fallback")

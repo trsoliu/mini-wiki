@@ -11,6 +11,7 @@ from mini_wiki_core.builder import (
     TransactionError,
     build_project,
 )
+from mini_wiki_core.search import SearchIndex
 from mini_wiki_core.vault import CONTENT_END, CONTENT_START
 
 
@@ -106,3 +107,17 @@ def test_transaction_restores_files_when_replace_fails(tmp_path: Path, monkeypat
         transaction.commit()
     assert first.read_text() == "before-a"
     assert second.read_text() == "before-b"
+
+
+def test_build_creates_rebuildable_search_index(v3_project: Path):
+    build_project(v3_project, BuildOptions())
+    database = v3_project / ".mini-wiki" / "cache" / "search.sqlite3"
+
+    assert database.exists()
+    assert SearchIndex(database).search("core")
+
+    database.unlink()
+    build_project(v3_project, BuildOptions(full=True))
+
+    assert database.exists()
+    assert SearchIndex(database).search("core")
