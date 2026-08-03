@@ -1,10 +1,10 @@
 """Shared pytest fixtures for Mini-Wiki tests."""
 
-import json
 from pathlib import Path
-from typing import Dict
 
 import pytest
+
+from init_wiki import init_mini_wiki
 
 
 @pytest.fixture
@@ -64,7 +64,7 @@ flowchart TB
 
 
 @pytest.fixture
-def sample_structure() -> Dict:
+def sample_structure() -> dict:
     """Sample project structure data."""
     return {
         "project_type": ["python", "nodejs"],
@@ -75,3 +75,15 @@ def sample_structure() -> Dict:
         ],
         "tech_stack": ["python", "fastapi", "pytest"],
     }
+
+
+@pytest.fixture
+def v3_project(tmp_path: Path) -> Path:
+    """Create an initialized v3 project with one source module."""
+    result = init_mini_wiki(str(tmp_path))
+    assert result["success"] is True
+
+    source = tmp_path / "src" / "core" / "app.py"
+    source.parent.mkdir(parents=True)
+    source.write_text("def run():\n    return 'ok'\n")
+    return tmp_path

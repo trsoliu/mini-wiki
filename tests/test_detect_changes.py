@@ -4,15 +4,12 @@ import json
 from pathlib import Path
 
 from detect_changes import (
-    calculate_file_hash,
-    should_include_file,
-    scan_project_files,
-    detect_changes,
     DEFAULT_EXCLUDES,
-    CODE_EXTENSIONS,
-    DOC_EXTENSIONS,
+    calculate_file_hash,
+    detect_changes,
+    scan_project_files,
+    should_include_file,
 )
-
 
 # --- calculate_file_hash ---
 
@@ -181,9 +178,7 @@ def test_detect_changes_no_changes(tmp_project):
     cache_dir = tmp_project / ".mini-wiki" / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
     cache_file = cache_dir / "checksums.json"
-    cache_data = {
-        k: {"hash": v} for k, v in first["current_checksums"].items()
-    }
+    cache_data = {k: {"hash": v} for k, v in first["current_checksums"].items()}
     cache_file.write_text(json.dumps(cache_data), encoding="utf-8")
 
     # Second pass: should detect no changes
@@ -202,9 +197,7 @@ def test_detect_changes_modified_file(tmp_project):
     cache_dir = tmp_project / ".mini-wiki" / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
     cache_file = cache_dir / "checksums.json"
-    cache_data = {
-        k: {"hash": v} for k, v in first["current_checksums"].items()
-    }
+    cache_data = {k: {"hash": v} for k, v in first["current_checksums"].items()}
     cache_file.write_text(json.dumps(cache_data), encoding="utf-8")
 
     # Modify a file
@@ -223,9 +216,7 @@ def test_detect_changes_deleted_file(tmp_project):
     cache_dir = tmp_project / ".mini-wiki" / "cache"
     cache_dir.mkdir(parents=True, exist_ok=True)
     cache_file = cache_dir / "checksums.json"
-    cache_data = {
-        k: {"hash": v} for k, v in first["current_checksums"].items()
-    }
+    cache_data = {k: {"hash": v} for k, v in first["current_checksums"].items()}
     cache_file.write_text(json.dumps(cache_data), encoding="utf-8")
 
     # Delete a file

@@ -2,14 +2,12 @@
 测试 extract_docs.py 模块
 """
 
-import pytest
-from pathlib import Path
 from scripts.extract_docs import (
     DocEntry,
+    docs_to_markdown,
+    extract_docs_from_file,
     extract_jsdoc,
     extract_python_docstring,
-    extract_docs_from_file,
-    docs_to_markdown
 )
 
 
@@ -27,7 +25,7 @@ class TestDocEntryDataclass:
             returns="int: return value",
             examples=["example1"],
             line_number=10,
-            file_path="/test/file.py"
+            file_path="/test/file.py",
         )
 
         # Assert
@@ -45,14 +43,24 @@ class TestDocEntryDataclass:
         """验证 DocEntry 数据类行为"""
         # Arrange & Act
         entry1 = DocEntry(
-            name="func1", type="function", description="desc1",
-            params=[], returns=None, examples=[],
-            line_number=1, file_path="file1.py"
+            name="func1",
+            type="function",
+            description="desc1",
+            params=[],
+            returns=None,
+            examples=[],
+            line_number=1,
+            file_path="file1.py",
         )
         entry2 = DocEntry(
-            name="func1", type="function", description="desc1",
-            params=[], returns=None, examples=[],
-            line_number=1, file_path="file1.py"
+            name="func1",
+            type="function",
+            description="desc1",
+            params=[],
+            returns=None,
+            examples=[],
+            line_number=1,
+            file_path="file1.py",
         )
 
         # Assert - 数据类应该支持相等性比较
@@ -520,12 +528,12 @@ class TestDocsToMarkdown:
                 description="Add two numbers",
                 params=[
                     {"name": "a", "type": "int", "description": "First number"},
-                    {"name": "b", "type": "int", "description": "Second number"}
+                    {"name": "b", "type": "int", "description": "Second number"},
                 ],
                 returns="int: Sum of a and b",
                 examples=[],
                 line_number=1,
-                file_path="test.py"
+                file_path="test.py",
             )
         ]
 
@@ -552,7 +560,7 @@ class TestDocsToMarkdown:
                 returns=None,
                 examples=[],
                 line_number=1,
-                file_path="test.py"
+                file_path="test.py",
             )
         ]
 
@@ -576,7 +584,7 @@ class TestDocsToMarkdown:
                 returns=None,
                 examples=[],
                 line_number=1,
-                file_path="test.ts"
+                file_path="test.ts",
             )
         ]
 
@@ -603,20 +611,35 @@ class TestDocsToMarkdown:
         # Arrange
         entries = [
             DocEntry(
-                name="add", type="function", description="Add function",
-                params=[], returns=None, examples=[],
-                line_number=1, file_path="test.py"
+                name="add",
+                type="function",
+                description="Add function",
+                params=[],
+                returns=None,
+                examples=[],
+                line_number=1,
+                file_path="test.py",
             ),
             DocEntry(
-                name="User", type="class", description="User class",
-                params=[], returns=None, examples=[],
-                line_number=10, file_path="test.py"
+                name="User",
+                type="class",
+                description="User class",
+                params=[],
+                returns=None,
+                examples=[],
+                line_number=10,
+                file_path="test.py",
             ),
             DocEntry(
-                name="Status", type="type", description="Status type",
-                params=[], returns=None, examples=[],
-                line_number=20, file_path="test.ts"
-            )
+                name="Status",
+                type="type",
+                description="Status type",
+                params=[],
+                returns=None,
+                examples=[],
+                line_number=20,
+                file_path="test.ts",
+            ),
         ]
 
         # Act

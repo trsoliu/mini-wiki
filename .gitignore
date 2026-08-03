@@ -1,5 +1,10 @@
 .DS_Store
 .mini-wiki/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
 node_modules/
 __pycache__/
 *.pyc

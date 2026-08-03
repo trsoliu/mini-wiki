@@ -3,18 +3,16 @@
 import sys
 from pathlib import Path
 
-import pytest
-
 # Add scripts to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
-from check_quality import QualityMetrics, analyze_document
+from check_quality import analyze_document
 
 
 def test_analyze_document_basic(sample_markdown):
     """Test basic document analysis."""
     metrics = analyze_document(str(sample_markdown))
-    
+
     assert metrics.file_path == str(sample_markdown)
     assert metrics.line_count > 0
     assert metrics.section_count >= 2  # At least 2 H2 sections
@@ -30,7 +28,7 @@ def test_analyze_document_quality_levels(tmp_path):
 ## Section 1
 Some content.
 """)
-    
+
     metrics = analyze_document(str(basic_doc))
     assert metrics.section_count < 8
     assert metrics.quality_level in ["basic", "standard"]
@@ -58,7 +56,7 @@ classDiagram
     class Foo
 ```
 """)
-    
+
     metrics = analyze_document(str(doc))
     assert metrics.diagram_count == 2
     assert metrics.class_diagram_count == 1

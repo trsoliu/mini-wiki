@@ -1,21 +1,17 @@
 """Tests for scripts/plugin_manager.py."""
 
-import json
-from pathlib import Path
-
 import yaml
 
 from plugin_manager import (
+    enable_plugin,
     get_plugins_dir,
     get_registry_path,
-    load_registry,
-    save_registry,
-    parse_plugin_manifest,
     list_plugins,
-    enable_plugin,
+    load_registry,
+    parse_plugin_manifest,
+    save_registry,
     uninstall_plugin,
 )
-
 
 # --- path helpers ---
 
@@ -59,10 +55,12 @@ def test_save_registry_creates_file(tmp_path):
 
 
 def test_save_and_load_roundtrip(tmp_path):
-    original = {"plugins": [
-        {"name": "a", "enabled": True, "priority": 10},
-        {"name": "b", "enabled": False, "priority": 20},
-    ]}
+    original = {
+        "plugins": [
+            {"name": "a", "enabled": True, "priority": 10},
+            {"name": "b", "enabled": False, "priority": 20},
+        ]
+    }
     save_registry(str(tmp_path), original)
     loaded = load_registry(str(tmp_path))
     assert len(loaded["plugins"]) == 2
@@ -81,7 +79,10 @@ def _create_plugin(tmp_path, name, manifest_content):
 
 
 def test_parse_plugin_manifest_valid(tmp_path):
-    plugin_dir = _create_plugin(tmp_path, "test-plugin", """---
+    plugin_dir = _create_plugin(
+        tmp_path,
+        "test-plugin",
+        """---
 name: test-plugin
 type: analyzer
 version: 1.0.0
@@ -89,7 +90,8 @@ description: A test plugin
 ---
 
 # Test Plugin
-""")
+""",
+    )
     result = parse_plugin_manifest(plugin_dir)
     assert result is not None
     assert result["name"] == "test-plugin"
@@ -111,11 +113,15 @@ def test_parse_plugin_manifest_no_file(tmp_path):
 
 
 def test_parse_plugin_manifest_invalid_yaml(tmp_path):
-    plugin_dir = _create_plugin(tmp_path, "bad-yaml", """---
+    plugin_dir = _create_plugin(
+        tmp_path,
+        "bad-yaml",
+        """---
 name: [invalid yaml
   broken: {
 ---
-""")
+""",
+    )
     result = parse_plugin_manifest(plugin_dir)
     assert result is None
 
@@ -129,22 +135,30 @@ def test_list_plugins_empty(tmp_path):
 
 
 def test_list_plugins_with_plugins(tmp_path):
-    _create_plugin(tmp_path, "plugin-a", """---
+    _create_plugin(
+        tmp_path,
+        "plugin-a",
+        """---
 name: plugin-a
 type: analyzer
 version: 1.0.0
 description: Plugin A
 ---
 # Plugin A
-""")
-    _create_plugin(tmp_path, "plugin-b", """---
+""",
+    )
+    _create_plugin(
+        tmp_path,
+        "plugin-b",
+        """---
 name: plugin-b
 type: generator
 version: 2.0.0
 description: Plugin B
 ---
 # Plugin B
-""")
+""",
+    )
 
     result = list_plugins(str(tmp_path))
     names = [p["name"] for p in result]
@@ -153,26 +167,34 @@ description: Plugin B
 
 
 def test_list_plugins_skips_underscore_dirs(tmp_path):
-    _create_plugin(tmp_path, "_example", """---
+    _create_plugin(
+        tmp_path,
+        "_example",
+        """---
 name: _example
 type: analyzer
 version: 1.0.0
 description: Example
 ---
-""")
+""",
+    )
     result = list_plugins(str(tmp_path))
     names = [p["name"] for p in result]
     assert "_example" not in names
 
 
 def test_list_plugins_respects_registry(tmp_path):
-    _create_plugin(tmp_path, "my-plugin", """---
+    _create_plugin(
+        tmp_path,
+        "my-plugin",
+        """---
 name: my-plugin
 type: analyzer
 version: 1.0.0
 description: My Plugin
 ---
-""")
+""",
+    )
     registry = {"plugins": [{"name": "my-plugin", "enabled": False, "priority": 5}]}
     save_registry(str(tmp_path), registry)
 
@@ -218,13 +240,17 @@ def test_enable_plugin_not_found(tmp_path):
 
 
 def test_uninstall_plugin_success(tmp_path):
-    _create_plugin(tmp_path, "to-remove", """---
+    _create_plugin(
+        tmp_path,
+        "to-remove",
+        """---
 name: to-remove
 type: analyzer
 version: 1.0.0
 description: Will be removed
 ---
-""")
+""",
+    )
     registry = {"plugins": [{"name": "to-remove", "enabled": True}]}
     save_registry(str(tmp_path), registry)
 

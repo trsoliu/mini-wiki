@@ -1,9 +1,6 @@
 """Tests for scripts/generate_toc.py."""
 
-from pathlib import Path
-
 from generate_toc import extract_title_from_markdown, generate_toc
-
 
 # --- extract_title_from_markdown ---
 

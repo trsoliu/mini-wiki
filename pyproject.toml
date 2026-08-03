@@ -10,6 +10,7 @@ requires-python = ">=3.10"
 dependencies = [
     "PyYAML>=6.0",
     "click>=8.1",
+    "pathspec>=0.12",
     "rich>=13.0",
     "tomli>=2.0; python_version<'3.11'",
 ]
@@ -30,6 +31,10 @@ py-modules = [
     "init_wiki",
     "plugin_manager",
 ]
+
+[tool.setuptools.packages.find]
+where = ["scripts"]
+include = ["mini_wiki_core*"]
 
 [project.optional-dependencies]
 dev = [

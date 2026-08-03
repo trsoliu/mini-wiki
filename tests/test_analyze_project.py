@@ -1,9 +1,9 @@
 """Tests for scripts/analyze_project.py."""
 
 import json
-from pathlib import Path
 
 from analyze_project import (
+    analyze_project,
     categorize_module,
     detect_monorepo_tools,
     detect_package_manager,
@@ -11,11 +11,7 @@ from analyze_project import (
     discover_modules,
     find_documentation,
     find_entry_points,
-    analyze_project,
-    IGNORE_DIRS,
-    CODE_EXTENSIONS,
 )
-
 
 # --- categorize_module ---
 

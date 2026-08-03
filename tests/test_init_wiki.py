@@ -1,18 +1,13 @@
 """Tests for scripts/init_wiki.py."""
 
 import json
-import shutil
-from pathlib import Path
-from datetime import datetime, timezone
-
-import pytest
+from datetime import datetime
 
 from init_wiki import (
     get_default_config,
     get_default_meta,
     init_mini_wiki,
 )
-
 
 # --- get_default_config ---
 
@@ -31,6 +26,9 @@ def test_get_default_config_contains_key_sections():
 
     # Check for key configuration sections
     assert "generation:" in result
+    assert "schema_version: 3" in result
+    assert "vault:" in result
+    assert "scan:" in result
     assert "exclude:" in result
     assert "language:" in result
     assert "include_diagrams:" in result
@@ -44,6 +42,7 @@ def test_get_default_config_contains_common_excludes():
     # Check for common exclude patterns
     assert "node_modules" in result
     assert ".git" in result
+    assert ".agents" in result
     assert "__pycache__" in result
 
 
@@ -75,6 +74,7 @@ def test_get_default_meta_contains_required_fields():
 
     # Check for required fields
     assert "version" in result
+    assert "schema_version" in result
     assert "created_at" in result
     assert "last_updated" in result
     assert "files_documented" in result
@@ -86,6 +86,7 @@ def test_get_default_meta_field_types():
     result = get_default_meta()
 
     assert isinstance(result["version"], str)
+    assert result["schema_version"] == 3
     assert isinstance(result["created_at"], str)
     assert result["last_updated"] is None
     assert isinstance(result["files_documented"], int)
@@ -96,7 +97,7 @@ def test_get_default_meta_initial_values():
     """Default meta should have correct initial values."""
     result = get_default_meta()
 
-    assert result["version"] == "2.0.0"
+    assert result["version"] == "3.3.0"
     assert result["last_updated"] is None
     assert result["files_documented"] == 0
     assert result["modules_count"] == 0
@@ -142,16 +143,20 @@ def test_init_mini_wiki_creates_directory_structure(tmp_path):
     init_mini_wiki(str(project_root), force=False)
 
     # Assert - check directory structure
-    wiki_dir = project_root / ".mini-wiki"
-    assert wiki_dir.exists()
-    assert (wiki_dir / "cache").exists()
-    assert (wiki_dir / "wiki").exists()
-    assert (wiki_dir / "wiki" / "modules").exists()
-    assert (wiki_dir / "wiki" / "api").exists()
-    assert (wiki_dir / "wiki" / "assets").exists()
-    assert (wiki_dir / "i18n").exists()
-    assert (wiki_dir / "i18n" / "en").exists()
-    assert (wiki_dir / "i18n" / "zh").exists()
+    state_dir = project_root / ".mini-wiki"
+    vault_dir = project_root / "wiki"
+    assert state_dir.exists()
+    assert (state_dir / "cache").exists()
+    assert (state_dir / "staging").exists()
+    assert (state_dir / "archive").exists()
+    assert vault_dir.exists()
+    assert (vault_dir / "domains").exists()
+    assert (vault_dir / "reference" / "api").exists()
+    assert (vault_dir / "reference" / "source").exists()
+    assert (vault_dir / "views").exists()
+    assert (vault_dir / "canvas").exists()
+    assert (vault_dir / "assets").exists()
+    assert not (state_dir / "wiki").exists()
 
 
 def test_init_mini_wiki_creates_config_file(tmp_path):
@@ -186,7 +191,7 @@ def test_init_mini_wiki_creates_meta_file(tmp_path):
     meta_path = project_root / ".mini-wiki" / "meta.json"
     assert meta_path.exists()
 
-    with open(meta_path, "r", encoding="utf-8") as f:
+    with open(meta_path, encoding="utf-8") as f:
         meta = json.load(f)
 
     assert "version" in meta
@@ -209,14 +214,18 @@ def test_init_mini_wiki_creates_cache_files(tmp_path):
     cache_dir = project_root / ".mini-wiki" / "cache"
     assert (cache_dir / "checksums.json").exists()
     assert (cache_dir / "structure.json").exists()
+    assert (cache_dir / "analysis.json").exists()
+    assert (cache_dir / "graph.json").exists()
+    assert (cache_dir / "build-plan.json").exists()
+    assert (project_root / ".mini-wiki" / "manifest.json").exists()
 
     # Verify checksums.json is empty dict
-    with open(cache_dir / "checksums.json", "r") as f:
+    with open(cache_dir / "checksums.json") as f:
         checksums = json.load(f)
     assert checksums == {}
 
     # Verify structure.json has correct keys
-    with open(cache_dir / "structure.json", "r") as f:
+    with open(cache_dir / "structure.json") as f:
         structure = json.load(f)
     assert "project_type" in structure
     assert "entry_points" in structure

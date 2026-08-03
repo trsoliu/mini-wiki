@@ -1,20 +1,17 @@
 """Tests for scripts/generate_diagram.py."""
 
 import json
-import re
-from pathlib import Path
 
 import pytest
 
 from generate_diagram import (
     generate_architecture_diagram,
-    generate_module_dependency_diagram,
+    generate_class_diagram,
     generate_data_flow_diagram,
     generate_file_tree_diagram,
-    generate_class_diagram,
+    generate_module_dependency_diagram,
     load_structure,
 )
-
 
 # --- generate_architecture_diagram ---
 
@@ -303,12 +300,7 @@ def test_generate_file_tree_diagram_empty_modules():
 def test_generate_file_tree_diagram_max_depth():
     """Should respect max_depth parameter."""
     # Arrange
-    structure = {
-        "modules": [
-            {"name": f"module{i}", "path": f"src/module{i}", "files": i}
-            for i in range(20)
-        ]
-    }
+    structure = {"modules": [{"name": f"module{i}", "path": f"src/module{i}", "files": i} for i in range(20)]}
 
     # Act
     result = generate_file_tree_diagram(structure, max_depth=2)
