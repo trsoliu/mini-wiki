@@ -13,5 +13,6 @@ site/.silen/cache/
 site/.silen/.temp/
 playwright-report/
 test-results/
+.playwright-cli/
 __pycache__/
 *.pyc

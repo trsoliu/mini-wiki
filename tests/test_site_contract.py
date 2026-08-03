@@ -5,7 +5,6 @@ from pathlib import Path
 
 import yaml
 
-
 ROOT = Path(__file__).resolve().parents[1]
 SITE_ROOT = ROOT / "site"
 ROUTE_DOCUMENTS = (
@@ -100,6 +99,13 @@ def test_theme_uses_semantic_tokens_and_local_assets() -> None:
     assert "focus-visible" in css
     assert 'width="40"' in logo
     assert 'height="40"' in logo
+
+
+def test_home_action_hierarchy_has_only_one_primary_link() -> None:
+    css = read_text("site/.silen/custom.css")
+
+    assert ".mw-actions > p:first-child a" in css
+    assert ".mw-actions a:first-child" not in css
 
 
 def test_public_agent_contract_and_evals_cover_product_boundaries() -> None:

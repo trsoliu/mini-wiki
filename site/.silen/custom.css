@@ -246,7 +246,7 @@ body {
   text-decoration: none;
 }
 
-.mw-actions a:first-child {
+.mw-actions > p:first-child a {
   border-color: var(--silen-primary);
   background: var(--silen-primary);
   color: var(--silen-primary-foreground);
