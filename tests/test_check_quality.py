@@ -6,7 +6,7 @@ from pathlib import Path
 # Add scripts to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
 
-from check_quality import analyze_document
+from check_quality import analyze_document, check_wiki_quality
 
 
 def test_analyze_document_basic(sample_markdown):
@@ -60,3 +60,19 @@ classDiagram
     metrics = analyze_document(str(doc))
     assert metrics.diagram_count == 2
     assert metrics.class_diagram_count == 1
+
+
+def test_quality_checker_accepts_resolved_vault_path(v3_project):
+    (v3_project / "wiki" / "index.md").write_text("# Index\n")
+
+    report = check_wiki_quality(str(v3_project / "wiki"))
+
+    assert report.total_docs == 1
+
+
+def test_quality_checker_accepts_project_root(v3_project):
+    (v3_project / "wiki" / "index.md").write_text("# Index\n")
+
+    report = check_wiki_quality(str(v3_project))
+
+    assert report.total_docs == 1

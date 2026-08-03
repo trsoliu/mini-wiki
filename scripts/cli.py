@@ -5,8 +5,10 @@ Mini-Wiki CLI — Generate professional project documentation with AI.
 Usage:
     mini-wiki init [--force]
     mini-wiki analyze [PATH]
+    mini-wiki build [PATH]
     mini-wiki check [PATH]
     mini-wiki changes [PATH]
+    mini-wiki doctor [PATH]
     mini-wiki plugins list [PATH]
     mini-wiki plugins enable NAME [PATH]
     mini-wiki plugins disable NAME [PATH]
@@ -28,7 +30,9 @@ from check_quality import check_wiki_quality
 from detect_changes import detect_changes, print_changes
 from init_wiki import init_mini_wiki, print_result
 from mini_wiki_core.builder import BuildOptions, TransactionError, build_project
-from mini_wiki_core.config import ConfigError
+from mini_wiki_core.config import ConfigError, load_config
+from mini_wiki_core.doctor import doctor_project
+from mini_wiki_core.validation import validate_vault
 from plugin_manager import (
     enable_plugin,
     install_plugin,
@@ -122,17 +126,42 @@ def build(full: bool, dry_run: bool, json_output: bool, path: str | None):
 
 
 @main.command()
+@click.option("--strict", is_flag=True, help="Validate structural knowledge-network integrity.")
+@click.option("--json", "json_output", is_flag=True, help="Print a machine-readable result.")
 @click.argument("path", required=False)
-def check(path: str | None):
+def check(strict: bool, json_output: bool, path: str | None):
     """Check documentation quality against standards."""
     project = _resolve_project(path)
-    wiki_dir = str(Path(project) / ".mini-wiki" / "wiki")
-
-    if not Path(wiki_dir).exists():
+    try:
+        config = load_config(project)
+    except ConfigError:
         click.echo("No wiki found. Run 'mini-wiki init' first, then generate docs.")
-        sys.exit(1)
+        raise click.exceptions.Exit(1) from None
 
-    report = check_wiki_quality(wiki_dir)
+    if not config.vault_dir.exists():
+        click.echo("No wiki found. Run 'mini-wiki init' first, then generate docs.")
+        raise click.exceptions.Exit(1)
+
+    if strict:
+        structural = validate_vault(config)
+        if json_output:
+            click.echo(json.dumps(structural.to_dict(), ensure_ascii=False, sort_keys=True))
+        else:
+            click.echo(
+                f"Validated {structural.documents} documents: "
+                f"{sum(issue.severity == 'error' for issue in structural.issues)} errors, "
+                f"{sum(issue.severity == 'warning' for issue in structural.issues)} warnings"
+            )
+            for structural_issue in structural.issues:
+                click.echo(
+                    f"  [{structural_issue.severity}] {structural_issue.code} "
+                    f"{structural_issue.path}: {structural_issue.message}"
+                )
+        if not structural.ok:
+            raise click.exceptions.Exit(1)
+        return
+
+    report = check_wiki_quality(str(config.vault_dir))
     click.echo(f"Checked {report.total_docs} documents")
     click.echo(f"  Professional: {report.professional_count}")
     click.echo(f"  Standard: {report.standard_count}")
@@ -140,8 +169,28 @@ def check(path: str | None):
 
     if report.summary_issues:
         click.echo("\nIssues:")
-        for issue in report.summary_issues:
-            click.echo(f"  - {issue}")
+        for summary_issue in report.summary_issues:
+            click.echo(f"  - {summary_issue}")
+
+
+# --- doctor ---
+
+
+@main.command()
+@click.option("--json", "json_output", is_flag=True, help="Print a machine-readable result.")
+@click.argument("path", required=False)
+def doctor(json_output: bool, path: str | None):
+    """Diagnose Mini-Wiki project and optional integration readiness."""
+    report = doctor_project(_resolve_project(path))
+    if json_output:
+        click.echo(json.dumps(report.to_dict(), ensure_ascii=False, sort_keys=True))
+    else:
+        for finding in report.findings:
+            click.echo(f"[{finding.severity}] {finding.code}: {finding.message}")
+            if finding.remediation:
+                click.echo(f"  {finding.remediation}")
+    if not report.ok:
+        raise click.exceptions.Exit(1)
 
 
 # --- changes ---

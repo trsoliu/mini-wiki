@@ -26,6 +26,7 @@ def test_help():
     assert "check" in result.output
     assert "changes" in result.output
     assert "build" in result.output
+    assert "doctor" in result.output
     assert "plugins" in result.output
 
 
@@ -87,6 +88,36 @@ def test_check_no_wiki(tmp_path):
     result = runner.invoke(main, ["check", str(tmp_path)])
     assert result.exit_code == 1
     assert "No wiki found" in result.output
+
+
+def test_check_strict_returns_nonzero_for_broken_network(v3_project):
+    broken = v3_project / "wiki" / "broken.md"
+    broken.write_text(
+        "---\nid: mw:document:broken\ntitle: Broken\ntype: module\n---\n"
+        "<!-- mini-wiki:generated:start -->\n[[missing]]\n<!-- mini-wiki:generated:end -->\n"
+        "<!-- mini-wiki:content:start -->\ncontent\n<!-- mini-wiki:content:end -->\n"
+    )
+
+    result = runner.invoke(main, ["check", "--strict", str(v3_project)])
+
+    assert result.exit_code == 1
+    assert "LINK_TARGET_MISSING" in result.output
+
+
+def test_check_strict_json_reports_healthy_generated_vault(v3_project):
+    runner.invoke(main, ["build", str(v3_project)])
+
+    result = runner.invoke(main, ["check", "--strict", "--json", str(v3_project)])
+
+    assert result.exit_code == 0
+    assert json.loads(result.output)["ok"] is True
+
+
+def test_doctor_json_is_machine_readable(v3_project):
+    result = runner.invoke(main, ["doctor", "--json", str(v3_project)])
+
+    assert result.exit_code == 0
+    assert "findings" in json.loads(result.output)
 
 
 def test_plugins_list(tmp_path):

@@ -250,17 +250,24 @@ def generate_issues(m: QualityMetrics) -> list[str]:
     return issues
 
 
+def resolve_quality_directory(wiki_path: str | Path) -> Path:
+    """Resolve a project/state root or an already resolved Vault directory."""
+    candidate = Path(wiki_path)
+    nested = candidate / "wiki"
+    return nested if nested.is_dir() else candidate
+
+
 def check_wiki_quality(wiki_path: str) -> QualityReport:
     """检查整个 Wiki 目录的质量"""
-    report = QualityReport(wiki_path=wiki_path, check_time=datetime.now().isoformat())
+    wiki_dir = resolve_quality_directory(wiki_path)
+    report = QualityReport(wiki_path=str(wiki_dir), check_time=datetime.now().isoformat())
 
-    wiki_dir = Path(wiki_path) / "wiki"
     if not wiki_dir.exists():
         report.summary_issues.append(f"Wiki 目录不存在: {wiki_dir}")
         return report
 
     # 遍历所有 .md 文件
-    for md_file in wiki_dir.rglob("*.md"):
+    for md_file in sorted(wiki_dir.rglob("*.md")):
         metrics = analyze_document(str(md_file))
         report.docs.append(metrics)
         report.total_docs += 1
