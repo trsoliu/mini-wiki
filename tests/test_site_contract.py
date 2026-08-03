@@ -210,19 +210,26 @@ def test_all_public_routes_are_bilingual_and_uniquely_described() -> None:
     assert len(descriptions) == len(set(descriptions))
 
 
-def test_homepages_lead_with_install_and_expose_the_knowledge_graph() -> None:
-    for relative_path, guide_link in (
-        ("site/index.mdx", "/guide/"),
-        ("site/en/index.mdx", "/en/guide/"),
+def test_homepages_use_the_vitepress_style_product_structure() -> None:
+    for relative_path, guide_link, primary_label, github_label in (
+        ("site/index.mdx", "/guide/", "开始使用", "在 GitHub 查看"),
+        ("site/en/index.mdx", "/en/guide/", "Get started", "View on GitHub"),
     ):
         frontmatter, body = read_frontmatter(relative_path)
         assert frontmatter["layout"] == "home"
         assert "npx skills add trsoliu/mini-wiki" in body
         assert "3.3.0" in body
         assert guide_link in body
-        assert "https://github.com/trsoliu/mini-wiki" in body
-        assert 'className="mw-knowledge-graph"' in body
-        assert 'className="mw-graph-node' in body
+        assert primary_label in body
+        assert github_label in body
+        assert body.count('className="mw-feature-card"') == 6
+        assert 'className="mw-home-hero"' in body
+        assert 'className="mw-hero-visual"' in body
+        assert 'className="mw-feature-grid"' in body
+        assert 'className="mw-ai-links"' in body
+        assert "mw-knowledge-graph" not in body
+        assert "mw-proof-strip" not in body
+        assert "mw-workflow" not in body
         for artifact in (
             "/llms.txt",
             "/llms-full.txt",

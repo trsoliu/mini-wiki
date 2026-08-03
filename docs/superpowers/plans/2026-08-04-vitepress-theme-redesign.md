@@ -207,7 +207,7 @@ Keep the current frontmatter and replace its body with this structure and final 
 ```mdx
 <section className="mw-home-hero">
   <div className="mw-hero-copy">
-    <p className="mw-kicker">Mini-Wiki 3.3</p>
+    <p className="mw-kicker">Mini-Wiki 3.3.0</p>
     <h1><span>Mini-Wiki</span>把代码仓库变成可追溯的知识网络</h1>
     <p className="mw-tagline">为维护者与 AI Agent 生成确定性、可搜索、可版本化的项目知识。</p>
     <div className="mw-actions">
@@ -254,7 +254,7 @@ Keep the current English frontmatter and replace its body with:
 ```mdx
 <section className="mw-home-hero">
   <div className="mw-hero-copy">
-    <p className="mw-kicker">Mini-Wiki 3.3</p>
+    <p className="mw-kicker">Mini-Wiki 3.3.0</p>
     <h1><span>Mini-Wiki</span>Turn repositories into traceable knowledge networks</h1>
     <p className="mw-tagline">Build deterministic, searchable, versioned project knowledge for maintainers and AI agents.</p>
     <div className="mw-actions">
