@@ -1,7 +1,7 @@
 # Mini-Wiki Obsidian 知识网络升级设计
 
 > 日期：2026-08-03
-> 状态：已批准方向，待设计复核
+> 状态：已自审，待用户确认
 > 目标版本：3.3.0
 > 实施范围：P0 + P1 + P2
 
@@ -160,8 +160,8 @@ project/
 │   │   ├── graph.json
 │   │   └── search.sqlite3
 │   ├── staging/
-│   ├── archive/
-│   └── plugins/
+│   └── archive/
+├── plugins/                       # 兼容现有、可版本化的 Agent 指令插件
 └── wiki/
     ├── index.md
     ├── getting-started.md
@@ -186,7 +186,7 @@ project/
     └── assets/
 ```
 
-仓库根 `.gitignore` 只需忽略 `.mini-wiki/`；`wiki/` 默认不忽略。Mini-Wiki 不自动修改已有根 `.gitignore`，但 `doctor` 会检测并给出明确修复建议。
+仓库根 `.gitignore` 只需忽略 `.mini-wiki/`；`wiki/` 和 `plugins/` 默认不忽略。插件继续沿用现有根目录 `plugins/` 与 `_registry.yaml` 契约，避免升级后丢失已安装插件。Mini-Wiki 不自动修改已有根 `.gitignore`，但 `doctor` 会检测并给出明确修复建议。
 
 ### 6.2 v3 配置
 
@@ -285,6 +285,7 @@ id: mw:document:domains/core/plugin-system
 title: 插件系统
 type: module
 status: generated
+domain: core
 aliases:
   - Plugin System
 tags:
@@ -293,6 +294,10 @@ tags:
 sources:
   - scripts/plugin_manager.py
 source_hash: sha256:...
+source_count: 1
+freshness: current
+orphan: false
+backlink_count: 4
 quality: professional
 mini_wiki_version: 3.3.0
 ---
@@ -324,9 +329,11 @@ mini_wiki_version: 3.3.0
 2. `content` 区域必须原样保留，除非 Agent 正在执行明确的生成或升级任务。
 3. 没有受管标记的现有 Markdown 默认视为用户文件，不覆盖；`migrate --adopt` 才会纳入管理。
 4. Manifest 记录最近一次受管区域哈希、内容区域哈希和源文件哈希。
-5. 构建在 `.mini-wiki/staging/` 完成，全部校验通过后逐文件原子替换。
+5. 构建在 `.mini-wiki/staging/` 完成，搜索索引也先写入暂存区；全部校验通过后，通过提交日志逐文件原子替换。
 6. 失去来源的受管文件移动到 `.mini-wiki/archive/<run-id>/`，不直接删除。
 7. 相同输入和配置必须生成字节级相同的受管产物。
+8. 提交阶段先备份所有待替换目标；任一替换失败时按提交日志恢复 Vault、索引和 Manifest，避免只更新一部分产物。
+9. 文件修改时间不参与内容或布局计算，确定性只依赖规范化内容、配置和稳定 ID。
 
 ## 9. 链接、反向链接与源码追溯
 
@@ -342,8 +349,10 @@ mini_wiki_version: 3.3.0
 源码追溯统一为相对 Markdown 链接：
 
 ```markdown
-[scripts/plugin_manager.py:42-88](../../scripts/plugin_manager.py#L42-L88)
+[scripts/plugin_manager.py:42-88](../../../scripts/plugin_manager.py#L42-L88)
 ```
+
+上例假设当前文档位于 `wiki/domains/core/`；实现必须从实际文档位置动态计算相对路径，不复制固定的 `../` 层级。行号显示在标签中；链接片段仅在目标渲染环境支持代码行锚点时启用。
 
 禁止生成：
 
@@ -358,14 +367,14 @@ mini_wiki_version: 3.3.0
 
 - 未解析链接；
 - 重复稳定 ID；
-- 孤立文档和孤立源码；
+- 孤立受管文档和未覆盖源码；
 - 缺失或越界的源码引用；
 - Properties 类型错误；
 - 来源哈希过期；
 - 用户内容区域之外的冲突；
 - Bases 和 Canvas 结构错误。
 
-反向链接由图的反向边实时计算，无需在每个文档正文复制一份不可控列表；受管“相关文档”区域可显示排序后的关键反向关系。
+反向链接由图的反向边实时计算，无需在每个文档正文复制一份不可控列表；受管“相关文档”区域可显示排序后的关键反向关系。`index.md` 与领域 `_index.md` 等入口节点不判定为孤立；未覆盖源码默认是覆盖率警告，只有孤立的 Mini-Wiki 受管文档才在严格模式下失败。
 
 ## 10. 构建流程与命令
 
@@ -425,7 +434,7 @@ FTS5 表索引以下字段：
 - `symbols`
 - `node_type`
 
-索引保存于 `.mini-wiki/cache/search.sqlite3`，不进入 Git。每次构建按节点内容哈希增量更新；Schema 版本变化时自动重建。
+索引保存于 `.mini-wiki/cache/search.sqlite3`，不进入 Git。每次构建按节点内容哈希增量更新；Schema 版本变化时自动重建。中文检索不能依赖 SQLite 对连续 CJK 文本的默认分词：索引器会同时保存规范化原文与确定性的 CJK 单字、双字词项，查询端使用相同规范化规则，从而在 Python 3.10–3.12 自带 SQLite 上保持可预测行为。
 
 ### 11.2 查询行为
 
@@ -433,7 +442,7 @@ FTS5 表索引以下字段：
 mini-wiki search "plugin install" --type module --tag domain/core --limit 20
 ```
 
-排序优先级：标题精确命中、别名、标签、正文、源码与符号。输出包含文档相对路径、匹配摘要和来源。若当前 Python 的 SQLite 不支持 FTS5，`doctor` 给出提示，`search` 自动退化为内存词项匹配，功能可用但排序能力降低。
+排序优先级：标题精确命中、别名、标签、正文、源码与符号。输出包含文档相对路径、匹配摘要和来源。若当前 Python 的 SQLite 不支持 FTS5，`doctor` 给出提示，`search` 自动退化为使用同一规范化器的内存词项匹配，功能可用但排序能力降低。
 
 ## 12. Bases 设计
 
@@ -442,7 +451,7 @@ mini-wiki search "plugin install" --type module --tag domain/core --limit 20
 | Base | 默认视图 |
 |---|---|
 | `modules.base` | 按领域、类型、状态分组的模块表 |
-| `sources.base` | 源文件、对应文档、哈希状态和质量 |
+| `sources.base` | 以文档为行展示来源列表、来源数量、哈希状态和质量 |
 | `quality.base` | 按质量等级、来源新鲜度和标签筛选 |
 | `orphans.base` | 没有入边或缺少来源关系的文档 |
 
@@ -511,12 +520,12 @@ Canvas 使用开放 JSON Canvas 格式，仅生成 `nodes` 和 `edges` 等标准
 - 下载和解压大小有上限；
 - 拒绝绝对路径、`..`、符号链接和 ZIP 路径穿越；
 - 临时目录由系统安全创建，不复用固定 `_temp.zip`；
-- `PLUGIN.yaml` 必须通过 Schema、名称和版本校验；
+- 原生 `PLUGIN.md` 的 YAML Frontmatter 必须通过 Schema、名称和版本校验；标准 `SKILL.md` 校验名称与描述，缺失版本时使用兼容默认值；不再把任意 README 自动包装成插件；
 - 安装记录来源、SHA-256、版本与时间；
-- 新插件默认禁用，需显式 `enable`；
+- 新安装的第三方插件默认禁用，需显式 `enable`；现有内置插件状态保持兼容；
 - 已存在目标默认拒绝覆盖；更新在暂存区验证后原子替换；
 - 失败保留原版本并清理不完整暂存；
-- Mini-Wiki 和宿主 Agent都不得自动执行插件脚本。
+- Mini-Wiki 和宿主 Agent 都不得自动执行插件脚本。
 
 ## 17. 错误处理与可观测性
 
@@ -538,7 +547,7 @@ Canvas 使用开放 JSON Canvas 格式，仅生成 `nodes` 和 `edges` 等标准
 - 人类输出简洁，`--json` 输出稳定、可供 Agent 解析；
 - 配置错误、输入错误、校验错误和环境降级使用不同错误码；
 - 普通警告不隐藏，严格模式下指定警告升级为失败；
-- 日志不打印绝对用户目录、令牌、下载凭据或文档私密内容；
+- 持久化日志和 `--json` 输出默认使用仓库相对路径，不打印令牌、下载凭据或文档私密内容；只有用户显式执行 `obsidian open` 时，交互提示才可显示要打开的本地 Vault 路径；
 - 写操作前报告目标，写操作后报告实际变更。
 
 ## 18. 测试策略
@@ -554,6 +563,7 @@ Canvas 使用开放 JSON Canvas 格式，仅生成 `nodes` 和 `edges` 等标准
 - Wikilink、Markdown 链接与相对源码路径；
 - 断链、反向链接、孤立节点和过期来源；
 - FTS5 索引与降级搜索；
+- 中英文混合查询与 CJK 双字词项规范化；
 - Bases YAML；
 - Canvas Schema 与确定性坐标；
 - ZIP 路径穿越、符号链接、超限与回滚；
@@ -570,6 +580,7 @@ Canvas 使用开放 JSON Canvas 格式，仅生成 `nodes` 和 `edges` 等标准
 5. 断链和孤立文档导致严格检查失败；
 6. v2 项目迁移后旧内容、备份和新 Vault 都存在；
 7. 没有 Obsidian 时全部核心门禁仍通过。
+8. 模拟提交阶段失败时，Vault、索引和 Manifest 都恢复到构建前状态。
 
 ### 18.3 质量门禁
 
@@ -621,7 +632,7 @@ CI Python 版本继续覆盖 3.10、3.11、3.12。
 4. 人工/Agent 正文不会被普通构建覆盖。
 5. 源码引用全部为有效相对路径，产物中不存在绝对用户目录或 `file://`。
 6. `check --strict` 能发现断链、重复 ID、孤立受管文档、过期来源、非法 Base 和 Canvas。
-7. `search` 在无 Obsidian 环境中可用，并支持类型、标签和数量过滤。
+7. `search` 在无 Obsidian 环境中可用，能查询中英文混合内容，并支持类型、标签和数量过滤。
 8. Obsidian 能原生读取 Properties、Bases 和 Canvas；没有 Obsidian 时核心流程不失败。
 9. v2 项目可以先预览、再备份迁移；迁移失败不破坏原目录。
 10. 恶意 ZIP 路径穿越和超限插件安装被测试证明会拒绝。
