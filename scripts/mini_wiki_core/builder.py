@@ -254,6 +254,7 @@ def _agent_plan(graph: KnowledgeGraph, document_records: dict[str, dict[str, Any
 
 
 def _search_documents(
+    config: WikiConfig,
     graph: KnowledgeGraph,
     artifacts: dict[Path, str],
     targets: dict[str, Path],
@@ -264,16 +265,25 @@ def _search_documents(
             continue
         properties = document_properties(node, graph)
         target = targets[node.id]
+        sources = tuple(str(item) for item in properties["sources"])
+        searchable_parts = [artifacts[target]]
+        for source in sources:
+            source_path = (config.project_root / source).resolve()
+            if source_path.is_file() and config.project_root in source_path.parents:
+                try:
+                    searchable_parts.append(source_path.read_text(encoding="utf-8"))
+                except (OSError, UnicodeError):
+                    continue
         documents.append(
             SearchDocument(
                 node_id=node.id,
                 title=node.title,
                 aliases=tuple(str(item) for item in properties["aliases"]),
                 tags=tuple(str(item) for item in properties["tags"]),
-                body=artifacts[target],
+                body="\n".join(searchable_parts),
                 node_type=str(properties["type"]),
                 path=target.as_posix(),
-                sources=tuple(str(item) for item in properties["sources"]),
+                sources=sources,
             )
         )
     return documents
@@ -344,7 +354,7 @@ def build_project(project_root: str | Path, options: BuildOptions | None = None)
             target = vault_relative.joinpath(*base_path.parts[1:])
             transaction.stage_text(target, content)
     if config.search_enabled:
-        search_documents = _search_documents(graph, artifacts, document_targets)
+        search_documents = _search_documents(config, graph, artifacts, document_targets)
         search_database = _build_search_database(config, search_documents)
         transaction.stage_bytes(Path(".mini-wiki/cache/search.sqlite3"), search_database)
 
