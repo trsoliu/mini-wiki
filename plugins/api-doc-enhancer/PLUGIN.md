@@ -193,7 +193,7 @@ modules:
 
 生成后进行专业级增强：
 
-1. **源码链接**：添加精确的源码位置链接 `[📄](file:///path#L42)`
+1. **源码链接**：添加仓库相对的精确位置链接 `[src/api.ts:42](../../src/api.ts#L42)`
 2. **类型关系图**：生成 Mermaid classDiagram
 3. **交叉引用**：添加 "See Also" 和 "Related APIs" 链接
 4. **导航生成**：生成 API 索引和快速导航
@@ -395,7 +395,7 @@ const wiki = await createWiki({
 });
 
 await wiki.generate();
-// 输出: Wiki 已生成到 .mini-wiki/wiki/
+// 输出: Wiki 已生成到 wiki/
 ​```
 
 🟡 **进阶用法 - 多语言和插件**
@@ -451,7 +451,7 @@ try {
 
 **� 源码位置**
 
-[📄 src/wiki.ts#L42-L78](file:///src/wiki.ts#L42)
+[📄 src/wiki.ts#L42-L78](../../src/wiki.ts#L42-L78)
 
 ---
 

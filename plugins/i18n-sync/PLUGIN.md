@@ -33,7 +33,7 @@ hooks:
 ### 2. 结构映射 / Structure Mapping
 
 ```
-.mini-wiki/wiki/              # 主语言 (默认 en)
+wiki/                         # 主语言 (默认 en)
 ├── index.md
 ├── architecture.md
 └── modules/
@@ -149,15 +149,15 @@ plugins:
 
 | 文件 | 原文更新 | 译文更新 | 差异 |
 |------|----------|----------|------|
-| [architecture.md](file:///wiki/architecture.md) | 3 天前 | 10 天前 | [查看](file:///cache/diffs/zh/architecture.diff) |
-| [modules/auth.md](file:///wiki/modules/auth.md) | 1 天前 | 5 天前 | [查看](file:///cache/diffs/zh/auth.diff) |
+| [architecture.md](../../wiki/architecture.md) | 3 天前 | 10 天前 | `cache/diffs/zh/architecture.diff` |
+| [modules/auth.md](../../wiki/modules/auth.md) | 1 天前 | 5 天前 | `cache/diffs/zh/auth.diff` |
 
 ### 🔴 待翻译 (2)
 
 | 文件 | 原文 | 操作 |
 |------|------|------|
-| modules/payments.md | [查看](file:///wiki/modules/payments.md) | 新增 |
-| api/webhooks.md | [查看](file:///wiki/api/webhooks.md) | 新增 |
+| modules/payments.md | [查看](../../wiki/modules/payments.md) | 新增 |
+| api/webhooks.md | [查看](../../wiki/api/webhooks.md) | 新增 |
 
 ## 翻译进度趋势
 

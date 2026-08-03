@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.3.0] - 2026-08-03
+
+### Obsidian-ready knowledge networks without an Obsidian dependency
+
+- Moved canonical Markdown knowledge to the repository-level `wiki/` directory and separated rebuildable runtime
+  state under `.mini-wiki/`.
+- Added a stable project/domain/module/source/symbol/document graph, managed Markdown ownership regions, portable
+  source links, a transactional build, Manifest, dry-run, strict validation, and recoverable migration/archive.
+- Added standalone Chinese-aware search with SQLite FTS5 acceleration and a deterministic fallback.
+- Added native Obsidian Properties plus four Bases views for modules, source coverage, quality, and orphan notes.
+- Added deterministic JSON Canvas 1.0 architecture, domain, and traceability views with schema validation.
+- Added isolated `obsidian status`, explicit `--probe`, and explicit `obsidian open` integration. Core build, search,
+  validation, and migration remain fully usable without Obsidian.
+- Hardened the instruction-only plugin installer against traversal, symlinks, oversized archives, invalid roots, and
+  unsafe overwrite; third-party plugins install disabled and are never executed by the Agent.
+- Reworked the English and Chinese Agent instructions, prompts, templates, and release documentation around the v3
+  lifecycle and evidence-first content contract.
+
 ## [3.1.0] - 2026-05-02
 
 ### 🏗️ Project Modernization

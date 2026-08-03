@@ -24,19 +24,19 @@ This plugin serves as a template and reference for creating your own plugins.
 1. Copy this directory as a starting point
 2. Rename to your plugin name
 3. Update PLUGIN.md with your plugin details
-4. Add your scripts and resources
+4. Add reference text or assets only; Agent-facing plugins remain instruction-only
 
 ## Hooks
 
 ### after_analyze
 
-After project analysis, this hook can add additional analysis data.
+After project analysis, this instruction can guide the Agent to add analysis data inside its owned content region.
 
 Example: Add code complexity metrics to the analysis.
 
 ### before_generate
 
-Before content generation, this hook can modify prompts or templates.
+Before content generation, this instruction can guide the Agent to apply approved prompts or templates.
 
 Example: Add custom sections to the wiki templates.
 
@@ -44,5 +44,10 @@ Example: Add custom sections to the wiki templates.
 
 1. Create a new directory in `plugins/`
 2. Add `PLUGIN.md` with YAML frontmatter
-3. Optionally add `scripts/`, `references/`, `assets/`
-4. Enable in `_registry.yaml`
+3. Optionally add `references/` and `assets/`; do not ask the Agent to execute plugin code or scripts
+4. Review the instructions, then enable the plugin in `_registry.yaml`
+
+## Safety boundary
+
+Plugin files are untrusted, instruction-only text. The Agent may apply relevant guidance but must never import or
+execute plugin scripts, shell commands, hooks, package managers, or downloaded code.

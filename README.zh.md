@@ -2,383 +2,223 @@
 
 <img src="assets/banner.png" alt="Mini-Wiki Banner" width="100%">
 
-<br>
-
-[![skills.sh compatible](https://img.shields.io/badge/skills.sh-兼容-blue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0wIDE4Yy00LjQxIDAtOC0zLjU5LTgtOHMzLjU5LTggOC04IDggMy41OSA4IDgtMy41OSA4LTggOHoiLz48L3N2Zz4=)](https://skills.sh)
-[![Version](https://img.shields.io/badge/version-3.1.0-06B6D4?style=for-the-badge)](https://github.com/trsoliu/mini-wiki/releases)
+[![Version](https://img.shields.io/badge/version-3.3.0-06B6D4?style=for-the-badge)](https://github.com/trsoliu/mini-wiki/releases)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=for-the-badge)](pyproject.toml)
 [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/trsoliu/mini-wiki?style=for-the-badge&color=yellow)](https://github.com/trsoliu/mini-wiki)
+[![skills.sh compatible](https://img.shields.io/badge/skills.sh-兼容-blue?style=for-the-badge)](https://skills.sh)
 
-**让 AI 自动将你的代码库转化为专业级的结构化文档** 🚀
+**面向 AI Agent、Markdown 与 Obsidian 的源码可追溯项目知识网络**
 
-[📖 English](README.md) · [🐛 报告问题](https://github.com/trsoliu/mini-wiki/issues) · [✨ 功能建议](https://github.com/trsoliu/mini-wiki/issues)
+[English](README.md) · [Skill 说明](SKILL.md) · [更新日志](CHANGELOG.md)
 
 </div>
 
----
+## Mini-Wiki 是什么
 
-## ✨ Mini-Wiki 是什么？
+Mini-Wiki 3.3 将代码仓库构建成确定性、可版本化、可搜索的 Markdown 知识网络。它充分学习 Obsidian
+最有价值的知识管理能力——Properties、链接/反向链接、Bases、Canvas 和可选应用集成——同时保证所有
+核心工作流不依赖 Obsidian。
 
-Mini-Wiki 是一个 [skills.sh](https://skills.sh) 兼容的技能包，让 AI Agent 能够**深度分析你的代码库**，生成**专业级**的结构化 Wiki 文档，包含图表、交叉链接和详细说明 —— 轻松省心。
+职责被明确拆分：
 
-<table>
-<tr>
-<td width="50%">
+- CLI 负责扫描、稳定 ID、图谱、托管 Markdown、导航、校验、搜索、Bases、Canvas、Manifest、事务与迁移；
+- AI Agent 只在受保护内容区内编写有源码证据的专业解释；
+- Git 保存正式知识历史；
+- Obsidian 是可选的阅读、查询和空间探索界面。
 
-### 💡 使用 Mini-Wiki 之前
-- 手写文档很无聊 📝
-- 文档很快就过时 😩
-- 没有架构图 📊
-- 代码引用断开 🔗
+## 3.3.0 升级内容
 
-</td>
-<td width="50%">
+- 正式 Wiki 迁移为仓库根级 `wiki/` 目录。
+- 稳定知识图谱连接项目、领域、模块、源文件、符号与文档。
+- 托管 Markdown 在重建时保留 Agent 内容与用户自定义 Properties。
+- 事务构建、Manifest、dry-run、严格校验和可恢复归档保证更新稳定。
+- 独立的中文感知搜索支持 FTS5 加速与一致的后备实现。
+- 四个原生 Obsidian Bases 覆盖模块、源码、质量和孤立页面治理。
+- 三个确定性 JSON Canvas 1.0 视图展示架构、领域和源码追溯。
+- Obsidian 检测/打开与核心命令隔离。
+- 第三方插件以默认禁用、instruction-only 文本方式安全安装。
 
-### 🎉 使用 Mini-Wiki 之后
-- AI 生成**专业级**文档 ✨
-- 增量更新保持新鲜 🔄
-- 漂亮的 Mermaid 图表 📈
-- 代码块链接到源码 🎯
-- **深度代码分析**生成详细内容 🔬
-- **交叉链接**的文档网络 🔗
+## 正式知识与本地状态边界
 
-</td>
-</tr>
-</table>
+```text
+wiki/                         # 正式、可移植知识，建议提交 Git
+├── index.md
+├── getting-started.md
+├── architecture.md
+├── knowledge-map.md
+├── domains/
+├── reference/
+├── views/
+│   ├── modules.base
+│   ├── sources.base
+│   ├── quality.base
+│   └── orphans.base
+└── canvas/
+    ├── architecture.canvas
+    ├── domains.canvas
+    └── traceability.canvas
 
----
+.mini-wiki/                   # 配置与可重建/本地状态
+├── config.yaml
+├── manifest.json
+├── meta.json
+├── cache/
+│   ├── analysis.json
+│   ├── graph.json
+│   ├── build-plan.json
+│   └── search.sqlite3
+├── staging/
+└── archive/                  # 退出管理的页面，可恢复
+```
 
-## 🎯 特性
+Mini-Wiki 无需创建或修改 `.obsidian/`。正式文档只使用仓库相对链接，在浏览器、编辑器、Git 平台和
+任意 Markdown 工具中都能阅读。
 
-<table>
-<tr>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/search.png" alt="智能分析"/>
-<br><b>🔍 智能项目分析</b>
-<br><sub>支持 Monorepo/Rust/Go/Python/Node 深度分析</sub>
-</td>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/synchronize.png" alt="增量更新"/>
-<br><b>🔄 增量更新</b>
-<br><sub>仅更新变更文件的文档</sub>
-</td>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/flow-chart.png" alt="架构图"/>
-<br><b>📊 架构图</b>
-<br><sub>自动生成 Mermaid 依赖图</sub>
-</td>
-</tr>
-<tr>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/link.png" alt="代码链接"/>
-<br><b>🔗 代码链接</b>
-<br><sub>文档代码块直接链接源码</sub>
-</td>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/language.png" alt="多语言"/>
-<br><b>🌐 多语言</b>
-<br><sub>支持中英文 Wiki 生成</sub>
-</td>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/plugin.png" alt="插件系统"/>
-<br><b>🔌 插件系统</b>
-<br><sub>支持自定义插件扩展</sub>
-</td>
-</tr>
-</table>
+## 安装
 
----
-
-## 🚀 快速开始
-
-### 安装
-
-选择你喜欢的方式：
-
-<details open>
-<summary><b>📦 方式 1：使用 npx（推荐）</b></summary>
+作为 Agent Skill 安装：
 
 ```bash
 npx skills add trsoliu/mini-wiki
 ```
 
-</details>
-
-<details open>
-<summary><b>📥 方式 2：下载 .skill 文件</b></summary>
-
-从 [Releases](https://github.com/trsoliu/mini-wiki/releases) 下载 `mini-wiki.skill` 文件。
-
-</details>
-
-<details open>
-<summary><b>📂 方式 3：克隆仓库</b></summary>
+安装本地 CLI：
 
 ```bash
 git clone https://github.com/trsoliu/mini-wiki.git
+cd mini-wiki
+python -m venv .venv
+.venv/bin/pip install -e .
+.venv/bin/mini-wiki --version
 ```
 
-</details>
+开发依赖可通过 `pip install -e '.[dev]'` 安装。
 
-### 使用
-
-安装后，对 AI Agent 说：
-
-```
-🤖 "生成 wiki"
-🤖 "创建项目文档"  
-🤖 "更新 wiki"
-```
-
-### 更新
-
-已安装？更新到最新版本：
-
-<details open>
-<summary><b>📦 npx（推荐）</b></summary>
+## 构建 Wiki
 
 ```bash
-npx skills update trsoliu/mini-wiki
+mini-wiki init /path/to/project
+mini-wiki doctor --json /path/to/project
+mini-wiki build --dry-run --json /path/to/project
+mini-wiki build --json /path/to/project
+mini-wiki check --strict --json /path/to/project
+mini-wiki search "架构决策" --json /path/to/project
 ```
 
-</details>
+首次构建后，Agent 读取构建计划与图谱，只在 `mini-wiki:content` 区域补充源码可证实的专业内容，
+然后重新构建和严格校验。仓库未变化时，第二次构建不应出现无法解释的差异。
 
-<details open>
-<summary><b>📂 Git clone</b></summary>
-
-```bash
-cd mini-wiki && git pull origin main
-```
-
-</details>
-
-<details open>
-<summary><b>📥 .skill 文件</b></summary>
-
-从 [Releases](https://github.com/trsoliu/mini-wiki/releases/latest) 重新下载
-
-</details>
-
-### 项目级专利 Skill
-
-本仓库已将
-[`patent-disclosure-skill`](https://skills.sh/handsomestwei/patent-disclosure-skill/patent-disclosure-skill)
-作为项目级 Agent Skill 放在 `.agents/skills/patent-disclosure-skill`，并由
-`skills-lock.json` 记录上游来源与内容哈希。
-
-需要立即手动同步时执行：
-
-```bash
-DISABLE_TELEMETRY=1 npx -y skills@1.5.21 update patent-disclosure-skill --project --yes
-```
-
-`Update external skills` 工作流每周一检查上游；发现变化后会自动创建或刷新
-更新 PR。工作流不会自动合并，因为该第三方 Skill 含可执行工具，项目启用新版本前
-应先审查 `SKILL.md`、提示词、依赖锁文件和 `tools/` 的差异。Fork 后还需在
-**Settings → Actions → General** 中启用 **Allow GitHub Actions to create and
-approve pull requests**，工作流才能创建 PR。
-
-### 插件命令
-
-```bash
-# 自然语言指令
-📋 "列出插件"
-📦 "安装插件 <source>"
-📦 "安装 <owner/repo>"  (GitHub 简写)
-🔄 "更新插件 <name>"
-✅ "启用插件 <name>"
-❌ "禁用插件 <name>"
-
-# 命令行高级用法
-python scripts/plugin_manager.py list
-python scripts/plugin_manager.py install <source>
-python scripts/plugin_manager.py update <name>
-python scripts/plugin_manager.py enable <name>
-```
-
-**安装来源:**
-- **GitHub**: `owner/repo` (例如 `vercel-labs/agent-skills`)
-- **URL**: `https://example.com/plugin.zip`
-- **本地**: `./plugins/my-plugin`
-
-### 插件工作原理
-
-Mini-Wiki 采用 **指令型插件系统**。当你运行任务时：
-1. AI 读取 `plugins/_registry.yaml`
-2. AI 读取启用插件的 `PLUGIN.md` 指令
-3. AI 在特定的 **Hooks**（如 `before_generate`, `on_export`）**应用插件指令（仅文本）**
-
-**执行模型（安全说明）**：
-- 插件为**纯指令**，Agent **不会执行**插件代码或脚本。
-- `PLUGIN.md` 中的 CLI 命令仅供人工操作，Agent 不应执行。
-
-### 内置插件
-
-- `code-complexity`: 代码健康度与复杂度分析
-- `paper-drafter`: 专家级学术论文生成 (LaTeX/IMRaD)
-- `repo-analytics`: 多维度 Git 分析与健康度评分
-- `patent-generator`: 专业级专利技术交底书生成
-- `api-doc-enhancer`: 深度语义 API 文档生成
-- `changelog-generator`: 从 Git 生成变更日志
-- `diagram-plus`: 增强型 Mermaid 图表
-- `i18n-sync`: 多语言同步工具
-- `docusaurus-exporter`: 导出为 Docusaurus 格式
-- `gitbook-exporter`: 导出为 GitBook 格式
-
----
-
-## 📁 输出结构
-
-所有内容生成到 `.mini-wiki/` 目录：
-
-```
-.mini-wiki/
-├── 📄 config.yaml           # 配置文件
-├── 📂 cache/                 # 增量缓存
-├── 📂 wiki/                  # Wiki 内容
-│   ├── index.md
-│   ├── architecture.md
-│   ├── modules/
-│   └── api/
-└── 📂 i18n/                  # 多语言支持
-    ├── en/
-    └── zh/
-```
-
-> [!TIP]
-> 建议将 `.mini-wiki/` 添加到您的 `.gitignore` 文件中，以避免将生成的内容提交到代码仓库。
-
----
-
-## 🏗️ 技能结构
-
-```
-mini-wiki/
-├── 📄 SKILL.md              # 主指令（英文）
-├── 📂 scripts/              # Python 工具脚本
-├── 📂 references/           # 提示词、模板、国际化
-├── 📂 assets/               # 配置模板
-└── 📂 plugins/              # 插件目录
-    ├── _registry.yaml
-    └── _example/
-```
-
----
-
-## ❓ 常见问题
-
-<details open>
-<summary><b>更新 Mini-Wiki 会删除已有的文档吗？</b></summary>
-
-**不会。** 更新 Mini-Wiki（技能/插件本身）只会更新生成规则和模板，**不会**自动删除或修改任何已生成的文档。
-
-```bash
-npx skills update trsoliu/mini-wiki  # 只更新 Mini-Wiki 代码
-```
-
-</details>
-
-<details open>
-<summary><b>如何升级旧版本生成的低质量文档？</b></summary>
-
-使用以下命令升级现有文档：
-
-| 命令 | 行为 |
-|------|------|
-| `生成 wiki` | 增量更新 - 只更新变更的文件 |
-| `升级 wiki` | 检测并升级低质量文档，保留高质量的 |
-| `刷新全部 wiki` | 重新生成所有文档（会先备份） |
-
-质量自动评估：
-- **basic**（< 8 章节，无图表）→ 🔴 需要升级
-- **standard**（8-12 章节，1 个图表）→ 🟡 可选升级
-- **professional**（13+ 章节，2+ 图表）→ ✅ 保持不变
-
-</details>
-
-<details open>
-<summary><b>升级时会保留我自定义的内容吗？</b></summary>
-
-**会的。** 使用 `<!-- user-content -->` 标记的内容会被保留：
+## 托管 Markdown 契约
 
 ```markdown
-## 我的自定义章节
-<!-- user-content -->
-这部分内容在升级时不会被覆盖。
-<!-- /user-content -->
+---
+id: mw:document:domains/core/core
+title: Core
+type: module
+domain: core
+sources:
+  - src/core/app.py
+freshness: current
+quality: basic
+mini_wiki_version: 3.3.0
+---
+
+<!-- mini-wiki:generated:start -->
+CLI 管理的导航、证据和关系。
+<!-- mini-wiki:generated:end -->
+
+<!-- mini-wiki:content:start -->
+Agent 管理的专业解释，重建时逐字保留。
+<!-- mini-wiki:content:end -->
 ```
 
-另外，所有文档在升级前都会自动备份到 `cache/backup/`。
+未知 Properties 属于用户并会被保留。无所有权标记的文档不会被接管或覆盖。消失的托管页面会进入
+`.mini-wiki/archive/`，不会被静默删除。
 
-</details>
+## 不依赖 Obsidian 的搜索
 
-<details open>
-<summary><b>如何检查现有文档的质量？</b></summary>
-
-告诉你的 AI Agent：
-
-```
-🤖 "检查 wiki 质量"
-🤖 "check wiki quality"
+```bash
+mini-wiki search "插件安装" --json /path/to/project
+mini-wiki search "storage" --type module --tag domain/storage --limit 10 /path/to/project
 ```
 
-这会生成一份质量评估报告，显示哪些文档需要升级。
+本地索引组合 Markdown、Properties、别名、标签、图谱元数据和有界源码文本。确定性的 CJK 单字/双字
+归一化支持中文与中英混合查询。SQLite FTS5 只是加速器；不可用时，后备实现保持相同的过滤与排序规则。
 
-</details>
+## Properties、Bases 与 Canvas
 
----
+Properties 是页面与派生视图唯一的元数据模型。
 
-## 🙏 灵感来源
+| 产物 | 用途 |
+| --- | --- |
+| `views/modules.base` | 模块状态、新鲜度、质量与反向链接 |
+| `views/sources.base` | 源码覆盖与漂移 |
+| `views/quality.base` | 评审和内容补强队列 |
+| `views/orphans.base` | 未接入知识网络的页面 |
+| `canvas/architecture.canvas` | 架构层次和依赖 |
+| `canvas/domains.canvas` | 领域与模块地图 |
+| `canvas/traceability.canvas` | 文档到源码和符号的追溯关系 |
 
-<table>
-<tr>
-<td align="center">
-<a href="https://github.com/AsyncFuncAI/deepwiki-open">
-<img src="https://img.icons8.com/color/48/book-shelf.png" alt="DeepWiki"/>
-<br><b>DeepWiki</b>
-</a>
-</td>
-<td align="center">
-<a href="https://github.com/daeisbae/open-repo-wiki">
-<img src="https://img.icons8.com/color/48/repository.png" alt="OpenRepoWiki"/>
-<br><b>OpenRepoWiki</b>
-</a>
-</td>
-<td align="center">
-<a href="https://docs.qoder.com/user-guide/repo-wiki">
-<img src="https://img.icons8.com/color/48/code.png" alt="Qoder"/>
-<br><b>Qoder Repo Wiki</b>
-</a>
-</td>
-</tr>
-</table>
+Bases 是基于 Properties 的原生声明式视图。Canvas 是知识图谱的确定性 JSON Canvas 1.0 投影；应修改
+事实源并重建，而不是在生成视图中保存唯一知识。
 
----
+## 校验与恢复
 
-## 📄 许可证
+```bash
+mini-wiki check --strict --json /path/to/project
+mini-wiki migrate --json /path/to/project
+mini-wiki migrate --apply --json /path/to/project
+mini-wiki migrate --apply --adopt --json /path/to/project
+```
 
-本项目采用 [Apache-2.0 许可证](LICENSE)。
+严格模式检查 ID、链接、源码边界与漂移、所有权标记、孤立页面、Base schema，以及 Canvas 节点和边。
+迁移默认只预览；正式迁移会拒绝非空目标、备份旧资料、验证复制结果，并且只在成功后切换配置。
+`--adopt` 将旧页面正文完整保留在 Agent 内容区。
 
----
+## 可选 Obsidian 集成
 
-<div align="center">
+```bash
+mini-wiki obsidian status --json /path/to/project
+mini-wiki obsidian status --probe --json /path/to/project
+mini-wiki obsidian open /path/to/project
+```
 
-## 💬 联系方式
+普通 `status` 无副作用。`--probe` 会显式调用 Obsidian CLI，可能启动应用。`open` 是唯一请求 Obsidian
+打开 Wiki 的命令，通过编码后的 Obsidian URI 工作。构建、搜索、校验、迁移、Bases 和 Canvas 生成均不
+依赖 Obsidian。
 
-<img src="assets/logo.png" alt="Mini-Wiki Logo" width="80">
+## instruction-only 插件
 
-**用 ❤️ 制作 by trsoliu**
+```bash
+mini-wiki plugins list /path/to/project
+mini-wiki plugins install owner/repository /path/to/project
+mini-wiki plugins enable plugin-name /path/to/project
+mini-wiki plugins disable plugin-name /path/to/project
+mini-wiki plugins update plugin-name /path/to/project
+mini-wiki plugins uninstall plugin-name /path/to/project
+```
 
-<a href="https://github.com/trsoliu/mini-wiki">
-<img src="https://img.shields.io/badge/GitHub-trsoliu/mini--wiki-181717?style=for-the-badge&logo=github" alt="GitHub">
-</a>
+插件说明是不可信文本。Agent 可以阅读已启用的 `PLUGIN.md` 或 `SKILL.md` 并应用相关指导，但绝不导入
+或执行插件脚本、Hook、包管理器和命令。网络源必须使用 HTTPS；安装会拒绝路径穿越、符号链接、非法
+根目录、超限归档和静默覆盖。第三方插件默认禁用，并记录目录树哈希。
 
-### 微信: `trsoliu`
+## 配置
 
-<img src="assets/wechat-qr.png" alt="微信二维码" width="180">
+`mini-wiki init` 创建 schema v3 配置，可分别控制搜索、Bases、Canvas 与可选 Obsidian 集成。扫描会
+遵守 Git ignore、配置排除项、符号链接边界、文件大小上限、状态目录和 Wiki 目录。
 
----
+完整 Agent 协议见 [SKILL.md](SKILL.md)，中文执行细则见 [中文工作流](references/SKILL.zh.md)，证据优先
+提示词见 [prompts](references/prompts.md)，托管页面模板见 [templates](references/templates.md)。
 
-⭐ **如果觉得有帮助，请给个 Star！** ⭐
+## 开发验证
 
-</div>
+```bash
+.venv/bin/python -m pytest -q
+.venv/bin/ruff check scripts tests
+.venv/bin/ruff format --check scripts tests
+.venv/bin/mypy scripts
+```
+
+## 许可证
+
+[MIT](LICENSE)

@@ -2,384 +2,229 @@
 
 <img src="assets/banner.png" alt="Mini-Wiki Banner" width="100%">
 
-<br>
-
-[![skills.sh compatible](https://img.shields.io/badge/skills.sh-compatible-blue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0id2hpdGUiIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0wIDE4Yy00LjQxIDAtOC0zLjU5LTgtOHMzLjU5LTggOC04IDggMy41OSA4IDgtMy41OSA4LTggOHoiLz48L3N2Zz4=)](https://skills.sh)
-[![Version](https://img.shields.io/badge/version-3.1.0-06B6D4?style=for-the-badge)](https://github.com/trsoliu/mini-wiki/releases)
+[![Version](https://img.shields.io/badge/version-3.3.0-06B6D4?style=for-the-badge)](https://github.com/trsoliu/mini-wiki/releases)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=for-the-badge)](pyproject.toml)
 [![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/trsoliu/mini-wiki?style=for-the-badge&color=yellow)](https://github.com/trsoliu/mini-wiki)
+[![skills.sh compatible](https://img.shields.io/badge/skills.sh-compatible-blue?style=for-the-badge)](https://skills.sh)
 
-**Transform your codebase into professional-grade, structured documentation with AI** 🚀
+**A source-traceable project knowledge network for AI Agents, Markdown, and Obsidian**
 
-[📖 中文文档](README.zh.md) · [🐛 Report Bug](https://github.com/trsoliu/mini-wiki/issues) · [✨ Request Feature](https://github.com/trsoliu/mini-wiki/issues)
+[中文](README.zh.md) · [Skill instructions](SKILL.md) · [Changelog](CHANGELOG.md)
 
 </div>
 
----
+## What Mini-Wiki is
 
-## ✨ What is Mini-Wiki?
+Mini-Wiki 3.3 turns a repository into a deterministic, versionable Markdown knowledge network. It learns from
+Obsidian's strongest knowledge-management ideas—Properties, links/backlinks, Bases, Canvas, and optional app
+integration—while keeping every core workflow independent of Obsidian.
 
-Mini-Wiki is a [skills.sh](https://skills.sh) compatible skill package that empowers AI Agents to **deeply analyze your codebase** and generate **professional-grade**, structured Wiki documentation with diagrams, cross-links, and detailed explanations — effortlessly.
+The split is deliberate:
 
-<table>
-<tr>
-<td width="50%">
+- the CLI owns scanning, stable IDs, graph construction, managed Markdown, navigation, validation, search, Bases,
+  Canvas, the Manifest, transactions, and migration;
+- the AI Agent owns evidence-based explanations inside protected content regions;
+- Git owns the durable history;
+- Obsidian is an optional reading and exploration surface.
 
-### 💡 Before Mini-Wiki
-- Writing docs manually is tedious 📝
-- Documentation gets outdated quickly 😩
-- No architecture diagrams 📊
-- Code references are disconnected 🔗
+## What changed in 3.3.0
 
-</td>
-<td width="50%">
+- Canonical Wiki moved to the repository-level `wiki/` directory.
+- Stable repository graph connects project, domain, module, source, symbol, and document nodes.
+- Managed Markdown preserves Agent content and unknown user Properties across rebuilds.
+- Transactional build, Manifest, dry-run, strict validation, and recoverable archive make updates deterministic.
+- Local CJK-aware search works with or without SQLite FTS5.
+- Four native Obsidian Bases provide module, source, quality, and orphan work queues.
+- Three deterministic JSON Canvas 1.0 views expose architecture, domains, and source traceability.
+- Optional Obsidian status/open commands are isolated from the core workflow.
+- Third-party plugins are installed as disabled, instruction-only text with archive and path safety checks.
 
-### 🎉 After Mini-Wiki
-- AI generates **professional-grade** docs ✨
-- Incremental updates keep docs fresh 🔄
-- Beautiful Mermaid diagrams 📈
-- Code blocks link to source 🎯
-- **Deep code analysis** for detailed content 🔬
-- **Cross-linked** documentation network 🔗
+## Knowledge and state boundaries
 
-</td>
-</tr>
-</table>
+```text
+wiki/                         # canonical, portable knowledge; commit this
+├── index.md
+├── getting-started.md
+├── architecture.md
+├── knowledge-map.md
+├── domains/
+├── reference/
+├── views/
+│   ├── modules.base
+│   ├── sources.base
+│   ├── quality.base
+│   └── orphans.base
+└── canvas/
+    ├── architecture.canvas
+    ├── domains.canvas
+    └── traceability.canvas
 
----
+.mini-wiki/                   # configuration and rebuildable/local state
+├── config.yaml
+├── manifest.json
+├── meta.json
+├── cache/
+│   ├── analysis.json
+│   ├── graph.json
+│   ├── build-plan.json
+│   └── search.sqlite3
+├── staging/
+└── archive/                  # recoverable retired managed pages
+```
 
-## 🎯 Features
+Mini-Wiki never needs to create or modify `.obsidian/`. Durable documents use repository-relative links and remain
+usable in a browser, editor, Git host, or any Markdown tool.
 
-<table>
-<tr>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/search.png" alt="Smart Analysis"/>
-<br><b>🔍 Smart Analysis</b>
-<br><sub>Auto-detect tech stack and module structure</sub>
-</td>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/synchronize.png" alt="Incremental Update"/>
-<br><b>🔄 Incremental Update</b>
-<br><sub>Only update docs for changed files</sub>
-</td>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/flow-chart.png" alt="Architecture"/>
-<br><b>📊 Architecture Diagrams</b>
-<br><sub>Auto-generate Mermaid dependency graphs</sub>
-</td>
-</tr>
-<tr>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/link.png" alt="Code Links"/>
-<br><b>🔗 Code Links</b>
-<br><sub>Code blocks link directly to source</sub>
-</td>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/language.png" alt="Multi-language"/>
-<br><b>🌐 Multi-language</b>
-<br><sub>Support Chinese and English Wiki</sub>
-</td>
-<td align="center" width="33%">
-<img src="https://img.icons8.com/fluency/48/plugin.png" alt="Plugin System"/>
-<br><b>🔌 Plugin System</b>
-<br><sub>Extend with custom plugins</sub>
-</td>
-</tr>
-</table>
+## Install
 
----
-
-## 🚀 Quick Start
-
-### Installation
-
-Choose your preferred method:
-
-<details open>
-<summary><b>📦 Option 1: Using npx (Recommended)</b></summary>
+As an Agent Skill:
 
 ```bash
 npx skills add trsoliu/mini-wiki
 ```
 
-</details>
-
-<details open>
-<summary><b>📥 Option 2: Download .skill file</b></summary>
-
-Download `mini-wiki.skill` from [Releases](https://github.com/trsoliu/mini-wiki/releases) and place it in your skills directory.
-
-</details>
-
-<details open>
-<summary><b>📂 Option 3: Clone repository</b></summary>
+For the local CLI:
 
 ```bash
 git clone https://github.com/trsoliu/mini-wiki.git
+cd mini-wiki
+python -m venv .venv
+.venv/bin/pip install -e .
+.venv/bin/mini-wiki --version
 ```
 
-</details>
+Development dependencies are available with `pip install -e '.[dev]'`.
 
-### Usage
-
-Simply tell your AI Agent:
-
-```
-🤖 "generate wiki"
-🤖 "create project docs"  
-🤖 "update wiki"
-```
-
-### Update
-
-Already installed? Update to the latest version:
-
-<details open>
-<summary><b>📦 npx (Recommended)</b></summary>
+## Build a Wiki
 
 ```bash
-npx skills update trsoliu/mini-wiki
+mini-wiki init /path/to/project
+mini-wiki doctor --json /path/to/project
+mini-wiki build --dry-run --json /path/to/project
+mini-wiki build --json /path/to/project
+mini-wiki check --strict --json /path/to/project
+mini-wiki search "architecture decision" --json /path/to/project
 ```
 
-</details>
+After the first build, the Agent reads the build plan and graph, enriches only the `mini-wiki:content` regions with
+repository evidence, then rebuilds and validates. A second unchanged build should produce no unexplained changes.
 
-<details open>
-<summary><b>📂 Git clone</b></summary>
-
-```bash
-cd mini-wiki && git pull origin main
-```
-
-</details>
-
-<details open>
-<summary><b>📥 .skill file</b></summary>
-
-Re-download from [Releases](https://github.com/trsoliu/mini-wiki/releases/latest)
-
-</details>
-
-### Project-level Patent Skill
-
-This repository also carries
-[`patent-disclosure-skill`](https://skills.sh/handsomestWei/patent-disclosure-skill/patent-disclosure-skill)
-as a project-level Agent Skill under `.agents/skills/patent-disclosure-skill`.
-`skills-lock.json` records its upstream source and content hash.
-
-To refresh it manually:
-
-```bash
-DISABLE_TELEMETRY=1 npx -y skills@1.5.21 update patent-disclosure-skill --project --yes
-```
-
-The `Update external skills` workflow checks upstream every Monday and opens or
-refreshes a review pull request when files change. Updates are deliberately not
-auto-merged: this third-party Skill includes executable tools and should be
-reviewed before the project starts using a new revision. Forks must enable
-**Settings → Actions → General → Allow GitHub Actions to create and approve pull
-requests** for the workflow to create its pull request.
-
-### Plugin Commands
-
-```bash
-# Natural Language
-📋 "list plugins"
-📦 "install plugin <source>"
-📦 "install <owner/repo>"  (GitHub shorthand)
-🔄 "update plugin <name>"
-✅ "enable plugin <name>"
-❌ "disable plugin <name>"
-
-# CLI Direct Usage
-python scripts/plugin_manager.py list
-python scripts/plugin_manager.py install <source>
-python scripts/plugin_manager.py update <name>
-python scripts/plugin_manager.py enable <name>
-```
-
-**Installation Sources:**
-- **GitHub**: `owner/repo` (e.g., `vercel-labs/agent-skills`)
-- **URL**: `https://example.com/plugin.zip`
-- **Local**: `./plugins/my-plugin`
-
-### How Plugins Work
-
-Mini-Wiki uses an **Instruction-based Plugin System**. When you run a task:
-1. AI reads `plugins/_registry.yaml`
-2. AI reads instructions from `PLUGIN.md` of enabled plugins
-3. AI **applies plugin guidance (text-only)** at specific **Hooks** (e.g., `before_generate`, `on_export`)
-
-**Execution model (safety)**:
-- Plugins are **instruction-only**; the agent does **not** execute plugin code or scripts.
-- Any CLI commands in `PLUGIN.md` are for humans only and must not be executed by the agent.
-
-### Built-in Plugins
-
-- `code-complexity`: Code health & complexity analysis
-- `paper-drafter`: Generate academic paper drafts (LaTeX/IMRaD)
-- `repo-analytics`: Multi-dimensional Git analytics & health scoring
-- `patent-generator`: Professional patent disclosure generator
-- `api-doc-enhancer`: Deep semantic API documentation
-- `changelog-generator`: Generate changelog from git
-- `diagram-plus`: Enhanced Mermaid diagrams
-- `i18n-sync`: Multi-language sync
-- `docusaurus-exporter`: Export to Docusaurus
-- `gitbook-exporter`: Export to GitBook
-
----
-
-## 📁 Output Structure
-
-All content is generated to `.mini-wiki/` directory:
-
-```
-.mini-wiki/
-├── 📄 config.yaml           # Configuration
-├── 📂 cache/                 # Incremental cache
-├── 📂 wiki/                  # Wiki content
-│   ├── index.md
-│   ├── architecture.md
-│   ├── modules/
-│   └── api/
-└── 📂 i18n/                  # Multi-language support
-    ├── en/
-    └── zh/
-```
-
-> [!TIP]
-> It is recommended to add `.mini-wiki/` to your `.gitignore` file to avoid committing generated content to your repository.
-
----
-
-## 🏗️ Skill Structure
-
-```
-mini-wiki/
-├── 📄 SKILL.md              # Main instructions (English)
-├── 📂 scripts/              # Python utilities
-├── 📂 references/           # Prompts, templates, i18n
-├── 📂 assets/               # Config templates
-└── 📂 plugins/              # Plugin directory
-    ├── _registry.yaml
-    └── _example/
-```
-
----
-
-## ❓ FAQ
-
-<details open>
-<summary><b>Will updating Mini-Wiki delete my existing docs?</b></summary>
-
-**No.** Updating Mini-Wiki (the skill/plugin itself) only updates the generation rules and templates. It does **NOT** automatically delete or modify any existing documentation.
-
-```bash
-npx skills update trsoliu/mini-wiki  # Only updates Mini-Wiki code
-```
-
-</details>
-
-<details open>
-<summary><b>How do I upgrade low-quality docs generated by older versions?</b></summary>
-
-Use these commands to upgrade existing documentation:
-
-| Command | Behavior |
-|---------|----------|
-| `generate wiki` | Incremental update - only updates changed files |
-| `upgrade wiki` | Detects & upgrades low-quality docs, preserves good ones |
-| `refresh all wiki` | Regenerates everything (backs up first) |
-
-Quality is assessed automatically:
-- **basic** (< 8 sections, no diagrams) → 🔴 Needs upgrade
-- **standard** (8-12 sections, 1 diagram) → 🟡 Optional upgrade
-- **professional** (13+ sections, 2+ diagrams) → ✅ Keep as-is
-
-</details>
-
-<details open>
-<summary><b>Will my custom content be preserved during upgrade?</b></summary>
-
-**Yes.** Content marked with `<!-- user-content -->` is preserved:
+## Managed Markdown contract
 
 ```markdown
-## My Custom Section
-<!-- user-content -->
-This content will NOT be overwritten during upgrade.
-<!-- /user-content -->
+---
+id: mw:document:domains/core/core
+title: Core
+type: module
+domain: core
+sources:
+  - src/core/app.py
+freshness: current
+quality: basic
+mini_wiki_version: 3.3.0
+---
+
+<!-- mini-wiki:generated:start -->
+CLI-owned navigation, evidence, and relationships.
+<!-- mini-wiki:generated:end -->
+
+<!-- mini-wiki:content:start -->
+Agent-owned professional explanation, preserved byte-for-byte on rebuild.
+<!-- mini-wiki:content:end -->
 ```
 
-Additionally, all docs are backed up to `cache/backup/` before any upgrade.
+Unknown Properties are user-owned and preserved. Documents without ownership markers are not adopted or overwritten.
+Removed managed documents move to `.mini-wiki/archive/` rather than being silently deleted.
 
-</details>
+## Search without Obsidian
 
-<details open>
-<summary><b>How do I check the quality of my existing docs?</b></summary>
-
-Tell your AI Agent:
-
-```
-🤖 "check wiki quality"
-🤖 "检查 wiki 质量"
+```bash
+mini-wiki search "插件安装" --json /path/to/project
+mini-wiki search "storage" --type module --tag domain/storage --limit 10 /path/to/project
 ```
 
-This generates a quality assessment report showing which docs need upgrading.
+The local index combines Markdown, Properties, aliases, tags, graph metadata, and bounded source text. Deterministic
+CJK unigram/bigram normalization supports Chinese and mixed-language queries. SQLite FTS5 is an accelerator, not a
+requirement; the fallback keeps the same filters and ranking rules.
 
-</details>
+## Properties, Bases, and Canvas
 
----
+Properties are the single metadata model for pages and derived views.
 
-## 🙏 Inspired By
+| Artifact | Purpose |
+| --- | --- |
+| `views/modules.base` | Module status, freshness, quality, and backlinks |
+| `views/sources.base` | Source coverage and drift |
+| `views/quality.base` | Review and enrichment queue |
+| `views/orphans.base` | Notes not connected to the knowledge network |
+| `canvas/architecture.canvas` | Architectural layers and dependencies |
+| `canvas/domains.canvas` | Domain and module map |
+| `canvas/traceability.canvas` | Document-to-source and symbol traceability |
 
-<table>
-<tr>
-<td align="center">
-<a href="https://github.com/AsyncFuncAI/deepwiki-open">
-<img src="https://img.icons8.com/color/48/book-shelf.png" alt="DeepWiki"/>
-<br><b>DeepWiki</b>
-</a>
-</td>
-<td align="center">
-<a href="https://github.com/daeisbae/open-repo-wiki">
-<img src="https://img.icons8.com/color/48/repository.png" alt="OpenRepoWiki"/>
-<br><b>OpenRepoWiki</b>
-</a>
-</td>
-<td align="center">
-<a href="https://docs.qoder.com/user-guide/repo-wiki">
-<img src="https://img.icons8.com/color/48/code.png" alt="Qoder"/>
-<br><b>Qoder Repo Wiki</b>
-</a>
-</td>
-</tr>
-</table>
+Bases are native declarative views over Properties. Canvas files are deterministic JSON Canvas 1.0 projections of
+the graph; edit the source facts and rebuild instead of keeping unique knowledge inside a generated view.
 
----
+## Validation and recovery
 
-## 📄 License
+```bash
+mini-wiki check --strict --json /path/to/project
+mini-wiki migrate --json /path/to/project
+mini-wiki migrate --apply --json /path/to/project
+mini-wiki migrate --apply --adopt --json /path/to/project
+```
 
-This project is licensed under the [Apache-2.0 License](LICENSE).
+Strict mode checks IDs, links, source boundaries and drift, ownership markers, orphans, Base schema, and Canvas node
+and edge integrity. Migration is preview-first, refuses a non-empty destination, backs up legacy material, validates
+the copied result, and switches configuration only after success. `--adopt` preserves each legacy body inside the
+Agent-owned region.
 
----
+## Optional Obsidian integration
 
-<div align="center">
+```bash
+mini-wiki obsidian status --json /path/to/project
+mini-wiki obsidian status --probe --json /path/to/project
+mini-wiki obsidian open /path/to/project
+```
 
-## 💬 Contact
+Normal status is side-effect free. `--probe` explicitly invokes the Obsidian CLI and may start the application.
+`open` is the only Mini-Wiki command that asks Obsidian to open the configured Wiki, through an encoded Obsidian URI.
+Build, search, check, migration, Bases, and Canvas generation never require the app.
 
-<img src="assets/logo.png" alt="Mini-Wiki Logo" width="80">
+## Instruction-only plugins
 
-**Made with ❤️ by trsoliu**
+```bash
+mini-wiki plugins list /path/to/project
+mini-wiki plugins install owner/repository /path/to/project
+mini-wiki plugins enable plugin-name /path/to/project
+mini-wiki plugins disable plugin-name /path/to/project
+mini-wiki plugins update plugin-name /path/to/project
+mini-wiki plugins uninstall plugin-name /path/to/project
+```
 
-<a href="https://github.com/trsoliu/mini-wiki">
-<img src="https://img.shields.io/badge/GitHub-trsoliu/mini--wiki-181717?style=for-the-badge&logo=github" alt="GitHub">
-</a>
+Plugin instructions are untrusted text. The Agent may read enabled `PLUGIN.md` or `SKILL.md` files and apply relevant
+guidance, but must never import or execute plugin scripts, hooks, package managers, or commands. Network sources must
+use HTTPS; installation rejects traversal paths, symbolic links, invalid roots, excessive archives, and silent
+overwrite. Third-party plugins are disabled by default and recorded with a tree hash.
 
-### WeChat: `trsoliu`
+## Configuration
 
-<img src="assets/wechat-qr.png" alt="WeChat QR" width="180">
+`mini-wiki init` creates schema v3 configuration with independent switches for search, Bases, Canvas, and optional
+Obsidian integration. Scanning respects Git ignore rules, configured exclusions, symlink boundaries, file-size
+limits, the state directory, and the Wiki directory.
 
----
+See [SKILL.md](SKILL.md) for the complete Agent protocol, [Chinese workflow](references/SKILL.zh.md) for the Chinese
+guide, [prompts](references/prompts.md) for evidence-first generation, and [templates](references/templates.md) for
+managed-note examples.
 
-⭐ **Star this repo if you find it helpful!** ⭐
+## Development
 
-</div>
+```bash
+.venv/bin/python -m pytest -q
+.venv/bin/ruff check scripts tests
+.venv/bin/ruff format --check scripts tests
+.venv/bin/mypy scripts
+```
+
+## License
+
+[MIT](LICENSE)

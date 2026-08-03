@@ -21,7 +21,7 @@ hooks:
 ### 1. 目录结构转换 / Structure Conversion
 
 ```
-.mini-wiki/wiki/           →    docs/
+wiki/                      →    docs/
 ├── index.md               →    ├── intro.md
 ├── architecture.md        →    ├── architecture.md
 ├── modules/               →    ├── modules/
@@ -76,7 +76,7 @@ module.exports = {
 
 导出时应用：
 
-1. 读取 `.mini-wiki/wiki/` 目录
+1. 读取 `wiki/` 目录
 2. 转换 Markdown 格式
 3. 生成 frontmatter
 4. 创建 sidebars.js

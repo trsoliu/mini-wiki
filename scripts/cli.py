@@ -32,6 +32,7 @@ from analyze_project import analyze_project, print_analysis
 from check_quality import check_wiki_quality
 from detect_changes import detect_changes, print_changes
 from init_wiki import init_mini_wiki, print_result
+from mini_wiki_core import __version__
 from mini_wiki_core import obsidian as obsidian_integration
 from mini_wiki_core.builder import BuildOptions, TransactionError, build_project
 from mini_wiki_core.config import ConfigError, load_config
@@ -56,7 +57,7 @@ def _resolve_project(path: str | None) -> str:
 
 
 @click.group()
-@click.version_option(version="3.2.0", prog_name="mini-wiki")
+@click.version_option(version=__version__, prog_name="mini-wiki")
 def main():
     """Mini-Wiki: AI-powered project documentation generator."""
 

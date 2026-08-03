@@ -21,7 +21,7 @@ hooks:
 ### 1. 目录结构转换 / Structure Conversion
 
 ```
-.mini-wiki/wiki/           →    gitbook-docs/
+wiki/                      →    gitbook-docs/
 ├── index.md               →    ├── README.md
 ├── architecture.md        →    ├── architecture.md
 ├── modules/               →    ├── modules/
@@ -103,7 +103,7 @@ gitbook-docs/
 
 导出时应用：
 
-1. 读取 `.mini-wiki/wiki/` 目录
+1. 读取 `wiki/` 目录
 2. 转换文件名（index.md → README.md）
 3. 生成 SUMMARY.md
 4. 创建 book.json
