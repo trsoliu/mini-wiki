@@ -1,0 +1,82 @@
+filters:
+  and:
+    - 'file.hasTag("patents")'
+
+formulas:
+  evidence_zh: 'if(evidence_label, evidence_label, if(evidence_scope == "full_text", "全文", if(evidence_scope == "abstract_only", "仅摘要", if(evidence_scope == "partial", "部分", evidence_scope))))'
+  speculative_zh: 'if(speculative_label, speculative_label, if(confidence_speculative, "是", "否"))'
+
+properties:
+  pub_number:
+    displayName: 公开号
+  domain:
+    displayName: 领域
+  ipc:
+    displayName: IPC
+  read_date:
+    displayName: 解读日期
+  evidence_scope:
+    displayName: 证据范围(英文)
+  evidence_label:
+    displayName: 证据范围
+  perspective:
+    displayName: 视角
+  confidence_speculative:
+    displayName: 含推测(布尔)
+  speculative_label:
+    displayName: 含推测
+  formula.evidence_zh:
+    displayName: 证据范围
+  formula.speculative_zh:
+    displayName: 含推测
+
+views:
+  - type: table
+    name: 全部专利解读
+    order:
+      - file.name
+      - pub_number
+      - domain
+      - ipc
+      - read_date
+      - formula.evidence_zh
+      - perspective
+      - formula.speculative_zh
+    filters:
+      and:
+        - 'file.inFolder("{{PAPERS_DIR}}")'
+        - 'file.name.contains("_解读_")'
+  - type: table
+    name: 按领域
+    order:
+      - domain
+      - pub_number
+      - read_date
+      - formula.evidence_zh
+    filters:
+      and:
+        - 'file.inFolder("{{PAPERS_DIR}}")'
+        - 'file.name.contains("_解读_")'
+  - type: table
+    name: 含推测线索
+    order:
+      - pub_number
+      - domain
+      - read_date
+      - formula.evidence_zh
+    filters:
+      and:
+        - 'file.inFolder("{{PAPERS_DIR}}")'
+        - 'file.name.contains("_解读_")'
+        - 'confidence_speculative == true'
+  - type: cards
+    name: 卡片视图
+    order:
+      - pub_number
+      - domain
+      - read_date
+      - formula.evidence_zh
+    filters:
+      and:
+        - 'file.inFolder("{{PAPERS_DIR}}")'
+        - 'file.name.contains("_解读_")'

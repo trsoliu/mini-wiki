@@ -1,0 +1,12 @@
+{
+  "_comment": "与 tools/patent_reader/obsidian.py::build_patent_graph_color_groups 保持同步；供文档对照。实际写入以脚本为准（含动态 path）。",
+  "legend": [
+    { "color": "#14B8A6", "meaning": "单篇 Canvas 图谱（file:_图谱）" },
+    { "color": "#0D9488", "meaning": "全局关联 Canvas（file:_专利关联）" },
+    { "color": "#F97316", "meaning": "术语页（path:术语 / tag:#glossary）" },
+    { "color": "#64748B", "meaning": "索引页（tag:#patents/index）" },
+    { "color": "#F59E0B", "meaning": "含推测线索的解读（tag:#patent/speculative）" },
+    { "color": "#4F46E5", "meaning": "专利解读笔记（file:_解读_ / tag:#patents）" },
+    { "color": "#0F766E", "meaning": "Bases 仪表盘（file:.base）" }
+  ]
+}
