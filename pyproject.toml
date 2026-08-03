@@ -17,6 +17,20 @@ dependencies = [
 [project.scripts]
 mini-wiki = "cli:main"
 
+[tool.setuptools]
+package-dir = { "" = "scripts" }
+py-modules = [
+    "analyze_project",
+    "check_quality",
+    "cli",
+    "detect_changes",
+    "extract_docs",
+    "generate_diagram",
+    "generate_toc",
+    "init_wiki",
+    "plugin_manager",
+]
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
@@ -44,6 +58,11 @@ select = [
     "SIM",  # flake8-simplify
     "TCH",  # flake8-type-checking
     "RUF",  # ruff-specific rules
+]
+ignore = [
+    "RUF001",  # Intentional Chinese punctuation in user-facing strings
+    "RUF002",  # Intentional Chinese punctuation in docstrings
+    "RUF003",  # Intentional Chinese punctuation in comments
 ]
 
 [tool.ruff.format]
