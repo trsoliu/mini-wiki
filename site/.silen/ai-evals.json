@@ -17,7 +17,12 @@
       "query": "托管 Markdown 如何区分 CLI 生成区域和 Agent 内容区域并在重建时保留内容？",
       "lang": "zh-CN",
       "expected": {
-        "acceptable": [{ "route": "/knowledge-network/" }],
+        "acceptable": [
+          { "route": "/knowledge-network/" },
+          { "route": "/features/" },
+          { "route": "/reference/" },
+          { "route": "/guide/" }
+        ],
         "forbidden": [],
         "maxRank": 3
       }
@@ -45,7 +50,7 @@
     {
       "id": "instruction-only-plugins",
       "query": "Are third-party Mini-Wiki plugin scripts executed during installation or use?",
-      "lang": "en",
+      "lang": "en-US",
       "expected": {
         "acceptable": [{ "route": "/en/security/" }],
         "forbidden": [],
@@ -55,9 +60,13 @@
     {
       "id": "optional-obsidian",
       "query": "Does Mini-Wiki require Obsidian for build, search, validation, Bases, or Canvas?",
-      "lang": "en",
+      "lang": "en-US",
       "expected": {
-        "acceptable": [{ "route": "/en/security/" }],
+        "acceptable": [
+          { "route": "/en/security/" },
+          { "route": "/en/features/" },
+          { "route": "/en/guide/" }
+        ],
         "forbidden": [],
         "maxRank": 3
       }

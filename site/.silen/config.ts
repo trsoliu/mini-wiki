@@ -91,7 +91,7 @@ export default defineConfig({
         sidebar: zhSidebar,
       },
       {
-        lang: 'en',
+        lang: 'en-US',
         label: 'English',
         root: '/en/',
         link: '/en/',

@@ -9,7 +9,7 @@
 
 **面向 AI Agent、Markdown 与 Obsidian 的源码可追溯项目知识网络**
 
-[English](README.md) · [Skill 说明](SKILL.md) · [更新日志](CHANGELOG.md)
+[产品站](https://trsoliu.github.io/mini-wiki/) · [English](README.md) · [Skill 说明](SKILL.md) · [更新日志](CHANGELOG.md)
 
 </div>
 

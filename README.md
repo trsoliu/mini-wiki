@@ -9,7 +9,7 @@
 
 **A source-traceable project knowledge network for AI Agents, Markdown, and Obsidian**
 
-[中文](README.zh.md) · [Skill instructions](SKILL.md) · [Changelog](CHANGELOG.md)
+[Product site](https://trsoliu.github.io/mini-wiki/) · [中文](README.zh.md) · [Skill instructions](SKILL.md) · [Changelog](CHANGELOG.md)
 
 </div>
 

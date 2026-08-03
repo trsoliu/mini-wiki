@@ -70,6 +70,7 @@ def test_silen_config_is_strict_pages_safe_and_bilingual() -> None:
         "search: true",
         "locales:",
         "'/en/'",
+        "lang: 'en-US'",
         "https://github.com/trsoliu/mini-wiki",
         "contract:",
         "instructions: '.silen/ai-public.md'",
@@ -115,6 +116,15 @@ def test_public_agent_contract_and_evals_cover_product_boundaries() -> None:
         "bases-and-canvas",
         "instruction-only-plugins",
         "optional-obsidian",
+    }
+    english_cases = {
+        case["id"]: case["lang"]
+        for case in evaluations["cases"]
+        if case["id"] in {"instruction-only-plugins", "optional-obsidian"}
+    }
+    assert english_cases == {
+        "instruction-only-plugins": "en-US",
+        "optional-obsidian": "en-US",
     }
     for phrase in ("wiki/", ".mini-wiki/", "source evidence", "instruction-only", "Obsidian"):
         assert phrase in instructions
@@ -212,3 +222,71 @@ def test_reference_pages_only_document_verified_v3_commands() -> None:
         assert "3.3.0" in body
         for command in commands:
             assert command in body
+
+
+def test_generated_site_contract_covers_routes_ai_files_and_leaks() -> None:
+    contract = read_text("scripts/check-silen-site.mjs")
+    robots = read_text("site/public/robots.txt")
+
+    for route in (
+        "index.html",
+        "guide/index.html",
+        "knowledge-network/index.html",
+        "features/index.html",
+        "security/index.html",
+        "reference/index.html",
+        "en/index.html",
+        "en/guide/index.html",
+        "en/knowledge-network/index.html",
+        "en/features/index.html",
+        "en/security/index.html",
+        "en/reference/index.html",
+    ):
+        assert route in contract
+    for artifact in (
+        "llms.txt",
+        "llms-full.txt",
+        "ai-index.json",
+        "search-index.json",
+        "sitemap.xml",
+        "robots.txt",
+        ".well-known/silen/manifest.json",
+    ):
+        assert artifact in contract
+    for blocked in ("sourceMappingURL", "docs/wechat-publish-notes.md", "/Users/", "file://"):
+        assert blocked in contract
+    assert "Sitemap: https://trsoliu.github.io/mini-wiki/sitemap.xml" in robots
+
+
+def test_pages_workflow_runs_the_frozen_silen_gate_and_keeps_hidden_artifacts() -> None:
+    workflow = read_text(".github/workflows/pages.yml")
+
+    required_fragments = (
+        "branches: [main]",
+        "workflow_dispatch:",
+        "contents: read",
+        "pages: write",
+        "id-token: write",
+        "cancel-in-progress: true",
+        "actions/checkout@v6",
+        "pnpm/action-setup@v4",
+        "version: 10.34.0",
+        "actions/setup-node@v6",
+        'node-version: "22.12.0"',
+        "pnpm install --frozen-lockfile",
+        "pnpm site:check",
+        "actions/configure-pages@v6",
+        "actions/upload-pages-artifact@v5",
+        "path: site/.silen/dist",
+        "include-hidden-files: true",
+        "actions/deploy-pages@v5",
+    )
+    for fragment in required_fragments:
+        assert fragment in workflow
+
+
+def test_readmes_expose_the_live_product_site() -> None:
+    site_url = "https://trsoliu.github.io/mini-wiki/"
+
+    assert f"[Product site]({site_url})" in read_text("README.md")
+    assert f"[产品站]({site_url})" in read_text("README.zh.md")
