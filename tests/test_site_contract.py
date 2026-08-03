@@ -133,6 +133,32 @@ def test_theme_uses_semantic_tokens_and_local_assets() -> None:
     assert 'height="40"' in logo
 
 
+def test_theme_is_restrained_and_vitepress_like() -> None:
+    css = read_text("site/.silen/custom.css")
+
+    for fragment in (
+        "--mw-brand: #3451b2",
+        "--silen-nav-height: 4rem",
+        ".mw-home-hero",
+        ".mw-hero-visual",
+        ".mw-feature-grid",
+        "grid-template-columns: repeat(3, minmax(0, 1fr))",
+        ".mw-ai-strip",
+        "backdrop-filter: blur(12px)",
+        "@media (max-width: 48rem)",
+    ):
+        assert fragment in css
+    for old_fragment in (
+        "--mini-wiki-grid",
+        ".mw-knowledge-graph",
+        ".mw-graph-node",
+        ".mw-proof-strip",
+        ".mw-workflow",
+        "font-size: clamp(3.5rem, 8.8vw, 7.8rem)",
+    ):
+        assert old_fragment not in css
+
+
 def test_home_action_hierarchy_has_only_one_primary_link() -> None:
     css = read_text("site/.silen/custom.css")
 
