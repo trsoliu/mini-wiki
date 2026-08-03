@@ -9,34 +9,27 @@ const isolateSsrRuntime = definePlugin(() => ({
   }),
 }))
 
-const zhNav = [
-  { text: '快速开始', link: '/guide/' },
-  { text: '知识网络', link: '/knowledge-network/' },
-  { text: '能力', link: '/features/' },
-  { text: '安全', link: '/security/' },
-  { text: '参考', link: '/reference/' },
-]
+const releaseUrl = 'https://github.com/trsoliu/mini-wiki/releases/tag/v3.3.0'
 
-const enNav = [
-  { text: 'Guide', link: '/en/guide/' },
-  { text: 'Knowledge Network', link: '/en/knowledge-network/' },
-  { text: 'Features', link: '/en/features/' },
-  { text: 'Security', link: '/en/security/' },
-  { text: 'Reference', link: '/en/reference/' },
-]
+const zhNav = [{ text: 'v3.3.0', link: releaseUrl }]
+
+const enNav = [{ text: 'v3.3.0', link: releaseUrl }]
 
 const zhSidebar = [
   {
     text: '开始使用',
+    items: [{ text: '五分钟上手', link: '/guide/' }],
+  },
+  {
+    text: '核心概念',
     items: [
-      { text: '五分钟上手', link: '/guide/' },
       { text: '知识网络', link: '/knowledge-network/' },
+      { text: '核心能力', link: '/features/' },
     ],
   },
   {
-    text: '产品手册',
+    text: '运维与参考',
     items: [
-      { text: '核心能力', link: '/features/' },
       { text: '安全边界', link: '/security/' },
       { text: '命令与配置', link: '/reference/' },
     ],
@@ -46,15 +39,18 @@ const zhSidebar = [
 const enSidebar = [
   {
     text: 'Get started',
+    items: [{ text: 'Five-minute guide', link: '/en/guide/' }],
+  },
+  {
+    text: 'Core concepts',
     items: [
-      { text: 'Five-minute guide', link: '/en/guide/' },
       { text: 'Knowledge network', link: '/en/knowledge-network/' },
+      { text: 'Core features', link: '/en/features/' },
     ],
   },
   {
-    text: 'Product manual',
+    text: 'Operations and reference',
     items: [
-      { text: 'Core features', link: '/en/features/' },
       { text: 'Security boundaries', link: '/en/security/' },
       { text: 'CLI and configuration', link: '/en/reference/' },
     ],

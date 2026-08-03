@@ -78,6 +78,38 @@ def test_silen_config_is_strict_pages_safe_and_bilingual() -> None:
         assert fragment in config
 
 
+def test_header_navigation_is_global_and_sidebar_owns_document_routes() -> None:
+    config = read_text("site/.silen/config.ts")
+    zh_nav = config.split("const zhNav =", 1)[1].split("const enNav =", 1)[0]
+    en_nav = config.split("const enNav =", 1)[1].split("const zhSidebar =", 1)[0]
+    zh_sidebar = config.split("const zhSidebar =", 1)[1].split("const enSidebar =", 1)[0]
+    en_sidebar = config.split("const enSidebar =", 1)[1].split("export default", 1)[0]
+
+    assert "v3.3.0" in zh_nav
+    assert "v3.3.0" in en_nav
+    for route in ("/guide/", "/knowledge-network/", "/features/", "/security/", "/reference/"):
+        assert f"link: '{route}'" not in zh_nav
+        assert zh_sidebar.count(f"link: '{route}'") == 1
+    for route in (
+        "/en/guide/",
+        "/en/knowledge-network/",
+        "/en/features/",
+        "/en/security/",
+        "/en/reference/",
+    ):
+        assert f"link: '{route}'" not in en_nav
+        assert en_sidebar.count(f"link: '{route}'") == 1
+    for group in (
+        "开始使用",
+        "核心概念",
+        "运维与参考",
+        "Get started",
+        "Core concepts",
+        "Operations and reference",
+    ):
+        assert group in config
+
+
 def test_silen_ssr_stays_inside_the_project_dependency_graph() -> None:
     config = read_text("site/.silen/config.ts")
 
