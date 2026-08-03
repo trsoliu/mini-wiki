@@ -8,5 +8,9 @@
 coverage.xml
 *.egg-info/
 node_modules/
+site/.silen/dist/
+site/.silen/cache/
+playwright-report/
+test-results/
 __pycache__/
 *.pyc

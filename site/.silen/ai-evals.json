@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 3,
+  "topK": 5,
+  "cases": [
+    {
+      "id": "install-mini-wiki",
+      "query": "如何安装 Mini-Wiki 并在五分钟内完成第一次构建？",
+      "lang": "zh-CN",
+      "expected": {
+        "acceptable": [{ "route": "/guide/" }],
+        "forbidden": [],
+        "maxRank": 3
+      }
+    },
+    {
+      "id": "deterministic-ownership",
+      "query": "托管 Markdown 如何区分 CLI 生成区域和 Agent 内容区域并在重建时保留内容？",
+      "lang": "zh-CN",
+      "expected": {
+        "acceptable": [{ "route": "/knowledge-network/" }],
+        "forbidden": [],
+        "maxRank": 3
+      }
+    },
+    {
+      "id": "chinese-search",
+      "query": "中文和中英混合关键词搜索是否依赖 SQLite FTS5？",
+      "lang": "zh-CN",
+      "expected": {
+        "acceptable": [{ "route": "/features/" }],
+        "forbidden": [],
+        "maxRank": 3
+      }
+    },
+    {
+      "id": "bases-and-canvas",
+      "query": "四个 Bases 和三个 Canvas 分别用来查看什么？",
+      "lang": "zh-CN",
+      "expected": {
+        "acceptable": [{ "route": "/features/" }],
+        "forbidden": [],
+        "maxRank": 3
+      }
+    },
+    {
+      "id": "instruction-only-plugins",
+      "query": "Are third-party Mini-Wiki plugin scripts executed during installation or use?",
+      "lang": "en",
+      "expected": {
+        "acceptable": [{ "route": "/en/security/" }],
+        "forbidden": [],
+        "maxRank": 3
+      }
+    },
+    {
+      "id": "optional-obsidian",
+      "query": "Does Mini-Wiki require Obsidian for build, search, validation, Bases, or Canvas?",
+      "lang": "en",
+      "expected": {
+        "acceptable": [{ "route": "/en/security/" }],
+        "forbidden": [],
+        "maxRank": 3
+      }
+    }
+  ]
+}

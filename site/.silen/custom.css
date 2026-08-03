@@ -1,0 +1,127 @@
+:root {
+  --silen-background: oklch(0.978 0.009 86);
+  --silen-foreground: oklch(0.205 0.028 224);
+  --silen-card: oklch(0.994 0.004 86);
+  --silen-card-foreground: var(--silen-foreground);
+  --silen-primary: oklch(0.58 0.135 203);
+  --silen-primary-foreground: oklch(0.985 0.008 195);
+  --silen-secondary: oklch(0.944 0.016 196);
+  --silen-secondary-foreground: oklch(0.245 0.035 222);
+  --silen-muted: oklch(0.947 0.011 89);
+  --silen-muted-foreground: oklch(0.475 0.027 222);
+  --silen-popover: var(--silen-card);
+  --silen-popover-foreground: var(--silen-foreground);
+  --silen-accent: oklch(0.92 0.035 196);
+  --silen-accent-foreground: oklch(0.22 0.04 220);
+  --silen-destructive: oklch(0.58 0.2 28);
+  --silen-border: oklch(0.84 0.025 205);
+  --silen-input: var(--silen-border);
+  --silen-ring: oklch(0.58 0.135 203);
+  --silen-radius: 0.35rem;
+  --silen-nav-height: 4.25rem;
+  --silen-sidebar-width: 17.5rem;
+  --silen-content-width: 48rem;
+  --silen-layout-width: 92rem;
+  --mini-wiki-amber: oklch(0.69 0.145 77);
+  --mini-wiki-grid: color-mix(in oklab, var(--silen-primary) 10%, transparent);
+  --mini-wiki-shadow: 0 18px 60px color-mix(in oklab, var(--silen-foreground) 8%, transparent);
+}
+
+.dark {
+  --silen-background: oklch(0.16 0.025 224);
+  --silen-foreground: oklch(0.925 0.018 191);
+  --silen-card: oklch(0.195 0.028 224);
+  --silen-card-foreground: var(--silen-foreground);
+  --silen-primary: oklch(0.77 0.13 192);
+  --silen-primary-foreground: oklch(0.14 0.03 224);
+  --silen-secondary: oklch(0.235 0.032 222);
+  --silen-secondary-foreground: var(--silen-foreground);
+  --silen-muted: oklch(0.215 0.025 224);
+  --silen-muted-foreground: oklch(0.7 0.025 202);
+  --silen-popover: oklch(0.18 0.027 224);
+  --silen-popover-foreground: var(--silen-foreground);
+  --silen-accent: oklch(0.27 0.045 205);
+  --silen-accent-foreground: var(--silen-foreground);
+  --silen-destructive: oklch(0.68 0.18 27);
+  --silen-border: oklch(0.34 0.038 210);
+  --silen-input: var(--silen-border);
+  --silen-ring: oklch(0.77 0.13 192);
+  --mini-wiki-amber: oklch(0.78 0.135 80);
+  --mini-wiki-grid: color-mix(in oklab, var(--silen-primary) 12%, transparent);
+  --mini-wiki-shadow: 0 22px 72px oklch(0.08 0.02 224 / 45%);
+}
+
+html {
+  background: var(--silen-background);
+}
+
+body {
+  background-color: var(--silen-background);
+  background-image:
+    linear-gradient(var(--mini-wiki-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mini-wiki-grid) 1px, transparent 1px);
+  background-size: 2.5rem 2.5rem;
+  font-feature-settings: 'ss01' 1, 'cv11' 1;
+}
+
+[data-product-docs='mini-wiki'] {
+  min-height: 100svh;
+}
+
+[data-product-docs='mini-wiki'] header {
+  border-bottom-color: color-mix(in oklab, var(--silen-border) 78%, transparent);
+}
+
+.silen-doc,
+.silen-page {
+  text-wrap: pretty;
+}
+
+.silen-doc h1,
+.silen-page h1 {
+  max-width: 24ch;
+  font-weight: 760;
+  letter-spacing: -0.045em;
+}
+
+.silen-doc h2,
+.silen-page h2 {
+  border-top-style: dashed;
+}
+
+.silen-code-block {
+  box-shadow: 0 10px 34px color-mix(in oklab, var(--silen-foreground) 7%, transparent);
+}
+
+.product-note {
+  margin-block: 1.5rem;
+  border: 1px solid color-mix(in oklab, var(--mini-wiki-amber) 58%, var(--silen-border));
+  border-left: 0.25rem solid var(--mini-wiki-amber);
+  background: color-mix(in oklab, var(--mini-wiki-amber) 8%, var(--silen-card));
+  padding: 1rem 1.1rem;
+  color: var(--silen-card-foreground);
+}
+
+.product-note > :first-child {
+  margin-top: 0;
+}
+
+.product-note > :last-child {
+  margin-bottom: 0;
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--silen-ring);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
