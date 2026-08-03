@@ -9,13 +9,23 @@ import os
 import re
 import shutil
 import sys
-import urllib.request
-import zipfile
+import tempfile
+import uuid
 from datetime import datetime
 from pathlib import Path
 from typing import Any, cast
 
 import yaml
+
+from mini_wiki_core.plugin_security import (
+    MAX_PLUGIN_TREE_BYTES,
+    PluginSecurityError,
+    download_bounded,
+    safe_extract_zip,
+    validate_instruction_plugin,
+)
+
+MAX_PLUGIN_DOWNLOAD_BYTES = 10 * 1024 * 1024
 
 
 def get_plugins_dir(project_root: str) -> Path:
@@ -41,14 +51,25 @@ def save_registry(project_root: str, registry: dict[str, Any]):
     """Save the plugin registry."""
     registry_path = get_registry_path(project_root)
     registry_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(registry_path, "w", encoding="utf-8") as f:
-        yaml.dump(registry, f, default_flow_style=False, allow_unicode=True)
+    descriptor, temporary_name = tempfile.mkstemp(prefix=".registry-", suffix=".yaml", dir=registry_path.parent)
+    temporary_path = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as output:
+            yaml.safe_dump(registry, output, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        os.replace(temporary_path, registry_path)
+    finally:
+        if temporary_path.exists():
+            temporary_path.unlink()
 
 
 def parse_plugin_manifest(plugin_path: Path) -> dict[str, Any] | None:
-    """Parse PLUGIN.md frontmatter."""
+    """Parse PLUGIN.md or a standard SKILL.md frontmatter without execution."""
     manifest_path = plugin_path / "PLUGIN.md"
-    if not manifest_path.exists():
+    skill_manifest = False
+    if not manifest_path.is_file():
+        manifest_path = plugin_path / "SKILL.md"
+        skill_manifest = True
+    if not manifest_path.is_file():
         return None
 
     with open(manifest_path, encoding="utf-8") as f:
@@ -59,7 +80,13 @@ def parse_plugin_manifest(plugin_path: Path) -> dict[str, Any] | None:
     if match:
         try:
             data = yaml.safe_load(match.group(1))
-            return cast("dict[str, Any]", data) if isinstance(data, dict) else None
+            if not isinstance(data, dict):
+                return None
+            normalized = cast("dict[str, Any]", data)
+            if skill_manifest:
+                normalized.setdefault("type", "skill")
+                normalized.setdefault("version", "1.0.0")
+            return normalized
         except yaml.YAMLError:
             return None
     return None
@@ -85,7 +112,7 @@ def list_plugins(project_root: str) -> list[dict[str, Any]]:
                     {
                         **manifest,
                         "path": str(item),
-                        "enabled": reg_entry.get("enabled", True) if reg_entry else True,
+                        "enabled": reg_entry.get("enabled", False) if reg_entry else False,
                         "priority": reg_entry.get("priority", 100) if reg_entry else 100,
                     }
                 )
@@ -93,214 +120,153 @@ def list_plugins(project_root: str) -> list[dict[str, Any]]:
     return sorted(plugins, key=lambda x: x.get("priority", 100))
 
 
-def install_plugin(project_root: str, source: str) -> dict[str, Any]:
-    """
-    Install an plugin from a path or URL.
+def _source_details(source: str) -> tuple[str, str, str]:
+    if re.fullmatch(r"[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+", source):
+        return "github", source, f"https://github.com/{source}/archive/refs/heads/main.zip"
+    if source.startswith(("http://", "https://")):
+        return "url", source, source
+    return "local", Path(source).name, source
 
-    Args:
-        project_root: Project root directory
-        source: Path to plugin directory, .zip file, or URL
 
-    Returns:
-        Result dict with success status and message
-    """
-    plugins_dir = get_plugins_dir(project_root)
+def _find_instruction_root(extracted: Path) -> Path:
+    if (extracted / "PLUGIN.md").is_file() or (extracted / "SKILL.md").is_file():
+        return extracted
+    candidates = [
+        path
+        for path in sorted(extracted.iterdir())
+        if path.is_dir() and ((path / "PLUGIN.md").is_file() or (path / "SKILL.md").is_file())
+    ]
+    if len(candidates) != 1:
+        raise PluginSecurityError("Plugin archive must contain exactly one PLUGIN.md or SKILL.md root")
+    return candidates[0]
+
+
+def _install_plugin(
+    project_root: str,
+    source: str,
+    *,
+    replace: bool,
+    expected_name: str | None = None,
+) -> dict[str, Any]:
+    result: dict[str, Any] = {"success": False, "message": "", "name": None}
+    root = Path(project_root).resolve()
+    if not root.is_dir():
+        result["message"] = "Installation failed: project root does not exist"
+        return result
+    plugins_dir = get_plugins_dir(str(root))
     plugins_dir.mkdir(parents=True, exist_ok=True)
-
-    result = {"success": False, "message": "", "name": None}
+    local_stage: Path | None = None
+    backup: Path | None = None
 
     try:
-        # Handle GitHub shorthand (owner/repo)
-        if re.match(r"^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$", source):
-            source = f"https://github.com/{source}/archive/refs/heads/main.zip"
-            # Fallback to master if main fails? For now let's assume main or let urllib fail.
-            # We could also try API but let's keep it simple.
+        source_type, source_origin, resolved_source = _source_details(source)
+        with tempfile.TemporaryDirectory(prefix="mini-wiki-plugin-") as temporary:
+            workspace = Path(temporary)
+            if source_type in {"github", "url"}:
+                archive = workspace / "plugin.zip"
+                download_bounded(resolved_source, archive, MAX_PLUGIN_DOWNLOAD_BYTES)
+                extracted = workspace / "extracted"
+                safe_extract_zip(archive, extracted, MAX_PLUGIN_TREE_BYTES)
+                instruction_root = _find_instruction_root(extracted)
+            else:
+                source_path = Path(resolved_source).expanduser().resolve()
+                if source_path.suffix.casefold() in {".zip", ".skill"}:
+                    extracted = workspace / "extracted"
+                    safe_extract_zip(source_path, extracted, MAX_PLUGIN_TREE_BYTES)
+                    instruction_root = _find_instruction_root(extracted)
+                else:
+                    instruction_root = source_path
 
-        # Handle URL
-        if source.startswith("http://") or source.startswith("https://"):
-            # Download to temp file
-            temp_zip = plugins_dir / "_temp.zip"
-            print(f"Downloading from {source}...")
-            # Helper to download with user agent
-            req = urllib.request.Request(source, headers={"User-Agent": "Mini-Wiki-Plugin-Manager"})
-            with urllib.request.urlopen(req) as response, open(temp_zip, "wb") as out_file:
-                shutil.copyfileobj(response, out_file)
-            source = str(temp_zip)
+            metadata = validate_instruction_plugin(instruction_root)
+            if expected_name is not None and metadata.name != expected_name:
+                raise PluginSecurityError(
+                    f"Updated plugin name mismatch: expected {expected_name}, received {metadata.name}"
+                )
+            target_dir = plugins_dir / metadata.name
+            if target_dir.exists() and not replace:
+                raise PluginSecurityError(f'Plugin "{metadata.name}" is already installed')
+            if replace and not target_dir.is_dir():
+                raise PluginSecurityError(f'Plugin "{metadata.name}" is not installed')
 
-        source_path = Path(source)
+            prepared = workspace / "prepared"
+            shutil.copytree(instruction_root, prepared)
+            metadata = validate_instruction_plugin(prepared)
+            local_stage = Path(tempfile.mkdtemp(prefix=".mini-wiki-plugin-", dir=root))
+            shutil.copytree(prepared, local_stage, dirs_exist_ok=True)
 
-        # Handle zip file
-        if source_path.suffix == ".zip" or source_path.suffix == ".skill":
-            with zipfile.ZipFile(source_path, "r") as zf:
-                # Extract to temp directory
-                temp_dir = plugins_dir / "_temp_extract"
-                if temp_dir.exists():
-                    shutil.rmtree(temp_dir)
-                temp_dir.mkdir(parents=True, exist_ok=True)
-
-                zf.extractall(temp_dir)
-
-                # Smart find: look for a directory containing PLUGIN.md or SKILL.md
-                found_root = None
-
-                # Check root first
-                if (temp_dir / "PLUGIN.md").exists() or (temp_dir / "SKILL.md").exists():
-                    found_root = temp_dir
-
-                # Check first level subdirs (common in github zips: repo-main/)
-                if not found_root:
-                    for item in temp_dir.iterdir():
-                        if item.is_dir() and (
-                            (item / "PLUGIN.md").exists()
-                            or (item / "SKILL.md").exists()
-                            or (item / "README.md").exists()
-                        ):
-                            found_root = item
-                            break
-
-                source_path = found_root if found_root else temp_dir
-
-        # Detect functionality
-        has_manifest = (source_path / "PLUGIN.md").exists()
-        has_skill = (source_path / "SKILL.md").exists()
-
-        target_name = None
-        manifest: dict[str, Any] | None = None
-
-        if has_manifest:
-            manifest = parse_plugin_manifest(source_path)
-            if manifest is None:
-                raise ValueError(f"Invalid PLUGIN.md manifest in {source_path}")
-            target_name = manifest.get("name")
-        elif has_skill:
-            # Auto-wrap SKILL.md
-            with open(source_path / "SKILL.md") as f:
-                content = f.read()
-                # Try to extract name from frontmatter or first line
-                match = re.search(r"name:\s*(.+)", content)
-                target_name = match.group(1).strip() if match else source_path.name
-
-            # Create wrapper PLUGIN.md
-            wrapper_manifest = f"""---
-name: {target_name}
-type: enhancer
-version: 1.0.0
-description: Auto-wrapped skill from standard SKILL.md
-author: unknown
-requires:
-  - mini-wiki >= 2.0.0
-hooks:
-  - after_analyze
-  - before_generate
----
-
-# {target_name}
-
-> Auto-wrapped from SKILL.md
-
-{content}
-"""
-            with open(source_path / "PLUGIN.md", "w") as f:
-                f.write(wrapper_manifest)
-            manifest = {"type": "enhancer", "version": "1.0.0"}
-
-        else:
-            # Last resort: Wrap a generic repo (using README.md if mostly)
-            target_name = source_path.name
-            wrapper_manifest = f"""---
-name: {target_name}
-type: enhancer
-version: 1.0.0
-description: Auto-wrapped generic plugin
-author: unknown
-requires:
-  - mini-wiki >= 2.0.0
-hooks:
-  - after_analyze
----
-
-# {target_name}
-
-> Auto-wrapped from repository content.
-"""
-            with open(source_path / "PLUGIN.md", "w") as f:
-                f.write(wrapper_manifest)
-            manifest = {"type": "enhancer", "version": "1.0.0"}
-
-        if not target_name:
-            target_name = "unknown-plugin"
-
-        # Clean name
-        target_name = re.sub(r"[^a-zA-Z0-9_-]", "-", target_name).lower()
-
-        target_dir = plugins_dir / target_name
-
-        # Copy plugin
-        if target_dir.exists():
-            shutil.rmtree(target_dir)
-        shutil.copytree(source_path, target_dir)
-
-        # Update registry
-        registry = load_registry(project_root)
-        plugins = registry.get("plugins", [])
-
-        # Remove existing entry if exists
-        plugins = [e for e in plugins if e.get("name") != target_name]
-
-        # Determine source metadata
-        source_type = "local"
-        source_origin = source
-        source_branch = None
-
-        # Check if it was a GitHub shorthand
-        github_match = re.match(r"^([a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+)$", source)
-        if github_match:
-            source_type = "github"
-            source_origin = github_match.group(1)
-            source_branch = "main"  # Default to main for now
-        elif source.startswith("http://") or source.startswith("https://"):
-            source_type = "url"
-            source_origin = source
-
-        # Get version from manifest
-        installed_version = "0.0.0"
-        if (target_dir / "PLUGIN.md").exists():
-            manifest = parse_plugin_manifest(target_dir)
-            if manifest:
-                installed_version = manifest.get("version", "0.0.0")
-
-        # Add new entry
-        plugins.append(
-            {
-                "name": target_name,
-                "enabled": True,
-                "priority": len(plugins) * 10 + 10,
-                "type": manifest.get("type", "enhancer") if manifest else "enhancer",
-                "version": installed_version,
-                "source": {"type": source_type, "origin": source_origin, "branch": source_branch},
+            registry = load_registry(str(root))
+            raw_plugins = registry.get("plugins", [])
+            if not isinstance(raw_plugins, list):
+                raise PluginSecurityError("Plugin registry entries must be a list")
+            existing = next(
+                (entry for entry in raw_plugins if isinstance(entry, dict) and entry.get("name") == metadata.name),
+                None,
+            )
+            priority = existing.get("priority", 100) if existing else len(raw_plugins) * 10 + 10
+            source_record: dict[str, Any] = {"type": source_type, "origin": source_origin}
+            if source_type == "github":
+                source_record["branch"] = "main"
+            entry = {
+                "name": metadata.name,
+                "enabled": False,
+                "priority": priority,
+                "type": metadata.plugin_type,
+                "version": metadata.version,
+                "source": source_record,
+                "sha256": metadata.sha256,
+                "instruction_only": True,
+                "manifest": metadata.manifest_file,
                 "installed_at": datetime.now().isoformat(),
             }
-        )
+            updated_plugins = [
+                item for item in raw_plugins if not isinstance(item, dict) or item.get("name") != metadata.name
+            ]
+            updated_plugins.append(entry)
+            updated_registry = {**registry, "plugins": updated_plugins}
 
-        registry["plugins"] = plugins
-        save_registry(project_root, registry)
+            if target_dir.exists():
+                backup = root / f".mini-wiki-plugin-backup-{uuid.uuid4().hex}"
+                os.replace(target_dir, backup)
+            try:
+                os.replace(local_stage, target_dir)
+                local_stage = None
+                save_registry(str(root), updated_registry)
+            except Exception:
+                if target_dir.exists():
+                    shutil.rmtree(target_dir)
+                if backup is not None and backup.exists():
+                    os.replace(backup, target_dir)
+                    backup = None
+                raise
+            if backup is not None and backup.exists():
+                shutil.rmtree(backup)
+                backup = None
 
-        # Cleanup
-        temp_zip = plugins_dir / "_temp.zip"
-        temp_dir = plugins_dir / "_temp_extract"
-        if temp_zip.exists():
-            temp_zip.unlink()
-        if temp_dir.exists():
-            shutil.rmtree(temp_dir)
-
-        result["success"] = True
-        result["name"] = target_name
-        result["message"] = f'Plugin "{target_name}" installed successfully'
-
-    except Exception as e:
-        result["message"] = f"Installation failed: {e!s}"
-
+            result.update(
+                {
+                    "success": True,
+                    "name": metadata.name,
+                    "message": f'Plugin "{metadata.name}" installed disabled; review instructions before enabling',
+                }
+            )
+    except Exception as exc:
+        result["message"] = f"Installation failed: {exc}"
+    finally:
+        if local_stage is not None and local_stage.exists():
+            shutil.rmtree(local_stage)
+        if backup is not None and backup.exists():
+            target_name = expected_name or result.get("name")
+            recovery_target = plugins_dir / str(target_name) if target_name else None
+            if recovery_target is not None and not recovery_target.exists():
+                os.replace(backup, recovery_target)
+            else:
+                shutil.rmtree(backup)
     return result
+
+
+def install_plugin(project_root: str, source: str) -> dict[str, Any]:
+    """Install validated text instructions without importing or executing plugin files."""
+    return _install_plugin(project_root, source, replace=False)
 
 
 def enable_plugin(project_root: str, name: str, enabled: bool = True) -> dict[str, Any]:
@@ -320,6 +286,8 @@ def enable_plugin(project_root: str, name: str, enabled: bool = True) -> dict[st
 
 def uninstall_plugin(project_root: str, name: str) -> dict[str, Any]:
     """Uninstall an plugin."""
+    if re.fullmatch(r"[a-z0-9](?:[a-z0-9_-]*[a-z0-9])?", name) is None:
+        return {"success": False, "message": f'Plugin "{name}" not found'}
     plugins_dir = get_plugins_dir(project_root)
     ext_path = plugins_dir / name
 
@@ -370,18 +338,9 @@ def update_plugin(project_root: str, name: str) -> dict[str, Any]:
     if source_type == "local":
         return {"success": False, "message": f'Plugin "{name}" is installed locally. Please update files manually.'}
 
-    print(f"Updating {name} from {source_type}: {source_origin}...")
-
-    # Re-install triggers the same download logic
-    install_source = source_origin
-    if source_type == "github":
-        install_source = source_origin  # install_plugin handles owner/repo
-    elif source_type == "url":
-        install_source = source_origin
-
-    # We reuse install_plugin (it handles overwrite and registry update)
-    # But we might want to backup first? For simplicity, we just overwrite.
-    return install_plugin(project_root, install_source)
+    if not isinstance(source_origin, str) or not source_origin:
+        return {"success": False, "message": f'Plugin "{name}" has no valid update source'}
+    return _install_plugin(project_root, source_origin, replace=True, expected_name=name)
 
 
 def print_plugins(plugins: list[dict[str, Any]]):

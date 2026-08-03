@@ -3,9 +3,11 @@
 import yaml
 
 from plugin_manager import (
+    _install_plugin,
     enable_plugin,
     get_plugins_dir,
     get_registry_path,
+    install_plugin,
     list_plugins,
     load_registry,
     parse_plugin_manifest,
@@ -267,3 +269,124 @@ def test_uninstall_plugin_not_found(tmp_path):
     result = uninstall_plugin(str(tmp_path), "nonexistent")
     assert result["success"] is False
     assert "not found" in result["message"]
+
+
+# --- secure instruction-only installation ---
+
+
+def _instruction_plugin(tmp_path, name="source-plugin", version="1.0.0"):
+    plugin = tmp_path / f"{name}-source"
+    plugin.mkdir()
+    (plugin / "PLUGIN.md").write_text(
+        f"---\nname: {name}\ntype: analyzer\nversion: {version}\ndescription: Test instructions\n---\n# Instructions\n"
+    )
+    return plugin
+
+
+def test_third_party_install_is_disabled_and_hashed_by_default(tmp_path):
+    source = _instruction_plugin(tmp_path)
+
+    result = install_plugin(str(tmp_path), str(source))
+    registry = load_registry(str(tmp_path))
+
+    assert result["success"] is True
+    assert registry["plugins"][0]["enabled"] is False
+    assert registry["plugins"][0]["sha256"].startswith("sha256:")
+    assert (tmp_path / "plugins" / "source-plugin" / "PLUGIN.md").exists()
+
+
+def test_install_never_executes_plugin_scripts(tmp_path):
+    source = _instruction_plugin(tmp_path)
+    marker = tmp_path / "executed.txt"
+    (source / "payload.py").write_text(f"from pathlib import Path\nPath({str(marker)!r}).write_text('ran')\n")
+
+    result = install_plugin(str(tmp_path), str(source))
+
+    assert result["success"] is True
+    assert not marker.exists()
+
+
+def test_install_rejects_readme_only_repository(tmp_path):
+    source = tmp_path / "generic-source"
+    source.mkdir()
+    (source / "README.md").write_text("# Generic\n")
+
+    result = install_plugin(str(tmp_path), str(source))
+
+    assert result["success"] is False
+    assert "PLUGIN.md or SKILL.md" in result["message"]
+
+
+def test_install_rejects_insecure_http_without_network_access(tmp_path, monkeypatch):
+    called = False
+
+    def unexpected_urlopen(*args, **kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("network must not be called")
+
+    monkeypatch.setattr("urllib.request.urlopen", unexpected_urlopen)
+
+    result = install_plugin(str(tmp_path), "http://example.com/plugin.zip")
+
+    assert result["success"] is False
+    assert "HTTPS" in result["message"]
+    assert called is False
+
+
+def test_install_refuses_overwrite_and_preserves_existing_plugin(tmp_path):
+    first = _instruction_plugin(tmp_path, version="1.0.0")
+    assert install_plugin(str(tmp_path), str(first))["success"] is True
+    installed = tmp_path / "plugins" / "source-plugin" / "PLUGIN.md"
+    before = installed.read_bytes()
+
+    replacement_root = tmp_path / "replacement"
+    replacement_root.mkdir()
+    replacement = _instruction_plugin(replacement_root, version="2.0.0")
+    result = install_plugin(str(tmp_path), str(replacement))
+
+    assert result["success"] is False
+    assert "already installed" in result["message"]
+    assert installed.read_bytes() == before
+
+
+def test_standard_skill_installs_without_mutating_or_wrapping_source(tmp_path):
+    source = tmp_path / "skill-source"
+    source.mkdir()
+    (source / "SKILL.md").write_text(
+        "---\nname: source-skill\ndescription: Standard skill instructions\n---\n# Instructions\n"
+    )
+    before = (source / "SKILL.md").read_bytes()
+
+    result = install_plugin(str(tmp_path), str(source))
+
+    assert result["success"] is True
+    assert (source / "SKILL.md").read_bytes() == before
+    assert not (source / "PLUGIN.md").exists()
+    assert (tmp_path / "plugins" / "source-skill" / "SKILL.md").exists()
+    assert not (tmp_path / "plugins" / "source-skill" / "PLUGIN.md").exists()
+
+
+def test_failed_update_replacement_restores_existing_plugin(tmp_path, monkeypatch):
+    first = _instruction_plugin(tmp_path, version="1.0.0")
+    assert install_plugin(str(tmp_path), str(first))["success"] is True
+    installed = tmp_path / "plugins" / "source-plugin" / "PLUGIN.md"
+    before = installed.read_bytes()
+    replacement_root = tmp_path / "replacement-update"
+    replacement_root.mkdir()
+    replacement = _instruction_plugin(replacement_root, version="2.0.0")
+
+    def fail_registry_save(*args):
+        raise OSError("registry failure")
+
+    monkeypatch.setattr("plugin_manager.save_registry", fail_registry_save)
+    result = _install_plugin(
+        str(tmp_path),
+        str(replacement),
+        replace=True,
+        expected_name="source-plugin",
+    )
+
+    assert result["success"] is False
+    assert "registry failure" in result["message"]
+    assert installed.read_bytes() == before
