@@ -1,0 +1,104 @@
+---
+title: "Get started with Mini-Wiki in five minutes"
+description: "The shortest complete path from Skill installation to build, Agent enrichment, strict validation, and local search."
+---
+
+# Get started in five minutes
+
+Mini-Wiki 3.3 turns a code repository into a root-level `wiki/` knowledge network. The CLI owns repeatable structure
+and facts; the AI Agent owns evidence-based explanation. Managed Markdown markers let them collaborate safely.
+
+## 1. Install
+
+Install Mini-Wiki as an Agent Skill first:
+
+```bash
+npx skills add trsoliu/mini-wiki
+```
+
+For direct local CLI use:
+
+```bash
+git clone https://github.com/trsoliu/mini-wiki.git
+cd mini-wiki
+python -m venv .venv
+.venv/bin/pip install -e .
+.venv/bin/mini-wiki --version
+```
+
+Python 3.10 or newer is required. Core builds require neither Node.js nor Obsidian.
+
+## 2. Initialize and diagnose
+
+Create schema v3 configuration in the target project, then inspect readiness and boundaries:
+
+```bash
+mini-wiki init /path/to/project
+mini-wiki doctor --json /path/to/project
+```
+
+`init` creates `.mini-wiki/config.yaml`. It does not put canonical knowledge in the state directory; the default
+destination for durable documents is the root-level `wiki/` directory.
+
+## 3. Preview, then build
+
+```bash
+mini-wiki build --dry-run --json /path/to/project
+mini-wiki build --json /path/to/project
+```
+
+Dry-run returns the write plan without changing files. A real build scans allowed sources, computes stable IDs,
+constructs the graph, writes managed pages in staging, validates them, and switches the result transactionally.
+
+<Note>
+After the first build, inspect `.mini-wiki/cache/build-plan.json` and `.mini-wiki/cache/graph.json`. They tell the Agent
+what needs explanation and which source evidence can support it, avoiding blank-page generation.
+</Note>
+
+## 4. Let the Agent write only in the content region
+
+Every managed page separates two responsibilities:
+
+```markdown
+<!-- mini-wiki:generated:start -->
+CLI-managed navigation, relationships, and evidence.
+<!-- mini-wiki:generated:end -->
+
+<!-- mini-wiki:content:start -->
+Agent-authored explanation grounded in source evidence.
+<!-- mini-wiki:content:end -->
+```
+
+The Agent edits only `mini-wiki:content`, leaving stable IDs, source lists, and generated navigation to the CLI.
+Unknown Properties are user-owned and survive later rebuilds.
+
+## 5. Rebuild and validate strictly
+
+```bash
+mini-wiki build --json /path/to/project
+mini-wiki check --strict --json /path/to/project
+```
+
+A second build with unchanged sources should have no unexplained diff. Strict mode validates IDs, links, source
+drift, ownership markers, orphans, Base schemas, and Canvas node/edge integrity.
+
+## 6. Search without Obsidian
+
+```bash
+mini-wiki search "architecture decision" --json /path/to/project
+mini-wiki search "storage" --type module --tag domain/storage --limit 10 /path/to/project
+```
+
+Search covers Markdown, Properties, aliases, tags, graph metadata, and bounded source text. SQLite FTS5 accelerates
+the index when available; the fallback preserves filters and ranking semantics.
+
+## Definition of done
+
+- `wiki/index.md` and the knowledge map open correctly;
+- Agent content cites locatable repository evidence;
+- `mini-wiki check --strict --json` succeeds;
+- the second unchanged build is stable;
+- English, Chinese, or mixed-language queries retrieve the expected page.
+
+Continue with the [knowledge-network model](/en/knowledge-network/), then use [features](/en/features/) and
+[security boundaries](/en/security/) as the operating manual.

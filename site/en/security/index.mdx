@@ -1,0 +1,80 @@
+---
+title: "Mini-Wiki security, boundaries, and recovery"
+description: "Canonical knowledge, local state, scan limits, instruction-only plugins, transactional recovery, and optional Obsidian."
+---
+
+# Security, boundaries, and recovery
+
+Mini-Wiki security is designed into directory responsibilities, ownership markers, scanning constraints,
+transactional writes, and disabled-by-default external instructions.
+
+## Canonical knowledge and local state
+
+```text
+wiki/          # canonical, portable, suitable for Git
+.mini-wiki/    # configuration, caches, staging, recoverable archive
+.obsidian/     # never created or modified by Mini-Wiki
+```
+
+`wiki/` is the durable-fact boundary. `.mini-wiki/` primarily holds rebuildable or local state. Do not treat caches
+as canonical knowledge, and do not allow repository-external files or machine-local absolute paths into the Wiki.
+
+## Scan boundaries
+
+Scanning respects Git ignore rules, explicit exclusions, file-size limits, state/Wiki exclusions, and symlink
+boundaries. Only sources inside the allowed project root can become evidence, preventing credentials, build output,
+or adjacent repositories from entering the knowledge graph.
+
+## Managed pages do not adopt unknown documents
+
+The builder updates only documents with complete Mini-Wiki ownership markers. Unknown Properties remain user-owned,
+and existing documents without markers are not overwritten. Retired pages move to `.mini-wiki/archive/` for review
+and recovery.
+
+## Third-party plugins are instructions, not code
+
+The plugin model is **instruction-only**: installed `PLUGIN.md` or `SKILL.md` files are untrusted text and disabled by
+default. An Agent may read relevant enabled guidance, but it must **never import or execute plugin scripts, hooks,
+package managers, or commands**.
+
+Installation also rejects:
+
+- non-HTTPS network sources;
+- path traversal, invalid roots, and symbolic links;
+- archives over bounded limits;
+- unconfirmed same-name replacement;
+- silent content changes that disagree with the recorded tree hash.
+
+## Obsidian is an optional interface
+
+Build, search, strict validation, migration, Bases, and Canvas do not require Obsidian. Normal status is side-effect
+free:
+
+```bash
+mini-wiki obsidian status --json /path/to/project
+```
+
+Only explicit `--probe` may invoke the Obsidian CLI and start the app. Only `obsidian open` asks the application to
+open the configured Wiki through an encoded URI. Mini-Wiki does not write `.obsidian/`.
+
+## Transactions, migration, and recovery
+
+Builds create a complete candidate in staging and switch only after validation. Failure leaves the current canonical
+Wiki intact. Migration previews by default, refuses a non-empty destination, backs up legacy material, validates the
+copy, and changes configuration last.
+
+```bash
+mini-wiki migrate --json /path/to/project
+mini-wiki migrate --apply --json /path/to/project
+mini-wiki migrate --apply --adopt --json /path/to/project
+```
+
+## Pre-publication checklist
+
+1. Check `wiki/` for credentials, personal data, and machine-local paths.
+2. Run `mini-wiki check --strict --json`.
+3. Review source evidence for Agent-authored claims.
+4. Compare a second unchanged build.
+5. Commit only canonical knowledge and intentionally shared configuration.
+
+Use the [CLI reference](/en/reference/) for exact commands and the [five-minute guide](/en/guide/) for the full loop.

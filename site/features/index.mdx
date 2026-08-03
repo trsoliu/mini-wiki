@@ -1,0 +1,69 @@
+---
+title: "Mini-Wiki 3.3 核心能力"
+description: "查看托管 Properties、中文搜索、四个 Bases、三个 Canvas 与确定性构建如何协同。"
+---
+
+# 核心能力
+
+Mini-Wiki 3.3 把 Obsidian 中最有价值的知识管理理念转化为独立、可版本化的仓库能力。Obsidian 可以
+增强阅读体验，但不是任何核心能力的运行依赖。
+
+## 托管 Markdown 与 Properties
+
+Properties 是页面和派生视图共用的元数据模型。CLI 维护 ID、类型、领域、来源、新鲜度、质量与版本，
+同时保留用户添加的未知 Properties。正文中的 generated/content 标记让机器事实与专业解释可以独立更新。
+
+结果是：重建不会把页面变成一次性生成物，手工知识也不会阻止结构和来源事实继续演进。
+
+## 中文感知的本地搜索
+
+```bash
+mini-wiki search "插件安装" --json /path/to/project
+mini-wiki search "storage" --type module --tag domain/storage --limit 10 /path/to/project
+```
+
+索引组合 Markdown、Properties、别名、标签、图谱元数据与受限源码文本。确定性的中文 unigram/bigram
+归一化支持中文和中英混合查询。
+
+SQLite FTS5 是可选加速器，不是功能依赖。后备实现保持相同的查询筛选、结果格式和排序规则，因此
+知识库在精简 Python 环境中仍可检索。
+
+## 四个 Bases：把知识治理变成队列
+
+| 文件 | 用途 |
+| --- | --- |
+| `views/modules.base` | 查看模块状态、新鲜度、质量与反向链接 |
+| `views/sources.base` | 查看源码覆盖、归属与漂移 |
+| `views/quality.base` | 形成待评审和待增补队列 |
+| `views/orphans.base` | 找出尚未接入知识网络的页面 |
+
+Bases 是 Properties 上的原生声明式视图。它们不持有唯一知识；修改事实后重新构建，视图会跟随正式
+Markdown 更新。
+
+## 三个 Canvas：从不同尺度查看同一张图
+
+| 文件 | 视角 |
+| --- | --- |
+| `canvas/architecture.canvas` | 架构层次和模块依赖 |
+| `canvas/domains.canvas` | 领域、模块与职责分布 |
+| `canvas/traceability.canvas` | 文档到源码和符号的证据路径 |
+
+Canvas 使用 JSON Canvas 1.0，节点 ID、位置、大小和边顺序均为确定性输出。它适合空间探索，但不应
+成为唯一事实来源。
+
+## 确定性构建与恢复
+
+- dry-run 先展示写入计划；
+- staging 中生成完整候选结果；
+- 严格校验通过后才切换正式 Wiki；
+- 退出管理的页面移动到 `.mini-wiki/archive/`；
+- 第二次无变化构建应产生相同结果。
+
+构建失败不会留下半写入的 Wiki。迁移同样采用预览优先、备份旧材料、校验副本、最后切换配置的流程。
+
+## 一个输入面，多个可消费产物
+
+正式 `wiki/` 可以被浏览器、编辑器、Git 主机和 Obsidian 阅读；图谱与 Manifest 可以被 Agent 使用；
+搜索、Bases、Canvas 则提供不同的召回和治理方式。
+
+先理解[知识网络模型](/knowledge-network/)，再阅读[安全边界](/security/)了解哪些内容可以生成、执行或发布。

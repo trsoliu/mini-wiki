@@ -1,0 +1,84 @@
+---
+title: "The Mini-Wiki knowledge-network model"
+description: "How project, domain, module, source, symbol, and document nodes connect through stable identities and evidence."
+---
+
+# The knowledge-network model
+
+Mini-Wiki does more than replace a directory tree with summaries. It constructs a stable repository graph first,
+then derives Markdown, search, Bases, Canvas, and the Manifest from that graph. Every surface uses the same IDs and
+relationship facts.
+
+## Six core node types
+
+| Node | Meaning | Typical relationship |
+| --- | --- | --- |
+| project | Root identity of the repository | contains domains and modules |
+| domain | Business or technical responsibility boundary | groups modules |
+| module | Explainable implementation unit | owns sources and symbols |
+| source | Source file inside the scan boundary | defines or references symbols |
+| symbol | Traceable class, function, or code entity | explained by documents |
+| document | Canonical knowledge page | references sources, symbols, and documents |
+
+Direction, node type, and paths are recorded in `.mini-wiki/cache/graph.json`. Pages, Bases, and Canvas project those
+facts instead of maintaining conflicting copies.
+
+## Stable identities, not fragile titles
+
+A managed page carries a machine-stable identity:
+
+```yaml
+id: mw:document:domains/core/core
+title: Core
+type: module
+domain: core
+sources:
+  - src/core/app.py
+freshness: current
+quality: basic
+mini_wiki_version: 3.3.0
+```
+
+Titles serve readers; stable IDs serve rebuilds, link validation, and Agent citations. A source-content change does
+not need to change page identity. When a module leaves management, its page moves to a recoverable archive instead
+of disappearing silently.
+
+## One page, three ownership zones
+
+1. **Properties:** known Mini-Wiki fields are CLI-owned; unknown fields remain user-owned.
+2. **generated region:** navigation, sources, relationships, and machine facts are rebuilt by the CLI.
+3. **content region:** expert explanation from an AI Agent or maintainer is preserved byte-for-byte.
+
+```markdown
+<!-- mini-wiki:generated:start -->
+CLI-owned navigation, evidence, and relationships.
+<!-- mini-wiki:generated:end -->
+
+<!-- mini-wiki:content:start -->
+Agent-owned explanation grounded in repository evidence.
+<!-- mini-wiki:content:end -->
+```
+
+Documents without ownership markers are not adopted or overwritten. During legacy migration, `migrate --adopt`
+explicitly wraps the existing body and preserves it inside the Agent-owned region.
+
+## The source-to-explanation evidence chain
+
+A useful explanation should answer:
+
+- Which domain and module own this knowledge?
+- Which sources and symbols support the conclusion?
+- Is every source still in bounds and current?
+- Is the text authored explanation or rebuildable machine fact?
+
+The build plan says what needs enrichment, the graph says what can be cited, and the Manifest says what the current
+build actually manages. The Agent is completing an inspectable evidence chain, not generating a free-form wiki.
+
+## Four views of one graph
+
+- Markdown pages support continuous reading;
+- local search supports fast human and Agent retrieval;
+- Bases turn Properties into governance queues;
+- Canvas exposes deterministic spatial relationships.
+
+See [core features](/en/features/) for each projection, or follow the [five-minute guide](/en/guide/) to build one.

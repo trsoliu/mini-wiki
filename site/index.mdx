@@ -1,0 +1,108 @@
+---
+layout: home
+title: "Mini-Wiki｜把代码仓库变成可追溯的知识网络"
+description: "Mini-Wiki 3.3 为人和 AI Agent 构建确定性、可搜索、可版本化的项目知识网络。"
+---
+
+<section className="mw-hero">
+  <div className="mw-hero-copy">
+    <p className="mw-eyebrow">Source-traceable knowledge network</p>
+    <h1 className="mw-title">代码进入，<em>知识成网。</em></h1>
+    <p className="mw-lede">Mini-Wiki 把项目、领域、模块、源码与符号组织成稳定图谱，让维护者与 AI Agent 从同一份 Markdown 事实出发。</p>
+    <div className="mw-install" aria-label="安装 Mini-Wiki"><span aria-hidden="true">$</span><code>npx skills add trsoliu/mini-wiki</code></div>
+    <div className="mw-actions">
+
+[五分钟上手](/guide/)
+
+[查看 GitHub](https://github.com/trsoliu/mini-wiki)
+
+    </div>
+    <p className="mw-version">Current release <strong>v3.3.0</strong> · Python 3.10+</p>
+  </div>
+
+  <div className="mw-knowledge-graph" role="img" aria-label="项目、领域、模块、源文件和符号组成的知识网络">
+    <svg className="mw-graph-lines" viewBox="0 0 600 560" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M300 80 L120 220 L165 470 M300 80 L480 220 L435 470 M120 220 L480 220 M165 470 L435 470" />
+      <circle cx="300" cy="80" r="5" />
+      <circle cx="120" cy="220" r="5" />
+      <circle cx="480" cy="220" r="5" />
+      <circle cx="165" cy="470" r="5" />
+      <circle cx="435" cy="470" r="5" />
+    </svg>
+    <div className="mw-graph-node mw-graph-project"><span>01 / project</span><strong>Mini-Wiki</strong></div>
+    <div className="mw-graph-node mw-graph-domain"><span>02 / domain</span><strong>knowledge</strong></div>
+    <div className="mw-graph-node mw-graph-module"><span>03 / module</span><strong>graph builder</strong></div>
+    <div className="mw-graph-node mw-graph-source"><span>04 / source</span><strong>graph.py</strong></div>
+    <div className="mw-graph-node mw-graph-symbol"><span>05 / symbol</span><strong>build_graph()</strong></div>
+  </div>
+</section>
+
+<section className="mw-proof-strip" aria-label="Mini-Wiki 3.3 核心证据">
+  <div className="mw-proof-item"><span>01</span><strong>确定性构建</strong></div>
+  <div className="mw-proof-item"><span>02</span><strong>独立中文搜索</strong></div>
+  <div className="mw-proof-item"><span>04</span><strong>原生 Bases</strong></div>
+  <div className="mw-proof-item"><span>03</span><strong>Canvas 视图</strong></div>
+  <div className="mw-proof-item"><span>∞</span><strong>源码可追溯</strong></div>
+</section>
+
+<section className="mw-section">
+  <div className="mw-section-heading"><span className="mw-section-index">01 / workflow</span><h2>每一步都有证据，也能重放。</h2></div>
+  <div className="mw-section-body">
+    <ol className="mw-workflow">
+      <li className="mw-workflow-step"><span>init</span><div><strong>建立边界</strong><p>创建 schema v3 配置，明确扫描范围、正式 Wiki 与本地状态。</p></div></li>
+      <li className="mw-workflow-step"><span>build</span><div><strong>生成稳定骨架</strong><p>CLI 扫描仓库、计算稳定 ID、构建图谱并写入托管 Markdown。</p></div></li>
+      <li className="mw-workflow-step"><span>enrich</span><div><strong>Agent 补充解释</strong><p>只在受保护内容区内，依据源码证据编写专业说明。</p></div></li>
+      <li className="mw-workflow-step"><span>rebuild</span><div><strong>保留人的知识</strong><p>重建导航与事实，同时逐字节保留 Agent 内容和未知 Properties。</p></div></li>
+      <li className="mw-workflow-step"><span>check</span><div><strong>严格校验</strong><p>检查 ID、链接、漂移、孤立页面、Bases 与 Canvas 完整性。</p></div></li>
+      <li className="mw-workflow-step"><span>search</span><div><strong>本地检索</strong><p>使用中文感知索引搜索 Markdown、元数据、图谱与有界源码。</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section className="mw-section">
+  <div className="mw-section-heading"><span className="mw-section-index">02 / two readers</span><h2>一份事实，服务两类读者。</h2></div>
+  <div className="mw-section-body mw-reader-grid">
+    <div className="mw-reader"><h3>给维护者</h3><p>在 Git、编辑器、浏览器或可选的 Obsidian 中阅读、评审和追踪知识变更。</p></div>
+    <div className="mw-reader"><h3>给 AI Agent</h3><p>通过稳定 ID、Properties、Manifest、图谱与受保护区域获得可引用、可验证的上下文。</p></div>
+  </div>
+</section>
+
+<section className="mw-section">
+  <div className="mw-section-heading"><span className="mw-section-index">03 / boundary</span><h2>正式知识与运行状态不混在一起。</h2></div>
+  <div className="mw-section-body mw-boundary-grid">
+    <div className="mw-boundary"><h3><code>wiki/</code></h3><p>正式、可移植、适合提交 Git 的 Markdown、Bases 与 Canvas。</p></div>
+    <div className="mw-boundary"><h3><code>.mini-wiki/</code></h3><p>配置、缓存、事务暂存与可恢复归档；其中多数内容可以重建。</p></div>
+  </div>
+</section>
+
+<section className="mw-section">
+  <div className="mw-section-heading"><span className="mw-section-index">04 / AI surface</span><h2>构建一次，同时发布给人和 Agent。</h2></div>
+  <div className="mw-section-body">
+    <p>本站由 Silen 生成搜索索引、Markdown 路由与模型无关的 AI 发现文件。所有产物都来自同一组受控公开页面。</p>
+    <div className="mw-artifact-list">
+
+[`llms.txt`](/llms.txt) <small>discovery</small>
+
+[`llms-full.txt`](/llms-full.txt) <small>full corpus</small>
+
+[`ai-index.json`](/ai-index.json) <small>structured index</small>
+
+[`Agent Contract`](/.well-known/silen/manifest.json) <small>capabilities</small>
+
+    </div>
+  </div>
+</section>
+
+<section className="mw-final">
+  <span className="mw-section-index">Ready when your repository is</span>
+  <h2>先让知识可重建，再让 AI 可信地使用它。</h2>
+  <p>从安装 Skill 开始，完成第一次构建，再进入知识网络、能力与安全边界的详细手册。</p>
+  <div className="mw-install" aria-label="安装命令"><span aria-hidden="true">$</span><code>npx skills add trsoliu/mini-wiki</code></div>
+  <div className="mw-actions">
+
+[开始构建](/guide/)
+
+[查看 v3.3.0 发布说明](https://github.com/trsoliu/mini-wiki/releases/tag/v3.3.0)
+
+  </div>
+</section>

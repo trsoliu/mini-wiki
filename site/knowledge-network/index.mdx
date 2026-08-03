@@ -1,0 +1,82 @@
+---
+title: "Mini-Wiki 知识网络模型"
+description: "理解项目、领域、模块、源码、符号与文档节点如何通过稳定 ID 和证据关系连接。"
+---
+
+# 知识网络模型
+
+Mini-Wiki 不是把目录树换成一批摘要。它先构建稳定的仓库图谱，再从图谱派生 Markdown、搜索、Bases、
+Canvas 与 Manifest。所有输出共享同一组 ID 和关系事实。
+
+## 六类核心节点
+
+| 节点 | 说明 | 典型关系 |
+| --- | --- | --- |
+| project | 当前仓库的根身份 | 包含 domain 与 module |
+| domain | 业务或技术职责边界 | 聚合 module |
+| module | 可解释的实现单元 | 拥有 source 与 symbol |
+| source | 受扫描边界约束的源码文件 | 定义或引用 symbol |
+| symbol | 类、函数等可追溯代码实体 | 被 document 解释 |
+| document | 正式知识页面 | 引用 source、symbol 与其他 document |
+
+关系方向、节点类型和路径都会进入 `.mini-wiki/cache/graph.json`。页面、Base 与 Canvas 只投影这些事实，
+不会各自维护互相冲突的数据副本。
+
+## 稳定 ID，而不是脆弱标题
+
+托管页面用机器稳定 ID 表示身份，例如：
+
+```yaml
+id: mw:document:domains/core/core
+title: Core
+type: module
+domain: core
+sources:
+  - src/core/app.py
+freshness: current
+quality: basic
+mini_wiki_version: 3.3.0
+```
+
+标题适合人阅读，稳定 ID 适合重建、链接校验和 Agent 引用。源文件内容改变不必导致页面身份变化；
+模块真正退出管理时，相关页面会进入可恢复归档，而不是静默删除。
+
+## 一份页面，三种所有权
+
+1. **Properties：** 已知 Mini-Wiki 字段由 CLI 管理，未知字段保留给用户。
+2. **generated 区域：** 导航、来源、关系和机器事实由 CLI 重建。
+3. **content 区域：** AI Agent 或维护者编写的专业解释逐字节保留。
+
+```markdown
+<!-- mini-wiki:generated:start -->
+CLI-owned navigation, evidence, and relationships.
+<!-- mini-wiki:generated:end -->
+
+<!-- mini-wiki:content:start -->
+Agent-owned explanation grounded in repository evidence.
+<!-- mini-wiki:content:end -->
+```
+
+没有所有权标记的现有文档不会被自动接管或覆盖。需要迁移旧知识时，`migrate --adopt` 会显式包装原有
+正文，并保留在 Agent 内容区。
+
+## 从源码到解释的证据链
+
+一次有效解释应当能够回答：
+
+- 这段知识对应哪个 domain 和 module？
+- 哪些 source 与 symbol 支撑这个结论？
+- 证据是否仍在扫描边界内，是否发生漂移？
+- 这段文字属于 Agent 内容，还是可重建的机器事实？
+
+构建计划提供“需要补充什么”，图谱提供“可以引用什么”，Manifest 提供“本次构建实际管理了什么”。
+因此 Agent 的工作不是自由生成百科，而是补齐一条可检查的证据链。
+
+## 同一图谱的四种读法
+
+- Markdown 页面给维护者连续阅读；
+- 本地搜索给人和 Agent 快速召回；
+- Bases 用 Properties 形成治理工作台；
+- Canvas 用确定性节点和边展示空间关系。
+
+更具体的视图与检索方式见[核心能力](/features/)。要开始建立自己的图谱，请回到[五分钟上手](/guide/)。

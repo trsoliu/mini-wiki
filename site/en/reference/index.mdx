@@ -1,0 +1,139 @@
+---
+title: "Mini-Wiki 3.3 CLI and configuration reference"
+description: "Verified Mini-Wiki 3.3.0 commands, directories, ownership markers, feature switches, and quality gates."
+---
+
+# CLI and configuration reference
+
+This page describes Mini-Wiki **3.3.0**. Project paths default to the current directory and can be supplied explicitly.
+
+## Installation and version
+
+```bash
+npx skills add trsoliu/mini-wiki
+mini-wiki --version
+```
+
+Local development installation:
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -e .
+```
+
+## Initialize, diagnose, and analyze
+
+```bash
+mini-wiki init /path/to/project
+mini-wiki init --force /path/to/project
+mini-wiki doctor --json /path/to/project
+mini-wiki analyze /path/to/project
+mini-wiki changes /path/to/project
+```
+
+`init --force` backs up existing configuration first. `doctor` checks project and optional-integration readiness.
+
+## Build
+
+```bash
+mini-wiki build --dry-run --json /path/to/project
+mini-wiki build --json /path/to/project
+mini-wiki build --full --json /path/to/project
+```
+
+`--dry-run` writes nothing; `--full` rebuilds every managed document; `--json` provides machine-readable results.
+
+## Strict validation
+
+```bash
+mini-wiki check --strict --json /path/to/project
+```
+
+Strict mode validates stable IDs, links, source bounds and drift, ownership markers, orphans, Base schemas, and
+Canvas nodes and edges.
+
+## Local search
+
+```bash
+mini-wiki search "architecture decision" --json /path/to/project
+mini-wiki search "storage" --type module --tag domain/storage --limit 10 /path/to/project
+```
+
+`--limit` accepts 1–200 and defaults to 20. `--type` filters document type; `--tag` matches an exact tag.
+
+## Migration
+
+```bash
+mini-wiki migrate --json /path/to/project
+mini-wiki migrate --apply --json /path/to/project
+mini-wiki migrate --apply --adopt --json /path/to/project
+```
+
+`--apply` runs the previewed v2→v3 copy migration. `--adopt` wraps legacy Markdown bodies in managed content regions.
+
+## Optional Obsidian integration
+
+```bash
+mini-wiki obsidian status --json /path/to/project
+mini-wiki obsidian status --probe --json /path/to/project
+mini-wiki obsidian open /path/to/project
+```
+
+Normal status does not launch the app. `--probe` explicitly permits an Obsidian CLI call; `open` explicitly asks the
+app to open the configured Wiki.
+
+## Instruction-only plugins
+
+```bash
+mini-wiki plugins list /path/to/project
+mini-wiki plugins install owner/repository /path/to/project
+mini-wiki plugins enable plugin-name /path/to/project
+mini-wiki plugins disable plugin-name /path/to/project
+mini-wiki plugins update plugin-name /path/to/project
+mini-wiki plugins uninstall plugin-name /path/to/project
+```
+
+Plugins are disabled by default and supply text guidance only. Scripts, hooks, package managers, and commands must
+never be imported or executed.
+
+## Default directories
+
+```text
+wiki/                         # canonical knowledge
+├── index.md
+├── getting-started.md
+├── architecture.md
+├── knowledge-map.md
+├── domains/
+├── reference/
+├── views/*.base
+└── canvas/*.canvas
+
+.mini-wiki/                   # configuration and state
+├── config.yaml
+├── manifest.json
+├── meta.json
+├── cache/
+├── staging/
+└── archive/
+```
+
+## Managed ownership markers
+
+```markdown
+<!-- mini-wiki:generated:start -->
+CLI-owned facts.
+<!-- mini-wiki:generated:end -->
+
+<!-- mini-wiki:content:start -->
+Agent-owned explanation.
+<!-- mini-wiki:content:end -->
+```
+
+## Feature switches
+
+Schema v3 has independent switches for search, Bases, Canvas, and optional Obsidian integration. Scan settings also
+cover Git ignore rules, explicit exclusions, symlink boundaries, file-size limits, and state/Wiki isolation.
+
+For a first run, complete the [five-minute guide](/en/guide/). For data relationships, see the
+[knowledge-network model](/en/knowledge-network/).

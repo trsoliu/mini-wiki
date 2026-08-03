@@ -1,0 +1,103 @@
+---
+title: "五分钟上手 Mini-Wiki"
+description: "从安装 Skill 到首次构建、Agent 增补、严格校验与本地搜索的完整最短路径。"
+---
+
+# 五分钟上手 Mini-Wiki
+
+Mini-Wiki 3.3 把一个代码仓库转换成仓库根级 `wiki/` 知识网络。CLI 负责可重复的结构和事实，AI Agent
+负责有源码证据的专业解释；二者通过托管 Markdown 的所有权标记协作。
+
+## 1. 安装
+
+推荐先把 Mini-Wiki 安装为 Agent Skill：
+
+```bash
+npx skills add trsoliu/mini-wiki
+```
+
+需要直接使用本地 CLI 时：
+
+```bash
+git clone https://github.com/trsoliu/mini-wiki.git
+cd mini-wiki
+python -m venv .venv
+.venv/bin/pip install -e .
+.venv/bin/mini-wiki --version
+```
+
+要求 Python 3.10 或更高版本。核心构建不需要 Node.js，也不需要 Obsidian。
+
+## 2. 初始化并诊断
+
+在目标项目上创建 schema v3 配置，然后先检查运行环境和边界：
+
+```bash
+mini-wiki init /path/to/project
+mini-wiki doctor --json /path/to/project
+```
+
+`init` 创建 `.mini-wiki/config.yaml`，不会把正式知识写进状态目录。正式文档的默认目标是项目根级
+`wiki/`。
+
+## 3. 先预览，再构建
+
+```bash
+mini-wiki build --dry-run --json /path/to/project
+mini-wiki build --json /path/to/project
+```
+
+dry-run 输出计划但不写文件。正式构建会扫描受允许的源文件、计算稳定 ID、生成图谱、写入托管页面，
+并通过事务暂存后一次性切换结果。
+
+<Note>
+第一次构建后，先查看 `.mini-wiki/cache/build-plan.json` 和 `.mini-wiki/cache/graph.json`。它们告诉 Agent
+哪些页面需要解释、每个结论能追溯到哪些源码，而不是让 Agent 从空白页面猜测。
+</Note>
+
+## 4. 让 Agent 只写内容区
+
+每个托管页面有两个职责区：
+
+```markdown
+<!-- mini-wiki:generated:start -->
+CLI 管理的导航、关系与证据。
+<!-- mini-wiki:generated:end -->
+
+<!-- mini-wiki:content:start -->
+Agent 根据源码证据编写的专业解释。
+<!-- mini-wiki:content:end -->
+```
+
+Agent 只修改 `mini-wiki:content` 区域，不改稳定 ID、来源列表或 CLI 管理的导航。未知 Properties 视为
+用户所有，后续重建会保留。
+
+## 5. 重建并严格校验
+
+```bash
+mini-wiki build --json /path/to/project
+mini-wiki check --strict --json /path/to/project
+```
+
+第二次未发生源码变化的构建应当没有无法解释的差异。严格模式检查 ID、链接、来源漂移、所有权标记、
+孤立页面、Base schema，以及 Canvas 节点和边的完整性。
+
+## 6. 不依赖 Obsidian 的搜索
+
+```bash
+mini-wiki search "架构决策" --json /path/to/project
+mini-wiki search "storage" --type module --tag domain/storage --limit 10 /path/to/project
+```
+
+搜索覆盖 Markdown、Properties、别名、标签、图谱元数据和有界源码文本。SQLite FTS5 只是加速器；没有
+FTS5 时，后备实现保持相同的筛选与排序语义。
+
+## 完成标准
+
+- `wiki/index.md` 与知识地图可以打开；
+- Agent 内容区包含可定位到仓库源码的证据；
+- `mini-wiki check --strict --json` 成功；
+- 第二次无变化构建稳定；
+- 中文或混合语言查询能返回正确页面。
+
+接下来阅读[知识网络模型](/knowledge-network/)，再根据需要查看[核心能力](/features/)与[安全边界](/security/)。

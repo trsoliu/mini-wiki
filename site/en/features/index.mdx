@@ -1,0 +1,73 @@
+---
+title: "Mini-Wiki 3.3 core features"
+description: "Managed Properties, CJK-aware search, four Bases, three Canvas projections, and deterministic builds in one workflow."
+---
+
+# Core features
+
+Mini-Wiki 3.3 converts the strongest repository-relevant ideas from Obsidian into standalone, versionable
+capabilities. Obsidian can enhance exploration, but no core feature depends on the application.
+
+## Managed Markdown and Properties
+
+Properties are the shared metadata model for pages and derived views. The CLI owns IDs, types, domains, sources,
+freshness, quality, and version fields while preserving unknown user Properties. Generated/content markers let
+machine facts and expert explanation evolve independently.
+
+Rebuilds therefore remain safe after human or Agent enrichment: a page is not a disposable generated artifact, and
+authored knowledge does not block structural facts from changing.
+
+## Local CJK-aware search
+
+```bash
+mini-wiki search "插件安装" --json /path/to/project
+mini-wiki search "storage" --type module --tag domain/storage --limit 10 /path/to/project
+```
+
+The index combines Markdown, Properties, aliases, tags, graph metadata, and bounded source text. Deterministic CJK
+unigram/bigram normalization supports Chinese and mixed-language queries.
+
+SQLite FTS5 is an optional accelerator, not a dependency. The fallback preserves query filters, result shape, and
+ranking rules, keeping retrieval available in minimal Python environments.
+
+## Four Bases turn governance into queues
+
+| File | Purpose |
+| --- | --- |
+| `views/modules.base` | module status, freshness, quality, and backlinks |
+| `views/sources.base` | source coverage, ownership, and drift |
+| `views/quality.base` | review and enrichment queue |
+| `views/orphans.base` | pages not yet connected to the graph |
+
+Bases are native declarative views over Properties. They contain no unique knowledge; edit canonical facts and
+rebuild, and the views follow the Markdown.
+
+## Three Canvas views project the same graph
+
+| File | Perspective |
+| --- | --- |
+| `canvas/architecture.canvas` | architectural layers and dependencies |
+| `canvas/domains.canvas` | domains, modules, and responsibilities |
+| `canvas/traceability.canvas` | document-to-source and symbol evidence paths |
+
+Canvas output follows JSON Canvas 1.0. Node IDs, positions, sizes, and edge ordering are deterministic. Canvas is a
+spatial exploration surface, never the only source of truth.
+
+## Deterministic builds and recovery
+
+- dry-run shows the write plan first;
+- staging holds a complete candidate result;
+- canonical Wiki switches only after strict validation;
+- retired managed pages move to `.mini-wiki/archive/`;
+- a second unchanged build should reproduce the same result.
+
+A failed build cannot leave a half-written Wiki. Migration uses the same preview, backup, copy-validation, and final
+configuration-switch discipline.
+
+## One input, several consumable surfaces
+
+Browsers, editors, Git hosts, and Obsidian can read canonical `wiki/`; Agents can use the graph and Manifest; search,
+Bases, and Canvas provide distinct retrieval and governance views.
+
+Start with the [knowledge-network model](/en/knowledge-network/), then read [security](/en/security/) before adding
+external instructions or publishing generated knowledge.

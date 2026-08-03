@@ -1,0 +1,108 @@
+---
+layout: home
+title: "Mini-Wiki | Turn repositories into traceable knowledge networks"
+description: "Mini-Wiki 3.3 builds deterministic, searchable, versioned project knowledge for maintainers and AI agents."
+---
+
+<section className="mw-hero">
+  <div className="mw-hero-copy">
+    <p className="mw-eyebrow">Source-traceable knowledge network</p>
+    <h1 className="mw-title">Code enters. <em>Knowledge connects.</em></h1>
+    <p className="mw-lede">Mini-Wiki connects projects, domains, modules, sources, and symbols in a stable graph so maintainers and AI agents can work from the same Markdown facts.</p>
+    <div className="mw-install" aria-label="Install Mini-Wiki"><span aria-hidden="true">$</span><code>npx skills add trsoliu/mini-wiki</code></div>
+    <div className="mw-actions">
+
+[Start in five minutes](/en/guide/)
+
+[View on GitHub](https://github.com/trsoliu/mini-wiki)
+
+    </div>
+    <p className="mw-version">Current release <strong>v3.3.0</strong> · Python 3.10+</p>
+  </div>
+
+  <div className="mw-knowledge-graph" role="img" aria-label="Knowledge network connecting a project, domain, module, source file, and symbol">
+    <svg className="mw-graph-lines" viewBox="0 0 600 560" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M300 80 L120 220 L165 470 M300 80 L480 220 L435 470 M120 220 L480 220 M165 470 L435 470" />
+      <circle cx="300" cy="80" r="5" />
+      <circle cx="120" cy="220" r="5" />
+      <circle cx="480" cy="220" r="5" />
+      <circle cx="165" cy="470" r="5" />
+      <circle cx="435" cy="470" r="5" />
+    </svg>
+    <div className="mw-graph-node mw-graph-project"><span>01 / project</span><strong>Mini-Wiki</strong></div>
+    <div className="mw-graph-node mw-graph-domain"><span>02 / domain</span><strong>knowledge</strong></div>
+    <div className="mw-graph-node mw-graph-module"><span>03 / module</span><strong>graph builder</strong></div>
+    <div className="mw-graph-node mw-graph-source"><span>04 / source</span><strong>graph.py</strong></div>
+    <div className="mw-graph-node mw-graph-symbol"><span>05 / symbol</span><strong>build_graph()</strong></div>
+  </div>
+</section>
+
+<section className="mw-proof-strip" aria-label="Mini-Wiki 3.3 proof points">
+  <div className="mw-proof-item"><span>01</span><strong>Deterministic builds</strong></div>
+  <div className="mw-proof-item"><span>02</span><strong>Standalone CJK search</strong></div>
+  <div className="mw-proof-item"><span>04</span><strong>Native Bases</strong></div>
+  <div className="mw-proof-item"><span>03</span><strong>Canvas views</strong></div>
+  <div className="mw-proof-item"><span>∞</span><strong>Source traceability</strong></div>
+</section>
+
+<section className="mw-section">
+  <div className="mw-section-heading"><span className="mw-section-index">01 / workflow</span><h2>Every step is evidenced and repeatable.</h2></div>
+  <div className="mw-section-body">
+    <ol className="mw-workflow">
+      <li className="mw-workflow-step"><span>init</span><div><strong>Set the boundaries</strong><p>Create schema v3 configuration for scanning, canonical Wiki content, and local state.</p></div></li>
+      <li className="mw-workflow-step"><span>build</span><div><strong>Generate a stable frame</strong><p>The CLI scans the repository, assigns stable IDs, constructs the graph, and writes managed Markdown.</p></div></li>
+      <li className="mw-workflow-step"><span>enrich</span><div><strong>Add expert explanation</strong><p>The Agent writes only inside the protected content region and cites repository evidence.</p></div></li>
+      <li className="mw-workflow-step"><span>rebuild</span><div><strong>Preserve authored knowledge</strong><p>Navigation and facts update while Agent content and unknown Properties stay byte-for-byte intact.</p></div></li>
+      <li className="mw-workflow-step"><span>check</span><div><strong>Validate strictly</strong><p>Check IDs, links, drift, orphans, Bases, and Canvas integrity.</p></div></li>
+      <li className="mw-workflow-step"><span>search</span><div><strong>Retrieve locally</strong><p>Search Markdown, metadata, graph facts, and bounded source text with CJK-aware normalization.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section className="mw-section">
+  <div className="mw-section-heading"><span className="mw-section-index">02 / two readers</span><h2>One source of truth. Two kinds of reader.</h2></div>
+  <div className="mw-section-body mw-reader-grid">
+    <div className="mw-reader"><h3>For maintainers</h3><p>Read, review, and track knowledge in Git, an editor, a browser, or optional Obsidian.</p></div>
+    <div className="mw-reader"><h3>For AI agents</h3><p>Use stable IDs, Properties, the Manifest, graph facts, and protected regions as verifiable context.</p></div>
+  </div>
+</section>
+
+<section className="mw-section">
+  <div className="mw-section-heading"><span className="mw-section-index">03 / boundary</span><h2>Canonical knowledge stays separate from runtime state.</h2></div>
+  <div className="mw-section-body mw-boundary-grid">
+    <div className="mw-boundary"><h3><code>wiki/</code></h3><p>Portable Markdown, Bases, and Canvas files suitable for version control.</p></div>
+    <div className="mw-boundary"><h3><code>.mini-wiki/</code></h3><p>Configuration, caches, transaction staging, and recoverable archives; most state is rebuildable.</p></div>
+  </div>
+</section>
+
+<section className="mw-section">
+  <div className="mw-section-heading"><span className="mw-section-index">04 / AI surface</span><h2>Build once for humans and agents.</h2></div>
+  <div className="mw-section-body">
+    <p>Silen generates local search, Markdown routes, and model-free AI discovery files from the same curated public pages.</p>
+    <div className="mw-artifact-list">
+
+[`llms.txt`](/llms.txt) <small>discovery</small>
+
+[`llms-full.txt`](/llms-full.txt) <small>full corpus</small>
+
+[`ai-index.json`](/ai-index.json) <small>structured index</small>
+
+[`Agent Contract`](/.well-known/silen/manifest.json) <small>capabilities</small>
+
+    </div>
+  </div>
+</section>
+
+<section className="mw-final">
+  <span className="mw-section-index">Ready when your repository is</span>
+  <h2>Make knowledge rebuildable before asking AI to trust it.</h2>
+  <p>Install the Skill, complete the first build, then explore the knowledge-network, feature, and security manuals.</p>
+  <div className="mw-install" aria-label="Install command"><span aria-hidden="true">$</span><code>npx skills add trsoliu/mini-wiki</code></div>
+  <div className="mw-actions">
+
+[Build your first Wiki](/en/guide/)
+
+[Read the v3.3.0 release](https://github.com/trsoliu/mini-wiki/releases/tag/v3.3.0)
+
+  </div>
+</section>

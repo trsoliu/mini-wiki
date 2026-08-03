@@ -125,3 +125,542 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+.mw-home {
+  width: min(100%, var(--silen-layout-width));
+  margin-inline: auto;
+  padding: clamp(2rem, 6vw, 5.5rem) clamp(1.25rem, 4vw, 3rem) 4rem;
+}
+
+.mw-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(28rem, 1.1fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+  min-height: min(46rem, calc(100svh - var(--silen-nav-height) - 2rem));
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+
+.mw-hero-copy {
+  display: grid;
+  align-content: center;
+  gap: 1.4rem;
+}
+
+.mw-eyebrow,
+.mw-section-index,
+.mw-graph-node span,
+.mw-proof-item span,
+.mw-workflow-step span,
+.mw-artifact-list small,
+.mw-version {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 720;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.mw-eyebrow {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--silen-primary);
+}
+
+.mw-eyebrow::before {
+  width: 1.75rem;
+  height: 1px;
+  background: currentColor;
+  content: '';
+}
+
+.mw-title {
+  max-width: 9ch;
+  margin: 0;
+  font-size: clamp(3.5rem, 8.8vw, 7.8rem);
+  font-weight: 780;
+  letter-spacing: -0.075em;
+  line-height: 0.88;
+  text-wrap: balance;
+}
+
+.mw-title em {
+  color: var(--silen-primary);
+  font-style: normal;
+}
+
+.mw-lede {
+  max-width: 39rem;
+  margin: 0;
+  color: var(--silen-muted-foreground);
+  font-size: clamp(1.08rem, 2vw, 1.34rem);
+  line-height: 1.65;
+}
+
+.mw-install {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 36rem;
+  border: 1px solid var(--silen-border);
+  background: color-mix(in oklab, var(--silen-card) 88%, transparent);
+  padding: 0.95rem 1rem;
+  box-shadow: var(--mini-wiki-shadow);
+}
+
+.mw-install > span {
+  color: var(--silen-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 800;
+}
+
+.mw-install code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--silen-foreground);
+  font-size: 0.88rem;
+}
+
+.mw-actions,
+.mw-actions > p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.mw-actions a {
+  display: inline-flex;
+  min-height: 2.9rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--silen-border);
+  background: var(--silen-card);
+  padding: 0.7rem 1rem;
+  color: var(--silen-foreground);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mw-actions a:first-child {
+  border-color: var(--silen-primary);
+  background: var(--silen-primary);
+  color: var(--silen-primary-foreground);
+}
+
+.mw-actions a:hover {
+  translate: 0 -2px;
+  box-shadow: 0 10px 28px color-mix(in oklab, var(--silen-primary) 16%, transparent);
+}
+
+.mw-version {
+  margin: 0;
+  color: var(--silen-muted-foreground);
+}
+
+.mw-version strong {
+  color: var(--mini-wiki-amber);
+}
+
+.mw-knowledge-graph {
+  position: relative;
+  min-height: 35rem;
+  overflow: hidden;
+  border: 1px solid var(--silen-border);
+  background:
+    radial-gradient(circle at 50% 44%, color-mix(in oklab, var(--silen-primary) 15%, transparent), transparent 38%),
+    color-mix(in oklab, var(--silen-card) 88%, transparent);
+  box-shadow: var(--mini-wiki-shadow);
+  isolation: isolate;
+}
+
+.mw-knowledge-graph::before,
+.mw-knowledge-graph::after {
+  position: absolute;
+  border: 1px solid color-mix(in oklab, var(--silen-primary) 22%, transparent);
+  border-radius: 50%;
+  content: '';
+  inset: 15%;
+}
+
+.mw-knowledge-graph::after {
+  border-style: dashed;
+  inset: 29%;
+}
+
+.mw-graph-lines {
+  position: absolute;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}
+
+.mw-graph-lines path {
+  fill: none;
+  stroke: color-mix(in oklab, var(--silen-primary) 70%, var(--silen-border));
+  stroke-dasharray: 7 7;
+  stroke-width: 1.4;
+  vector-effect: non-scaling-stroke;
+}
+
+.mw-graph-lines circle {
+  fill: var(--mini-wiki-amber);
+}
+
+.mw-graph-node {
+  position: absolute;
+  display: grid;
+  gap: 0.2rem;
+  min-width: 8.6rem;
+  border: 1px solid var(--silen-border);
+  background: var(--silen-card);
+  padding: 0.75rem 0.85rem;
+  box-shadow: 0 12px 30px color-mix(in oklab, var(--silen-foreground) 9%, transparent);
+}
+
+.mw-graph-node::before {
+  position: absolute;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--silen-primary);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--silen-primary) 14%, transparent);
+  content: '';
+  left: -0.25rem;
+  top: 50%;
+  translate: 0 -50%;
+}
+
+.mw-graph-node span {
+  color: var(--silen-muted-foreground);
+  font-size: 0.62rem;
+}
+
+.mw-graph-node strong {
+  font-size: 0.94rem;
+}
+
+.mw-graph-project {
+  border-color: var(--silen-primary);
+  left: 50%;
+  top: 8%;
+  translate: -50% 0;
+}
+
+.mw-graph-domain {
+  left: 8%;
+  top: 35%;
+}
+
+.mw-graph-module {
+  right: 8%;
+  top: 35%;
+}
+
+.mw-graph-source {
+  bottom: 10%;
+  left: 13%;
+}
+
+.mw-graph-symbol {
+  right: 13%;
+  bottom: 10%;
+}
+
+.mw-proof-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-block: 1px solid var(--silen-border);
+}
+
+.mw-proof-item {
+  display: grid;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 1.25rem clamp(0.65rem, 2vw, 1.25rem);
+}
+
+.mw-proof-item + .mw-proof-item {
+  border-left: 1px solid var(--silen-border);
+}
+
+.mw-proof-item span {
+  color: var(--mini-wiki-amber);
+}
+
+.mw-proof-item strong {
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.mw-section {
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.35fr) minmax(0, 1fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  padding-block: clamp(4rem, 8vw, 7.5rem);
+  border-bottom: 1px solid var(--silen-border);
+}
+
+.mw-section-heading {
+  align-self: start;
+}
+
+.mw-section-index {
+  display: block;
+  margin-bottom: 0.8rem;
+  color: var(--silen-primary);
+}
+
+.mw-section h2 {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.7rem);
+  font-weight: 740;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.mw-section-body {
+  min-width: 0;
+}
+
+.mw-section-body > :first-child {
+  margin-top: 0;
+}
+
+.mw-workflow {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mw-workflow-step {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 1rem;
+  border-top: 1px dashed var(--silen-border);
+  padding-block: 1.25rem;
+}
+
+.mw-workflow-step span {
+  color: var(--silen-primary);
+}
+
+.mw-workflow-step strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 1.08rem;
+}
+
+.mw-workflow-step p {
+  margin: 0;
+  color: var(--silen-muted-foreground);
+}
+
+.mw-reader-grid,
+.mw-boundary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.mw-reader,
+.mw-boundary {
+  border-top: 3px solid var(--silen-primary);
+  background: color-mix(in oklab, var(--silen-card) 88%, transparent);
+  padding: 1.5rem;
+}
+
+.mw-boundary:last-child {
+  border-top-color: var(--mini-wiki-amber);
+}
+
+.mw-reader h3,
+.mw-boundary h3 {
+  margin: 0 0 0.8rem;
+  font-size: 1.2rem;
+}
+
+.mw-reader p,
+.mw-boundary p {
+  margin: 0;
+  color: var(--silen-muted-foreground);
+}
+
+.mw-artifact-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.mw-artifact-list > p {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 1rem;
+  margin: 0;
+  border: 1px solid var(--silen-border);
+  background: var(--silen-card);
+  padding: 0.9rem 1rem;
+}
+
+.mw-artifact-list a {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--silen-primary);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.mw-artifact-list small {
+  color: var(--silen-muted-foreground);
+  font-size: 0.6rem;
+}
+
+.mw-final {
+  display: grid;
+  justify-items: center;
+  gap: 1.5rem;
+  padding: clamp(4rem, 9vw, 8rem) 1rem 3rem;
+  text-align: center;
+}
+
+.mw-final h2 {
+  max-width: 16ch;
+  margin: 0;
+  font-size: clamp(2.4rem, 5.5vw, 5rem);
+  letter-spacing: -0.06em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.mw-final p {
+  max-width: 45rem;
+  margin: 0;
+  color: var(--silen-muted-foreground);
+  font-size: 1.05rem;
+}
+
+.mw-hero-copy > *,
+.mw-graph-node,
+.mw-proof-item {
+  animation: mw-enter 620ms both;
+}
+
+.mw-hero-copy > :nth-child(2),
+.mw-graph-domain,
+.mw-proof-item:nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.mw-hero-copy > :nth-child(3),
+.mw-graph-module,
+.mw-proof-item:nth-child(3) {
+  animation-delay: 160ms;
+}
+
+.mw-hero-copy > :nth-child(4),
+.mw-graph-source,
+.mw-proof-item:nth-child(4) {
+  animation-delay: 240ms;
+}
+
+.mw-hero-copy > :nth-child(5),
+.mw-graph-symbol,
+.mw-proof-item:nth-child(5) {
+  animation-delay: 320ms;
+}
+
+@keyframes mw-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 64rem) {
+  .mw-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mw-title {
+    max-width: 11ch;
+  }
+
+  .mw-knowledge-graph {
+    min-height: 30rem;
+  }
+
+  .mw-proof-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mw-proof-item + .mw-proof-item {
+    border-left: 0;
+  }
+
+  .mw-proof-item:nth-child(even) {
+    border-left: 1px solid var(--silen-border);
+  }
+
+  .mw-proof-item:nth-child(n + 3) {
+    border-top: 1px solid var(--silen-border);
+  }
+}
+
+@media (max-width: 44rem) {
+  .mw-home {
+    padding-inline: 1rem;
+  }
+
+  .mw-title {
+    font-size: clamp(3.25rem, 18vw, 5rem);
+  }
+
+  .mw-knowledge-graph {
+    min-height: 31rem;
+  }
+
+  .mw-graph-node {
+    min-width: 7.4rem;
+    padding: 0.65rem;
+  }
+
+  .mw-graph-domain,
+  .mw-graph-source {
+    left: 4%;
+  }
+
+  .mw-graph-module,
+  .mw-graph-symbol {
+    right: 4%;
+  }
+
+  .mw-section {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+  }
+
+  .mw-reader-grid,
+  .mw-boundary-grid,
+  .mw-artifact-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .mw-workflow-step {
+    grid-template-columns: 3.2rem minmax(0, 1fr);
+  }
+}

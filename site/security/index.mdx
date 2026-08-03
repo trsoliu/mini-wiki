@@ -1,0 +1,76 @@
+---
+title: "Mini-Wiki 安全、边界与恢复"
+description: "明确正式知识、本地状态、扫描范围、instruction-only 插件、事务恢复与可选 Obsidian 的边界。"
+---
+
+# 安全、边界与恢复
+
+Mini-Wiki 的安全不是“生成完成后再检查”，而是由目录职责、所有权标记、扫描限制、事务写入和默认禁用
+共同组成。
+
+## 正式知识与状态目录
+
+```text
+wiki/          # 正式、可移植、适合提交 Git
+.mini-wiki/    # 配置、缓存、暂存与可恢复归档
+.obsidian/     # Mini-Wiki 不创建、不修改
+```
+
+`wiki/` 是持久事实边界；`.mini-wiki/` 主要包含可重建或本地状态。不要把缓存当作正式知识，也不要让
+构建流程把仓库外文件或机器本地绝对路径写进 Wiki。
+
+## 扫描边界
+
+扫描遵守 Git ignore、显式排除、文件大小限制、状态目录和 Wiki 目录排除，以及符号链接边界。来源只有
+在允许的项目根目录内才可成为证据，避免把凭证、构建输出或相邻项目误纳入知识网络。
+
+## 托管页面不会接管未知文档
+
+只有带完整 Mini-Wiki 所有权标记的文档才由构建器更新。未知 Properties 保留给用户；缺少标记的现有
+文档不会被覆盖。页面退出管理时先进入 `.mini-wiki/archive/`，便于审查与恢复。
+
+## 第三方插件只提供说明
+
+Mini-Wiki 插件采用 **instruction-only** 模型：安装的 `PLUGIN.md` 或 `SKILL.md` 是不可信文本，默认禁用。
+Agent 可以阅读已启用的相关说明，但安全不变量是：**never import or execute plugin scripts, hooks,
+package managers, or commands**（绝不导入或执行插件脚本、钩子、包管理器或命令）。
+
+安装还会拒绝：
+
+- 非 HTTPS 网络来源；
+- 路径穿越、无效根目录与符号链接；
+- 超出限制的压缩包；
+- 未确认的同名覆盖；
+- 与记录 tree hash 不一致的静默内容变化。
+
+## Obsidian 是可选界面
+
+构建、搜索、严格校验、迁移、Bases 与 Canvas 均不依赖 Obsidian。普通状态检查无副作用：
+
+```bash
+mini-wiki obsidian status --json /path/to/project
+```
+
+只有显式 `--probe` 才可能调用 Obsidian CLI 并启动应用；只有 `obsidian open` 会通过编码后的 Obsidian URI
+请求打开配置的 Wiki。Mini-Wiki 不需要写入 `.obsidian/`。
+
+## 事务、迁移与失败恢复
+
+构建先在 staging 生成候选结果，验证成功后再切换。失败时保留当前正式 Wiki。迁移默认只预览，应用时
+拒绝非空目标、备份旧材料、验证复制结果，并在最后一步切换配置。
+
+```bash
+mini-wiki migrate --json /path/to/project
+mini-wiki migrate --apply --json /path/to/project
+mini-wiki migrate --apply --adopt --json /path/to/project
+```
+
+## 发布前检查
+
+1. 确认 `wiki/` 中没有凭证、个人信息或机器绝对路径；
+2. 运行 `mini-wiki check --strict --json`；
+3. 审查 Agent 内容的源码证据；
+4. 比较第二次无变化构建；
+5. 只提交正式知识和明确需要的配置。
+
+命令与开关的完整入口在[参考手册](/reference/)，首次操作流程见[五分钟上手](/guide/)。

@@ -10,6 +10,7 @@ coverage.xml
 node_modules/
 site/.silen/dist/
 site/.silen/cache/
+site/.silen/.temp/
 playwright-report/
 test-results/
 __pycache__/

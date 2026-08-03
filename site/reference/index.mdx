@@ -1,0 +1,135 @@
+---
+title: "Mini-Wiki 3.3 命令与配置参考"
+description: "Mini-Wiki 3.3.0 的已验证 CLI、目录、所有权标记、功能开关与质量检查速查。"
+---
+
+# 命令与配置参考
+
+本页对应 Mini-Wiki **3.3.0**。命令中的项目路径默认是当前目录，也可以显式传入目标仓库。
+
+## 安装与版本
+
+```bash
+npx skills add trsoliu/mini-wiki
+mini-wiki --version
+```
+
+本地开发安装：
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -e .
+```
+
+## 初始化、诊断与分析
+
+```bash
+mini-wiki init /path/to/project
+mini-wiki init --force /path/to/project
+mini-wiki doctor --json /path/to/project
+mini-wiki analyze /path/to/project
+mini-wiki changes /path/to/project
+```
+
+`init --force` 会先备份已有配置。`doctor` 用于诊断项目和可选集成是否就绪。
+
+## 构建
+
+```bash
+mini-wiki build --dry-run --json /path/to/project
+mini-wiki build --json /path/to/project
+mini-wiki build --full --json /path/to/project
+```
+
+`--dry-run` 不写文件；`--full` 忽略增量判断并重建所有托管文档；`--json` 提供机器可读结果。
+
+## 严格校验
+
+```bash
+mini-wiki check --strict --json /path/to/project
+```
+
+严格模式检查稳定 ID、链接、来源边界与漂移、所有权标记、孤立页面、Base schema，以及 Canvas 节点和边。
+
+## 本地搜索
+
+```bash
+mini-wiki search "架构决策" --json /path/to/project
+mini-wiki search "storage" --type module --tag domain/storage --limit 10 /path/to/project
+```
+
+`--limit` 范围为 1–200，默认 20。`--type` 按文档类型过滤，`--tag` 做精确标签过滤。
+
+## 迁移
+
+```bash
+mini-wiki migrate --json /path/to/project
+mini-wiki migrate --apply --json /path/to/project
+mini-wiki migrate --apply --adopt --json /path/to/project
+```
+
+`--apply` 应用预览过的 v2→v3 复制迁移；`--adopt` 把旧 Markdown 正文包装进托管内容区。
+
+## 可选 Obsidian
+
+```bash
+mini-wiki obsidian status --json /path/to/project
+mini-wiki obsidian status --probe --json /path/to/project
+mini-wiki obsidian open /path/to/project
+```
+
+普通 status 不启动应用。`--probe` 明确允许调用 Obsidian CLI；`open` 明确请求打开配置的 Wiki。
+
+## instruction-only 插件
+
+```bash
+mini-wiki plugins list /path/to/project
+mini-wiki plugins install owner/repository /path/to/project
+mini-wiki plugins enable plugin-name /path/to/project
+mini-wiki plugins disable plugin-name /path/to/project
+mini-wiki plugins update plugin-name /path/to/project
+mini-wiki plugins uninstall plugin-name /path/to/project
+```
+
+插件默认禁用，只提供说明文本；任何脚本、钩子、包管理器或命令都不得导入或执行。
+
+## 默认目录
+
+```text
+wiki/                         # 正式知识
+├── index.md
+├── getting-started.md
+├── architecture.md
+├── knowledge-map.md
+├── domains/
+├── reference/
+├── views/*.base
+└── canvas/*.canvas
+
+.mini-wiki/                   # 配置与状态
+├── config.yaml
+├── manifest.json
+├── meta.json
+├── cache/
+├── staging/
+└── archive/
+```
+
+## 托管标记
+
+```markdown
+<!-- mini-wiki:generated:start -->
+CLI-owned facts.
+<!-- mini-wiki:generated:end -->
+
+<!-- mini-wiki:content:start -->
+Agent-owned explanation.
+<!-- mini-wiki:content:end -->
+```
+
+## 配置能力开关
+
+schema v3 为搜索、Bases、Canvas 与可选 Obsidian 集成提供独立开关。扫描配置还包括 Git ignore、显式排除、
+符号链接边界、文件大小限制，以及 Wiki/状态目录隔离。
+
+如果这是第一次使用，先按[五分钟上手](/guide/)完成完整闭环；数据关系见[知识网络模型](/knowledge-network/)。

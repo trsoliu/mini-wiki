@@ -1,4 +1,13 @@
-import { defineConfig } from '@aicode-nexus/silen'
+import { defineConfig, definePlugin } from '@aicode-nexus/silen'
+
+const isolateSsrRuntime = definePlugin(() => ({
+  name: 'mini-wiki:ssr-isolation',
+  vite: () => ({
+    name: 'mini-wiki:ssr-isolation',
+    // Prevent an ancestor workspace from injecting a second React instance into Silen SSR.
+    config: () => ({ ssr: { noExternal: true } }),
+  }),
+}))
 
 const zhNav = [
   { text: '快速开始', link: '/guide/' },
@@ -59,6 +68,7 @@ export default defineConfig({
   base: '/mini-wiki/',
   siteUrl: 'https://trsoliu.github.io',
   onBrokenLinks: 'error',
+  plugins: [isolateSsrRuntime],
   themeConfig: {
     logo: { src: '/logo.svg', alt: 'Mini-Wiki' },
     search: true,
