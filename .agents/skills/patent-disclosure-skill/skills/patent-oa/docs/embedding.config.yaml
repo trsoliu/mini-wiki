@@ -1,0 +1,37 @@
+# 审查答复 · 向量嵌入配置（仓库模板种子）
+#
+# 运行时默认写入操作系统「文档」目录。
+# 向量模型【可选】：
+#   python skills/patent-oa/tools/config.py skip-vector
+#   python skills/patent-oa/tools/config.py set --preset zhipu
+#   python skills/patent-oa/tools/config.py enable-vector --preset local
+#   python skills/patent-oa/tools/rebuild_vectors.py --confirm
+
+version: 1
+
+user_confirmed: false
+
+# 是否启用向量检索（false=仅标签/字段）
+vector_enabled: false
+
+# 线上 embedding 超时秒数
+embedding_timeout_sec: 30
+
+# 重建成功后写入；变更模型会清空并提示 rebuild
+embedding_fingerprint: ""
+
+preset: zhipu
+provider: openai_compatible
+model: embedding-3
+dimensions: 1024
+
+base_url: https://open.bigmodel.cn/api/paas/v4
+api_key_env: ZHIPUAI_API_KEY
+
+group_id_env: ""
+group_id: ""
+minimax_embed_type: ""
+
+sqlite_path: data/oa_vectors.sqlite
+obsidian_cases_dir: oa/cases
+default_top_k: 5

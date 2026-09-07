@@ -13,11 +13,11 @@ git clone <本仓库 URL> .claude/skills/patent-disclosure-skill
 
 或使用本地路径复制到 `.claude/skills/patent-disclosure-skill`。
 
-运行时环境通常会设置 **`CLAUDE_SKILL_DIR`** 指向该技能目录；`SKILL.md` 中的 `${CLAUDE_SKILL_DIR}/prompts/...` 即解析到此路径。
+命令均相对**本技能仓库根**（含根级 `SKILL.md` 的目录），例如 `python skills/patent-disclosure/tools/image_gen.py`。当前工作区不是该仓库时，先定位技能安装目录再拼接。不要依赖厂商环境变量。
 
 ## Cursor
 
-Cursor 支持 [Agent Skills](https://www.cursor.com/docs/context/skills) 约定：每个技能是一个**子文件夹**，内含根级 `SKILL.md`（`name` 字段须与文件夹名一致，本仓库为 `patent-disclosure-skill`）。可将**本仓库完整内容**（含 `prompts/`、`tools/` 等）放在下列位置之一，重启 Cursor 后在 **Settings → Rules** 中查看是否已被发现；亦可用 Agent 输入 `/` 后选择技能名。
+Cursor 支持 [Agent Skills](https://www.cursor.com/docs/context/skills) 约定：每个技能是一个**子文件夹**，内含根级 `SKILL.md`（`name` 字段须与文件夹名一致，本仓库为 `patent-disclosure-skill`）。可将**本仓库完整内容**（含各 `skills/patent-*` 子包）放在下列位置之一，重启 Cursor 后在 **Settings → Rules** 中查看是否已被发现；亦可用 Agent 输入 `/` 后选择技能名。
 
 ### 用户主目录（全局，所有项目可用）
 
@@ -50,47 +50,154 @@ git clone <本仓库 URL> "$env:USERPROFILE\.cursor\skills\patent-disclosure-ski
 
 ### 与「仅打开文件夹」等价关系
 
-若未使用上述 `skills/` 布局，也可**直接用 Cursor 打开本仓库根目录**作为工作区；此时将 **`CLAUDE_SKILL_DIR`** 理解为「包含 `SKILL.md` 的目录」，prompts 路径为 `./prompts/*.md`，与 `SKILL.md` 示例命令中的 **`${CLAUDE_SKILL_DIR}`** 同义。
+若未使用上述 `skills/` 布局，也可**直接用 Cursor 打开本仓库根目录**作为工作区。分步指令在：
 
-为与 Claude Code 迁移一致，Cursor 也会扫描 **`~/.claude/skills/`**、项目内 **`.claude/skills/`** 等路径；详见 Cursor 官方文档与当前版本设置项。
+- `skills/patent-disclosure/prompts/`（交底；含 `invention/`、`utility_model/`、`design/` 以及填表 / 线稿）
+- `skills/patent-application/prompts/`（申请文件四件套；须指定交底目录）
+- `skills/patent-reader/prompts/`（通俗解读；含本包 `fill_*`）
 
-## 可选依赖
+Cursor 也会扫描 **`~/.claude/skills/`**、项目内 **`.claude/skills/`** 等路径；详见 Cursor 官方文档与当前版本设置项。
 
-若仅使用交底书 Markdown 流程，不必安装 Python。
+## 默认交底需要什么（发明主路径）
 
-若需使用 **`tools/md_to_docx.py`**（Markdown → Word）、**`tools/docx_to_md.py`**（Word → Markdown + 图片）或 **`tools/pptx_to_md.py`**（PPT → Markdown + 图片，供扫描）：
+技能默认按**发明交底**走：定稿要 `.md` + `.docx`，3.2 / 3.4 框图要出 PNG，Step 5 优先国知局检索。这条路径**需要**：
+
+1. **Python 3.9+**（及 pip）
+2. 在技能根目录安装依赖（含 `python-docx`、`playwright` 等）：
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **本机 Google Chrome 或 Microsoft Edge**（推荐，多数电脑已有）。出图与查新共用，**不必**再装 Node / npm / mmdc。
+
+探测是否已能启动浏览器：
 
 ```bash
-pip install -r requirements.txt
+python skills/patent-disclosure/tools/browser.py --probe
 ```
 
-交底书定稿须同时产出 **.md + .docx**，且将 **mermaid**（**3.2 系统框图**与 **3.4 流程图**）经 **`tools/mermaid_render.py`** 转为 PNG 嵌入。**mermaid** 须 **Node.js**：在 **`tools/`** 执行 **`npm install`**（含 **`puppeteer`**）；若 **`mmdc`** 报找不到 Chrome，再执行 **`npx puppeteer browsers install chrome-headless-shell`**。详见 **`tools/README.md`**。
+- `ok=true`：可直接定稿出图、跑国知局检索。
+- 没有 Playwright 包：再执行一次上面的 `pip install -r requirements.txt`。
+- 本机既无 Chrome 也无 Edge：才执行 `python -m playwright install chromium`（整机一次即可）。
 
-## 可选：国知局公布公告站抓取（Step 5 查新优先路径）
+无可用浏览器时，发明仍可先交 **Markdown**（mermaid 围栏保留）；Word 里框图可能先是代码块，补齐浏览器后重跑 `skills/patent-disclosure/tools/mermaid_render.py` 即可。
 
-若需使用 **`tools/cnipa_epub_search.py`**（一步，推荐）或 **`tools/cnipa_epub_crawler.py`** / **`tools/cnipa_epub_parse.py`**（[epub.cnipa.gov.cn](http://epub.cnipa.gov.cn/)，见 `prompts/prior_art_search.md`）：
+公式进 Word 走 **OMML**（`latex2mathml`，已在 `requirements.txt`）。**不要**为默认交底安装 matplotlib。仅当定稿 stderr 出现 `omml_text_fallback`、且用户回复「是」之后，才：
 
 ```bash
-pip install -r tools/requirements-cnipa.txt
-python -m playwright install chromium
+pip install matplotlib
+python skills/patent-disclosure/tools/md_to_docx.py -i 定稿.md -o 定稿.docx --base-dir 定稿目录 --math-render
 ```
 
-**Windows 终端中文**：`cnipa_epub_search.py` / `cnipa_epub_crawler.py` 已对 stdout/stderr 尝试 **UTF-8**（`reconfigure`）。若仍乱码，可在运行前执行 **`chcp 65001`**，或设置环境变量 **`PYTHONUTF8=1`**，以便复制 **`EPUB_HITS_JSON:`** 一行给 Agent 时不误判为失败。
+**实用新型 / 外观**定稿以各类型 `skills/patent-disclosure/prompts/utility_model|design/disclosure_builder.md` 为准：填表产出 `structure_schema`/`appearance_schema` + **`figure_plan.yaml`**，成文只嵌清单入文图（结构图或视图；docx 对实用建议、对外观可选）。不跑发明 mermaid 时，仍建议装 `requirements.txt`（扫 Word/PPT、出 docx）。
 
-与主流程 `requirements.txt` **独立**；未安装时 Step 5 仍可按该 prompt 降级为 **WebSearch**（如 Google 学术）。
+仅在编辑器里**手写** Markdown、完全不跑仓库脚本时，才不必装 Python。
+
+细则见 **`skills/patent-disclosure/tools/README.md`**。
+
+## 可选：STEP 多视角解析（默认关闭）
+
+扫描发现 **`.step` / `.stp`** 时，Agent **成文不中断**；交底 md+docx **落盘后再反问**是否开启。确认前**不安装** CadQuery。仅有 SolidWorks 等原生 CAD、无 STEP 时，在交付回复末尾提示导出中性格式。
+
+先探测 `skills/patent-disclosure/tools/cad-env`（已就绪则**跳过安装**）：
+
+```bash
+python skills/patent-disclosure/tools/cad_venv.py
+python skills/patent-disclosure/tools/bootstrap_cad_venv.py
+python skills/patent-disclosure/tools/run_step_to_views.py --enable-step-parse -i model.step -o outputs/{案件}/cad_views
+```
+
+CadQuery 只进隔离 venv（Python **3.10–3.12**，本机已是 3.11/3.12 不必再装 3.10）。无系统 Cairo 时保留 SVG，用已有 Playwright 无头浏览器截 PNG。CAD 出图**不使用** matplotlib（matplotlib 只用于发明公式 PNG，见上文）。
+
+与主 `requirements.txt` **独立**。细则见 `skills/patent-disclosure/prompts/project_scan.md`「CAD / STEP」、`skills/patent-disclosure/tools/README.md`。
+
+## 外观 / 实用新型线稿（成文前必做）
+
+不问用户。先规划再出图。仅 `PATENT_SKILL_SKIP_LINEART=1` 或用户明确不要线稿才跳过。CAD 投影不是线稿、不得入文。
+
+```bash
+python skills/patent-disclosure/tools/image_gen.py --case-dir outputs/{案件}
+python skills/patent-disclosure/tools/design_lineart_gate.py --case-dir outputs/{案件} --prepare-jobs
+python skills/patent-disclosure/tools/structure_lineart_gate.py --case-dir outputs/{案件} --prepare-jobs
+python skills/patent-disclosure/tools/structure_lineart_compose.py --case-dir outputs/{案件}
+```
+
+流程见 `skills/patent-disclosure/prompts/image_gen.md`、`design_lineart_assist.md`、`structure_lineart_assist.md`、`structure_lineart_compose.md`。结构线稿按 `parts` 写出子 SVG 再拼总图、再 overlay 件号，禁止自创件号。
+
+## 可选：国知局公布公告站抓取（交底查新与著录检索）
+
+若需使用交底轻量查新 **`skills/patent-disclosure/tools/crawl/cnipa_epub_search.py`**（一词一页）或著录检索 **`skills/patent-search/tools/cnipa_search.py`**（[epub.cnipa.gov.cn](http://epub.cnipa.gov.cn/)）：
+
+```bash
+pip install -r skills/patent-disclosure/tools/crawl/requirements-cnipa.txt
+python skills/patent-disclosure/tools/browser.py --probe
+# 仅当 probe 显示无 Chrome/Edge 且无自带 Chromium 时：
+# python -m playwright install chromium
+python skills/patent-disclosure/tools/crawl/cnipa_epub_search.py --type utility_model 卡扣
+# 著录检索：默认只翻 config.yaml 的 max_pages；对话或 --max-pages 可改
+python skills/patent-search/tools/cnipa_search.py --inventor "发明人姓名" \
+  --applicant "申请主体一" \
+  --applicant "申请主体二" \
+  --type all
+```
+
+检索结果落到 `outputs/patent-search/SEARCH-*.md`（版式在 `skills/patent-search/tools/emit_search_report.py`），并打印 `EPUB_SEARCH_MD` / `EPUB_SEARCH_JSON`。只有 `complete: true` 才表示已翻到末页；退出码 `3` 表示部分结果，禁止据此声称“全部”。普通查询不要默认 `--complete`。
+
+**Windows 终端**：定稿 / 查新脚本会把 stdout、stderr 设为 UTF-8，子进程带 `PYTHONUTF8=1`。Agent **以退出码和机读前缀为准**（`EPUB_HITS_JSON:`、`EPUB_SEARCH_JSON:`、`PROBE:`、`MERMAID:`、`DOCX:`、`MATH:`）；stderr 有中文或 PowerShell `NativeCommandError` **不等于**失败。不必先 `chcp 65001`。若仍乱码，可设 **`PYTHONUTF8=1`**，且不要用 **`2>&1`** 把 JSON 混进错误流。
+
+**Windows 终端**：定稿 / 查新脚本会把 stdout、stderr 设为 UTF-8，子进程带 `PYTHONUTF8=1`。Agent **以退出码和机读前缀为准**（`EPUB_HITS_JSON:`、`PROBE:`、`MERMAID:`、`DOCX:`、`MATH:`）；stderr 有中文或 PowerShell `NativeCommandError` **不等于**失败。不必先 `chcp 65001`。若仍乱码，可设 **`PYTHONUTF8=1`**，且不要用 **`2>&1`** 把 JSON 混进错误流。
+
+`playwright` 已写入根目录 `requirements.txt`。若已按上文装过主依赖，**不必**再为查新单独 pip 一遍；`skills/patent-disclosure/tools/crawl/requirements-cnipa.txt` 仅在只装爬虫、不装整份主依赖时使用。未装或探测失败时，Step 5 仍可按该 prompt 降级为 **WebSearch**（如 Google 学术）。
+
+## 可选：申请文件（须显式；须指定交底目录）
+
+把已有交底产出改写成权利要求书、说明书、摘要与黑白附图。不另装依赖（PyYAML + 已有 python-docx / playwright）。不做 TIFF。
+
+```bash
+python skills/patent-application/tools/material_gate.py --case-dir outputs/{案件}
+python skills/patent-application/tools/render_invention_figures.py \
+  --plan outputs/patent-application/{案}/figures/invention_figures.yaml \
+  --out-dir outputs/patent-application/{案}/figures
+python skills/patent-application/tools/audit_claims.py outputs/patent-application/{案}/权利要求书.md
+python skills/patent-application/tools/check_support.py --dir outputs/patent-application/{案}
+python skills/patent-application/tools/emit_application_docx.py --dir outputs/patent-application/{案}
+```
+
+缺材料时门禁退出码为 2，应先回到交底技能补齐。细则见 [skills/patent-application/SKILL.md](skills/patent-application/SKILL.md)。
+
+## 可选：审查答复案例库（默认关闭）
+
+显式触发「审查答复 / 案例入库 / `/oa`」后使用。配置与向量库默认在操作系统**文档**目录：`{Documents}/patent-disclosure-skill/oa/`（`PATENT_OA_HOME` 可覆盖）。**推荐**智谱 `embedding-3`；亦支持 DashScope / MiniMax / 本地 / OpenAI（`config.py set --preset …`）。
+
+```bash
+pip install -r skills/patent-oa/tools/requirements-oa.txt
+# 例：智谱
+# 环境变量 ZHIPUAI_API_KEY=…
+python skills/patent-oa/tools/config.py recommend
+python skills/patent-oa/tools/config.py set --preset zhipu
+# 其他：--preset dashscope|minimax|local|openai
+python skills/patent-oa/tools/ingest_case.py -i path/to/case.md
+python skills/patent-oa/tools/refresh_vault.py   # 刷新 oa 索引 / Bases / 关联 Canvas
+python skills/patent-oa/tools/search_cases.py --query "创造性 区别特征" --defect inventiveness --top-k 5
+# 用户确认采纳某份草稿后，才出陈述正文 Word
+# python skills/patent-oa/tools/emit_opinion_docx.py -i outputs/oa/案/意见陈述_时间戳.md
+```
+
+Obsidian 案例落在 `{vault}/oa/cases/history/`（另有 `pending/`、`drafts/`、`playbooks/`）。与主依赖**独立**。细则见 `skills/patent-oa/prompts/`、`skills/patent-oa/tools/README.md`、[skills/patent-oa/SKILL.md](skills/patent-oa/SKILL.md)。
 
 ## 强烈建议：专利通俗解读 + Obsidian 库
 
-**强烈建议安装并配置 Obsidian**，才能完整体验索引、Canvas 知识图谱、术语网、关系图配色与公开线索旁注。无库时可降级到 `outputs/patent_reader/`，效果会弱一截。
+**强烈建议安装并配置 Obsidian**，才能完整体验索引、Canvas 知识图谱、术语网、关系图配色与公开线索旁注。取证与中间产物写在工作区 `outputs/patent_reader/`；无库时笔记也落在该目录，效果会弱一截。
 
 对话开始前由 Agent 运行探测（也可手动）：
 
 ```bash
-python tools/patent_reader/check_obsidian_env.py
+python skills/patent-reader/tools/vault/check_obsidian_env.py
 # 自动接受唯一/当前打开的库：
-python tools/patent_reader/check_obsidian_env.py --auto-accept
+python skills/patent-reader/tools/vault/check_obsidian_env.py --auto-accept
 # 手动指定并持久化（+ Windows 用户环境变量）：
-python tools/patent_reader/check_obsidian_env.py --set "C:\Users\你\Documents\Obsidian Vault" --setx
+python skills/patent-reader/tools/vault/check_obsidian_env.py --set "C:\Users\你\Documents\Obsidian Vault" --setx
 ```
 
 亦可仅设会话变量：
@@ -104,9 +211,14 @@ $env:PATENT_READER_GLOSSARY_DIR = "Research/术语"
 ```
 
 ```bash
-pip install -r tools/patent_reader/requirements.txt   # PDF：pymupdf
+pip install -r skills/patent-reader/tools/requirements.txt   # PDF：pymupdf
 ```
 
-**首次使用**：解读**入库时会自动**初始化库（CSS、Bases、索引、关系图配色）。用户只需安装 Obsidian、配置库路径，并（可选）在社区插件市场安装 Dataview 等——步骤与插件清单见 **`docs/obsidian-setup-guide.md`**。交付后 Agent 按 **`prompts/obsidian_plugin_guide.md`** 引导可选插件。
+**首次使用**：解读**入库时会自动**初始化库（CSS、Bases、索引、关系图配色）。用户只需安装 Obsidian、配置库路径，并（可选）在社区插件市场安装 Dataview 等——步骤与插件清单见 **`skills/patent-reader/docs/obsidian-setup-guide.md`**。交付后 Agent 按 **`skills/patent-reader/prompts/obsidian_plugin_guide.md`** 引导可选插件。
 
-工具链见 **`tools/patent_reader/README.md`**。
+工具链分层见 **`skills/patent-reader/tools/README.md`**（`shared/` · `extract/` · `analyze/` · `vault/`）。常用入口：
+
+```bash
+python skills/patent-reader/tools/extract/fetch_patent_pdf.py --pub CN… -o outputs/patent_reader/RUN
+python skills/patent-reader/tools/vault/write_patent_obsidian_note.py --help
+```

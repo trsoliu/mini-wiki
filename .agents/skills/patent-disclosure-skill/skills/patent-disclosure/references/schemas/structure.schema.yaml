@@ -1,0 +1,33 @@
+# StructureSchema — 产品形状 / 构造事实合同
+
+用于实用新型交底（发明案写装置结构时也可填）。入文以同目录 `figure_plan.yaml` 为准。
+
+```yaml
+$schema: structure.schema
+version: 1
+mode: disclosure
+source_images: []  # 看过的图（路径或说明）；入文以 figure_plan 为准
+parts:
+  - id: "1"
+    name: ""           # 部件名
+    shape: ""          # 板状/杆状/壳体/鳍片阵列等
+    material_hint: ""  # 可空；unknown 则写 unknown
+relations:
+  - from: "1"
+    to: "2"
+    type: ""           # 卡扣|螺栓|铰接|焊接|一体成型|过盈|粘接|其他
+    where: ""          # 位置
+    seen_in: []        # 可选；figure_plan 的 fig 号，表示哪些图能看见该连接
+spatial: []            # 上下/内外/同轴/阵列等短句
+function_of_structure: []  # 该结构解决什么问题（非纯方法步骤）
+delta_hypothesis: []   # 相对常见结构可能新在哪
+uncertain: []          # 看不清 / 说明书未写明
+not_utility_model_signals: []  # 若更像方法/外观，列于此供分流
+```
+
+## 必填
+
+- `parts`（至少 1；或 `uncertain` 说明无法识出部件）  
+  - 粒度对齐交底部件表：可分离总成可分开编号；**不要**为画图把筋、单颗螺栓、齿形、倒角拆成独立 id  
+- `relations` 或显式 `[]` + 说明  
+- `uncertain` 数组（可为 `[]`）

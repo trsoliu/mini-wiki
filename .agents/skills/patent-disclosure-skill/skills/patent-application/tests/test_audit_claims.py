@@ -1,0 +1,82 @@
+# -*- coding: utf-8 -*-
+from __future__ import annotations
+
+import sys
+import unittest
+from pathlib import Path
+
+PKG = Path(__file__).resolve().parents[1]
+if str(PKG / "tools") not in sys.path:
+    sys.path.insert(0, str(PKG / "tools"))
+
+from audit_claims import audit, summarize
+
+
+GOOD = """
+1. 一种壳体装配方法，包括提供电机腔壳体；其特征在于，将减速器腔与电机腔隔开，并使电机沿花键轴向抽拔。
+2. 根据权利要求1所述的方法，其特征在于，冷却水套仅布置于电机腔外壁。
+"""
+
+INDEPENDENT_REF = """
+1. 一种装置，根据权利要求2所述的装置，其特征在于包括壳体。
+2. 一种装置，其特征在于包括盖板。
+"""
+
+SKIP_NUMBERS = """
+1. 一种方法，其特征在于包括采集步骤以及处理步骤。
+3. 根据权利要求1所述的方法，其特征在于处理步骤输出缺陷检测结果。
+"""
+
+PROMO = """
+1. 一种方法，其特征在于采用新算法从而显著提高检测精度并得到缺陷检测结果。
+"""
+
+
+class AuditClaimsTests(unittest.TestCase):
+    def test_good_claims_pass(self) -> None:
+        findings = audit(GOOD)
+        errors, _warnings = summarize(findings)
+        self.assertEqual(errors, 0)
+
+    def test_independent_cannot_reference(self) -> None:
+        codes = {item.code for item in audit(INDEPENDENT_REF) if item.level == "ERROR"}
+        self.assertIn("INDEPENDENT_REFERENCE", codes)
+        self.assertIn("FORWARD_REFERENCE", codes)
+
+    def test_number_sequence(self) -> None:
+        codes = {item.code for item in audit(SKIP_NUMBERS) if item.level == "ERROR"}
+        self.assertIn("NUMBER_SEQUENCE", codes)
+
+    def test_promo_is_warning_only(self) -> None:
+        findings = audit(PROMO)
+        errors, warnings = summarize(findings)
+        self.assertEqual(errors, 0)
+        self.assertGreaterEqual(warnings, 1)
+        self.assertTrue(any(item.code == "RESULT_LANGUAGE" for item in findings))
+
+    def test_placeholder_is_error(self) -> None:
+        text = "1. 一种方法，其特征在于[待确认：步骤未写]包括采集。\n"
+        codes = {item.code for item in audit(text) if item.level == "ERROR"}
+        self.assertIn("PLACEHOLDER", codes)
+
+    def test_second_independent_system_skips_no_reference(self) -> None:
+        text = """
+1. 一种调度方法，其特征在于包括以下步骤：步骤一，采集节点指标。
+2. 一种调度系统，其特征在于包括配置中心和调度器。
+"""
+        findings = audit(text)
+        self.assertFalse(
+            any(item.code == "NO_REFERENCE" for item in findings),
+            msg=[(item.claim, item.code) for item in findings],
+        )
+
+    def test_dependent_without_reference_still_warns(self) -> None:
+        text = """
+1. 一种调度方法，其特征在于包括以下步骤：步骤一，采集节点指标。
+2. 进一步，冷却水套仅布置于电机腔外壁并完成装配。
+"""
+        self.assertTrue(any(item.code == "NO_REFERENCE" for item in audit(text)))
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,40 @@
+# ApplicationPlan — 申请文件策略备忘（内部，不入正式三件）
+
+```yaml
+$schema: application_plan
+version: 1
+patent_type: invention   # invention | utility_model | design
+case_dir: ""             # 用户指定的交底目录
+disclosure: ""           # 门禁用到的交底文件
+status: draft            # draft | incomplete
+problem: ""              # 技术问题一句
+means: ""                # 相互配合的手段一句
+effect: ""               # 具体效果一句，避免「性能优异」
+principal_claim: ""      # 独立权项保护对象，如 一种…方法 / 一种…装置
+fallback: []             # 拟写入从属的要点（须能在交底找到）
+open_questions: []       # 只进问题清单，不进正式权要
+suggested_abstract_figure: ""  # 图 2 / 主流程图
+claim_tree:
+  independent:
+    - id: 1
+      kind: method       # method | system | product
+      essential: []      # 必要技术特征短句；方法与步骤一…同序
+  dependents:
+    - id: 2
+      refers: [1]
+      layer: preferred_param  # preferred_param | branch | system_map | embodiment
+      aligns_embodiment: "第一种"  # 第一种 / 第二种 / 空
+      point: ""
+named_figures: []        # 用户点名入文的源图路径；未点名则为 []
+```
+
+`claim_tree.dependents[].layer`：
+
+| 值 | 写入从属的内容 | 实施例 |
+|----|----------------|--------|
+| `preferred_param` | 交底已有的优选参数、阈值、窗口等 | 第一种实施例的数值例 |
+| `branch` | 交底已有的分支、回环、例外 | 第二种或分支走查 |
+| `system_map` | 方法独权之后的系统/模块对应 | 结合图 1 |
+| `embodiment` | 仅实施例展开、不进独权的实施细节 | 对应「第一种/第二种」 |
+
+独权只写必要技术特征。交底第五章条目不要整段译成从属；排进上表一层后再写。`named_figures` 仅记录用户点名或交底已入文的额外示意图，禁止扫工程素材目录。

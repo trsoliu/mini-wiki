@@ -1,0 +1,68 @@
+filters:
+  and:
+    - 'file.inFolder("{{OA_DIR}}")'
+
+properties:
+  case_id:
+    displayName: 案例ID
+  status:
+    displayName: 状态
+  domain:
+    displayName: 领域
+  outcome:
+    displayName: 结果
+  patent_type:
+    displayName: 专利类型
+  notice_kind:
+    displayName: 通知种类
+
+views:
+  - type: table
+    name: 全部案例
+    order:
+      - file.name
+      - case_id
+      - status
+      - domain
+      - outcome
+      - patent_type
+    filters:
+      and:
+        - 'file.inFolder("{{OA_DIR}}")'
+        - 'file.ext == "md"'
+        - 'file.name != "_OA索引"'
+  - type: table
+    name: 历史案
+    order:
+      - case_id
+      - domain
+      - outcome
+    filters:
+      and:
+        - 'file.inFolder("{{OA_DIR}}/cases/history")'
+  - type: table
+    name: 待答复
+    order:
+      - file.name
+      - status
+    filters:
+      and:
+        - 'file.inFolder("{{OA_DIR}}/pending")'
+  - type: table
+    name: 草稿
+    order:
+      - file.name
+    filters:
+      and:
+        - 'file.inFolder("{{OA_DIR}}/drafts")'
+  - type: cards
+    name: 卡片
+    order:
+      - case_id
+      - status
+      - domain
+    filters:
+      and:
+        - 'file.inFolder("{{OA_DIR}}")'
+        - 'file.ext == "md"'
+        - 'file.name != "_OA索引"'

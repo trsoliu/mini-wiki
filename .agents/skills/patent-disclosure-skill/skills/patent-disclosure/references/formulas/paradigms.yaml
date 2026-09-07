@@ -1,0 +1,242 @@
+# 发明交底 · 公式起草菜单（可外挂扩展）
+#
+# 默认路径：references/formulas/paradigms.yaml
+# 覆盖（后者覆盖同 id）：
+#   1) 环境变量 PATENT_FORMULA_PARADIGMS=绝对或相对路径
+#   2) 案件目录 formula_paradigms.yaml / formula_paradigms.json
+#
+# 仅当 formula_plan 中 origin: agent（材料没有对应式）时从本文件选题。
+# 材料里已有的公式须 origin: source 保真转录，禁止为匹配本库而改写。
+
+version: 1
+
+rules:
+  forbid_accents: true
+  # 禁止在交底公式中使用：\tilde \hat \bar \breve \vec 等装饰音（Word/PNG 易渲成「怪符号」）
+  forbid_accent_commands:
+    - "\\tilde"
+    - "\\hat"
+    - "\\bar"
+    - "\\breve"
+    - "\\vec"
+    - "\\check"
+    - "\\grave"
+    - "\\acute"
+  max_free_symbols: 12
+  require_numeric_example: true
+  prefer_separate_trigger_eq: true
+  # 打分与限频触发宜分式 (1)/(2)，勿拧成一项量纲混乱的巨型单式
+  notes_zh: |
+    各项相加前须无量纲或已归一；防零除用与分母同量纲的 ε，禁止裸写 max(1, 内存MB)。
+    「平滑」用独立符号（如 A）+ 文字说明，或选 ema_smooth / window_mean 范式，勿用波浪号。
+
+paradigms:
+  - id: weighted_sum
+    name_zh: 加权和打分
+    tags: [score, match, fusion]
+    when_zh: 多维特征合成一个匹配分、置信度或优先级分
+    latex: 's = \\alpha x + \\beta y + \\gamma z - \\lambda n'
+    notes_zh: x,y,z 先归一到相近量级；α,β,γ,λ≥0 且建议和为 1 或在参数表给范围
+
+  - id: weighted_sum_unit
+    name_zh: 先归一再加权
+    tags: [score, normalize]
+    when_zh: 原始量纲不一（比例、容量、计数混用）时先映射到 [0,1] 再加权
+    latex: 's = \\alpha \\hat{x} + \\beta \\hat{y} + \\gamma \\hat{z}'
+    # 注意：此处 \hat{x} 表示「归一化后的 x」，若 rules.forbid_accents=true，成文时改写为 x^{\\mathrm{norm}} 或 X
+    render_latex: 's = \\alpha x^{\\mathrm{norm}} + \\beta y^{\\mathrm{norm}} + \\gamma z^{\\mathrm{norm}}'
+    notes_zh: 成文禁用 \\hat；用上标 \\mathrm{norm} 或大写 X,Y,Z 表示归一化量
+
+  - id: ratio_clip
+    name_zh: 比率截断
+    tags: [capacity, match]
+    when_zh: 余量/需求、命中率、完成度等「越多越好但封顶」
+    latex: 's = \\min\\big(1,\\, a / \\max(\\varepsilon, b)\\big)'
+    notes_zh: ε 与 b 同量纲；a,b>0 时的语义在符号表写清
+
+  - id: product_fit
+    name_zh: 乘积适配
+    tags: [match, resource]
+    when_zh: 需求权重与可用比例同向促进（如需求高且节点空闲）
+    latex: 's = b \\cdot A'
+    notes_zh: 通常 b,A∈[0,1]；多维时对每维求积再加权和
+
+  - id: min_bucket
+    name_zh: 多维木桶（取最小）
+    tags: [match, bottleneck]
+    when_zh: 任一维不足即拖垮整体（短板效应）
+    latex: 's = \\min(u, v, w)'
+    notes_zh: u,v,w 为各维适配分，均已归一
+
+  - id: distance_similarity
+    name_zh: 距离转相似度
+    tags: [similarity, retrieval, vector]
+    when_zh: 画像/特征向量接近程度；检索、聚类、匹配
+    latex: 's = 1 / (1 + \\| r - c \\|_2)'
+    notes_zh: 也可用余弦相似度 \\cos(r,c)；在符号表固定选用哪一种
+
+  - id: cosine_sim
+    name_zh: 余弦相似度
+    tags: [similarity, vector]
+    when_zh: 方向相近即可、幅度不敏感
+    latex: 's = (r^{\\top} c) / (\\|r\\|_2 \\|c\\|_2 + \\varepsilon)'
+    notes_zh: ε 防零向量；取值约 [-1,1] 或经裁剪到 [0,1]
+
+  - id: penalty_load
+    name_zh: 负载/过载惩罚
+    tags: [score, schedule]
+    when_zh: 主分之后扣除在途量、拥塞、违规次数
+    latex: 's = s_0 - \\lambda n'
+    notes_zh: 常与 weighted_sum 组合：先算 s0 再罚；λ 与 n 的量纲在表中说明
+
+  - id: ranking_fuse
+    name_zh: 排序融合分
+    tags: [rank, queue]
+    when_zh: 业务静态优先级与动态匹配分合并后排序
+    latex: 'r = \\omega p + (1-\\omega) s'
+    notes_zh: p 为静态优先级分，s 为动态匹配分，ω∈[0,1]
+
+  - id: ema_smooth
+    name_zh: 指数滑动平滑
+    tags: [smooth, timeseries]
+    when_zh: 对采集指标做平滑，避免抖动（代替 \\tilde 装饰）
+    latex: 'A_t = \\rho A_{t-1} + (1-\\rho) a_t'
+    notes_zh: ρ∈(0,1)；成文用 A 表示平滑后画像，禁止 \\tilde{a}
+
+  - id: window_mean
+    name_zh: 窗口均值（签名）
+    tags: [aggregate, trigger]
+    when_zh: 用窗口统计量作为「分布签名」σ，供限频比较
+    latex: '\\sigma = \\frac{1}{W} \\sum_{k=1}^{W} s_{(k)}'
+    notes_zh: s_{(k)} 为窗口内第 k 个任务的代表分（如最优可达匹配分）；勿只写 σ 不定义
+
+  - id: window_quantile
+    name_zh: 窗口分位数
+    tags: [aggregate, trigger]
+    when_zh: 关注尾部（饥饿/极端低分）而非均值
+    latex: '\\sigma = Q_{q}\\big(\\{s_{(k)}\\}_{k=1}^{W}\\big)'
+    notes_zh: q 如 0.1/0.5；在参数表给出 q
+
+  - id: single_threshold
+    name_zh: 单阈值触发
+    tags: [trigger, control]
+    when_zh: 超时、超限、超温等单一条件动作
+    latex: '\\Delta t \\ge T_r'
+    notes_zh: 触发后动作用文字步骤写清；可与打分式分列
+
+  - id: dual_threshold
+    name_zh: 双条件触发（限频）
+    tags: [trigger, debounce]
+    when_zh: 防抖/限频：间隔够长且变化够大才重算或重排
+    latex: "\\Delta t \\ge T_r ; |\\sigma - \\sigma'| \\ge \\Delta s"
+    notes_zh: 逻辑「且」写在公式外；σ 须来自 window_mean / window_quantile 等已定义范式
+
+  - id: hysteresis_band
+    name_zh: 滞回带
+    tags: [trigger, control]
+    when_zh: 避免阈值附近来回切换（开启/关闭用不同阈值）
+    latex: '开: x \\ge \\tau_{\\mathrm{hi}} ;\\ 关: x \\le \\tau_{\\mathrm{lo}}'
+    notes_zh: τ_hi > τ_lo；用文字说明状态机
+
+  - id: piecewise_linear
+    name_zh: 分段线性
+    tags: [map, score]
+    when_zh: 不同区间不同斜率（如低负载鼓励、高负载抑制）
+    latex: 's = \\begin{cases} k_1 x + c_1 & x < \\tau \\\\ k_2 x + c_2 & x \\ge \\tau \\end{cases}'
+    notes_zh: 分段式可用 cases；交底中补充边界连续或可接受跳变说明
+
+  - id: exponential_decay
+    name_zh: 时间衰减权重
+    tags: [time, weight]
+    when_zh: 越新样本越重要；老化、冷却
+    latex: 'w(\\Delta t) = e^{-\\Delta t / T_c}'
+    notes_zh: T_c>0 为时间常数；与加权和组合时 w 作系数
+
+  - id: update_rule
+    name_zh: 迭代更新
+    tags: [iterate, control]
+    when_zh: 每轮根据误差/反馈修正参数或配额
+    latex: 'x \\leftarrow x + \\eta \\cdot e'
+    notes_zh: η 为步长，e 为误差或梯度代理；给出裁剪范围防发散
+
+  - id: soft_clip
+    name_zh: 软饱和/挤压
+    tags: [normalize]
+    when_zh: 把实数压到 (0,1) 作概率或权重
+    latex: 'y = 1 / (1 + e^{-k(x-x_0)})'
+    notes_zh: 给出 k,x0 的含义与典型范围
+
+  - id: evidence_logodds
+    name_zh: 对数证据合成
+    tags: [fusion, confidence]
+    when_zh: 多路证据强弱合成（非严格贝叶斯亦可）
+    latex: 'L = L_0 + \\sum_m \\omega_m \\ell_m'
+    notes_zh: ℓ_m 为第 m 路证据分；说明与概率的换算是否需要
+
+  - id: constraint_box
+    name_zh: 盒式约束组
+    tags: [constraint]
+    when_zh: 可行域用一组不等式描述（不一定合成单分）
+    latex: 'a \\ge a_{\\min},\\; b \\le b_{\\max},\\; c \\in [c_{\\mathrm{lo}}, c_{\\mathrm{hi}}]'
+    notes_zh: 主流程用文字「满足约束则派发」；打分另选 weighted_sum 等
+
+  - id: argmax_assign
+    name_zh: 最大分指派
+    tags: [assign, schedule]
+    when_zh: 任务选节点 / 样本选类别
+    latex: 'j^{\\star} = \\arg\\max_{j \\in J} s_{ij}'
+    notes_zh: 与打分范式配对；并列最高分时的平局规则用文字写
+
+  - id: topk_window
+    name_zh: 队首 Top-K 窗口
+    tags: [queue, schedule]
+    when_zh: 仅对队首 W 个任务重算/重排以控制开销
+    latex: 'K = \\{1,\\ldots,W\\}'
+    notes_zh: 本身不是打分；与 ranking_fuse / dual_threshold 联用
+
+  - id: stoichiometric_reaction
+    name_zh: 化学计量反应
+    tags: [chemistry, stoich]
+    when_zh: 反应式、配平、产物生成（勿套用加权和打分范式）
+    latex: '\\ce{aA + bB -> cC}'
+    notes_zh: 左右原子守恒；实施例摩尔比与计量系数同形。成文可用 \\ce{} 或 \\mathrm{H_2O}，勿把反应写成 weighted_sum
+
+  - id: composition_mass_frac
+    name_zh: 组成质量分数
+    tags: [chemistry, composition]
+    when_zh: 配方、合金、浆料各组分质量分数
+    latex: 'w_i = m_i / (m_1 + m_2 + m_3)'
+    notes_zh: 各 w_i∈(0,1]，和为 1；numeric_example 可给各 w 或各 m。求和项多时手算即可
+
+  - id: concentration_dilute
+    name_zh: 稀释浓度
+    tags: [chemistry]
+    when_zh: 溶液配制、稀释前后溶质物质的量守恒
+    latex: 'c_1 V_1 = c_2 V_2'
+    notes_zh: 仅稀释、无反应消耗时成立；c、V 量纲在符号表写清
+
+  - id: si_linear_combo
+    name_zh: 同量纲线性组合
+    tags: [physics, si]
+    when_zh: 物理量相加（力、功率等同量纲项）
+    latex: 'y = a + b + c'
+    notes_zh: 相加各项须同 SI 量纲族；不同量纲须先归一。符号表 unit_zh 供粗检
+
+# 组合建议（非强制；Agent 可在 formula_plan.combo 中引用）
+combos:
+  - id: match_then_rate_limit
+    name_zh: 匹配打分 + 限频重排
+    paradigm_ids: [weighted_sum_unit, penalty_load, window_mean, dual_threshold, topk_window]
+    when_zh: 资源画像匹配调度、防抖重排类发明（如批任务调度）
+  - id: retrieve_then_fuse
+    name_zh: 向量相似 + 加权融合
+    paradigm_ids: [cosine_sim, weighted_sum, single_threshold]
+    when_zh: 检索、推荐、多路召回融合
+  - id: control_hysteresis
+    name_zh: 检测 + 滞回控制
+    paradigm_ids: [ema_smooth, hysteresis_band, update_rule]
+    when_zh: 阈值告警、自动扩缩容、开关防抖
+  - id: chem_reaction_batch
+    name_zh: 反应计量 + 组成
+    paradigm_ids: [stoichiometric_reaction, composition_mass_frac]
+    when_zh: 材料配方、化工反应交底

@@ -1,0 +1,82 @@
+# OA 案例笔记合同
+
+落盘（方案 C · Obsidian 优先）：
+
+| 状态 `status` | 目录 |
+|---------------|------|
+| `history`（默认，可检索） | `{vault}/oa/cases/history/{case_id}.md` |
+| `pending` | `{vault}/oa/pending/{case_id}.md` |
+| `draft` | `{vault}/oa/drafts/{case_id}.md` |
+
+无库时根目录改为 `{Documents}/patent-disclosure-skill/oa/`。  
+
+经验手册：`{vault}/oa/playbooks/{slug}/`（`oa_playbook.schema.yaml`），**不进**案例向量。  
+
+库根固定生成：`_OA索引.md`、`_OA看板.base`、`_OA关联.canvas`（入库 / `refresh_vault.py` 刷新）。  
+
+向量库默认：`{Documents}/patent-disclosure-skill/oa/data/oa_vectors.sqlite`。  
+配置：`{Documents}/patent-disclosure-skill/oa/embedding.config.yaml`（须用户确认后写入；仓库 `docs/oa/` 仅为模板）。
+
+```yaml
+$schema: oa_case
+version: 1
+case_id: ""                      # 稳定 id，建议 slug
+title: ""
+status: history                  # history | pending | draft
+patent_type: invention           # invention | utility_model | design
+statutes: []                     # 如 ["专利法第22条第3款", "实施细则第23条"]
+defect_types: []                 # 如 [novelty, inventiveness, clarity, support, disclosure, formality, other]
+domain: ""                       # 技术领域短标签
+notice_kind: office_action       # office_action | correction | rejection | other
+outcome: unknown                 # granted | rejected | pending | withdrawn | unknown | amended_then_granted
+strategy: []                     # argue_only | amend_claims | amend_spec | correction | other
+compare_refs: []                 # 对比文件公开号列表（可脱敏）
+related_cases: []                # 相关案例 case_id 列表（双链）
+compare_patent_notes: []         # 可选：对比文件已有解读笔记的库内路径（自动回写）
+redacted: true
+tags: []                         # Obsidian 标签建议，如 oa/inventiveness、oa/status/history
+source_paths: []                 # 原始材料路径（入库后可清空敏感路径）
+created_at: ""
+updated_at: ""
+```
+
+## 笔记正文建议结构
+
+```markdown
+---
+# frontmatter 字段同上
+---
+
+> 导航：[[oa/_OA索引|_OA索引]] · [[oa/_OA关联.canvas|关联 Canvas]] · [[oa/_OA看板.base|看板]]
+
+# {title}
+
+## 通知书要点
+…
+
+## 策略
+…
+
+## 陈述要点
+…
+
+## 修改摘要（若有）
+…
+
+## 结果
+…
+
+## 关联案
+- [[oa/cases/history/other-id|other-id]]
+
+## 对比文件
+- `CN…` → [[Research/Patents/…|解读笔记]]   # 有解读笔记才链
+```
+
+## 硬性规则
+
+- 入库前须脱敏（客户名、具体未公开参数等）；`redacted: true`。  
+- 仅 `status: history` 进入标签/向量检索库；`pending` / `draft` 只落 Obs 笔记。  
+- 检索先按 `statutes` / `defect_types` / `patent_type` 过滤，再向量 Top-K。  
+- 生成答复须引用命中案例并展示差异；不得无检索空写。  
+- 刷新本地库：`python skills/patent-oa/tools/refresh_vault.py`。
