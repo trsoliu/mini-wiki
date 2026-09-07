@@ -6,25 +6,34 @@ tmp/
 ~$*
 
 # 示例专利材料（仅提交 README 中的镜像链接；PDF/TXT 等本地自备）
-examples/example_patent_reader/**
-!examples/example_patent_reader/README.md
+skills/patent-reader/examples/example_patent_reader/**
+!skills/patent-reader/examples/example_patent_reader/README.md
 
-# 国知局抓取结果缓存（tools/）
-tools/_last_result*.html
+# 国知局抓取结果缓存
+skills/patent-disclosure/tools/crawl/_last_result*.html
+skills/patent-disclosure/tools/crawl/_last_home.html
+skills/patent-search/tools/_last_result*.html
+skills/patent-reader/tools/crawl/_last_result*.html
 
 # Python / tools
-tools/node_modules/
+**/node_modules/
 __pycache__/
 *.py[cod]
 .pyo
 .venv/
 venv/
+.venv-step310/
+skills/patent-disclosure/tools/cad-env/
 *.egg-info/
 
-# math_render 联调产物（tests/test_math_render.py 运行时生成）
-tests/_math_test_figures/
-tests/_math_test_out.md
-tests/_math_test_bad.md
+# math_render 联调产物
+skills/patent-disclosure/tests/_math_test_figures/
+skills/patent-disclosure/tests/_math_test_out.md
+skills/patent-disclosure/tests/_math_test_bad.md
+
+# 技能市场上架限制：不得提交 Obsidian Bases（*.base）；源稿用 *.base.yaml，拷库时再写成 .base
+skills/patent-reader/assets/obsidian/*.base
+skills/patent-oa/assets/obsidian/*.base
 
 # OS
 .DS_Store

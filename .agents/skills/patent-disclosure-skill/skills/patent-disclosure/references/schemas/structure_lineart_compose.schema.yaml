@@ -1,0 +1,58 @@
+# StructureLineartCompose — 实用新型结构线稿「按件拼装」合同
+#
+# 每个可见部件一个可单独打开的子 SVG（parts/{视}_{id}.svg），总图相对引用后再叠成总图。
+# 件号仍由 structure_callout_overlay 注入，不压扁零件层、不把整图 base64+clip 进总 SVG。
+#
+# 落盘：案件目录 structure_lineart_compose.yaml
+# 指令：prompts/structure_lineart_compose.md
+# 实现：tools/structure_lineart_compose.py
+
+$schema: structure_lineart_compose
+version: 1
+structure_ref: structure_schema.yaml
+canvas:
+  width: 1600
+  height: 1200
+  background: "#ffffff"
+views:
+  - view_name: 总装立体图
+    layout: assembly          # assembly | exploded
+    source_image: lineart_assist/总装立体图_structure_lineart.png
+    output_svg_path: lineart_assist/总装立体图_composed.svg
+    parts:
+      - id: "1"
+        name: 壳体
+        source: crop          # crop | image | placeholder
+        slot: [0.08, 0.10, 0.72, 0.78]   # x, y, w, h 归一化到画布 0..1
+        crop_box: [0.08, 0.10, 0.72, 0.78]  # 仅 crop：在 source_image 上的框，0..1
+        z_index: 1
+        image_path: ""        # 仅 image：该件小图（PNG/JPEG）
+      - id: "2"
+        name: 卡扣
+        source: crop
+        slot: [0.55, 0.40, 0.28, 0.22]
+        crop_box: [0.55, 0.40, 0.28, 0.22]
+        z_index: 2
+
+# 字段
+# - canvas.width/height：拼装 SVG 的像素画布；缺省时若有 source_image 则用其尺寸。
+# - layout=assembly：槽位可重叠（总装遮挡）；优先 source=crop。
+# - layout=exploded：槽位尽量不重叠；优先 source=image（每件单独生小图）。
+# - slot 缺省：assembly 则跟 crop_box 或铺满画布；exploded 则自动网格。
+# - z_index 小的先画（在下层）。
+# - uncertain 中的件不得用 crop/image 冒充已绘结构，只用 placeholder 或不列入。
+#
+# 粒度：视 → 件号 → 件号层。parts[] 与本视可见件号一一对应；禁止自创子件号，
+# 禁止把同一 id 再拆成筋/齿/螺栓圈/剖面线。爆炸视只对 schema 已分开的可分离件
+# 用 source=image；壳体等仍一层。
+#
+# 硬约束
+# - id/name 必须与 StructureSchema.parts 一致；同一视图不得重复 id。
+# - slot / crop_box 为 4 个数 [x,y,w,h]，均在 0..1，w>0, h>0。
+# - source=crop 时该视须有存在的 source_image。
+# - source=image 时 image_path 须指向存在的 PNG/JPEG。
+# - 输出：parts/{视}_{id}.svg（可单独打开）+ 总 SVG 每个部件一个 <g id="part-{id}">，
+#   href 相对指向子文件。有 source_image 的总装/crop 视另有 id="view-source"
+#   （相对 href 整张轮廓）。禁止总图内嵌整张 source_image 的 data URI / clipPath。
+# - 不得为同一 parts.id 输出多个 group 或多个子文件，也不得把一件切成多块小图。
+# - crop 子文件是总装 PNG 的 viewBox 裁窗（隔离弱）；exploded 的可分离件须 source=image。

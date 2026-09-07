@@ -1,0 +1,59 @@
+# 按专利类型检索（交底查新）
+
+案件类型来自 `prompts/intake.md`（默认 invention）。
+
+## 国知局 · 中国专利公布公告（已支持）
+
+首页四类勾选（与官网一致）：
+
+| 技能 `--type` | 勾选 |
+|---------------|------|
+| `invention` | 发明公布 `#fmgb` + 发明授权 `#fmsq` |
+| `utility_model` | 实用新型 `#xxsq` |
+| `design` | 外观设计 `#wgsq` |
+| `all`（默认） | 四类全选 |
+
+```bash
+python skills/patent-disclosure/tools/crawl/cnipa_epub_search.py --type utility_model 卡扣
+python skills/patent-disclosure/tools/crawl/cnipa_epub_search.py --type design 灯具
+python skills/patent-disclosure/tools/crawl/cnipa_epub_search.py --type invention 调度
+python skills/patent-disclosure/tools/crawl/cnipa_epub_search.py --type invention --class B01J20 胺功能化
+python skills/patent-disclosure/tools/crawl/cnipa_epub_search.py --type design --class 26-05 台灯
+python skills/patent-disclosure/tools/crawl/cnipa_epub_search.py --type design --class 26-05
+```
+
+第一轮首页关键词；stderr **`EPUB_CLASS_HINT:`** 与 JSON **`ipc_codes`/`loc_codes`** 供第二轮 `--class`（发明/实用 IPC，外观 LOC）。第二轮不足 4 条时从第一轮同分类号回补；仍少可仅分类号或相邻号再查，禁止编造凑数。Google Patents 的 `CPC=` / LOC 词仅为可选补充，外网失败即跳过。
+
+实现：`tools/patent_type.py` + `cnipa_epub_crawler.apply_epub_type_filter`（首页）/ `apply_epub_advanced_type_filter`（`--class` 高级查询）。
+
+## Google Patents（降级 / 补充；WebSearch 或浏览器）
+
+| 类型 | 是否有官方 type | 建议 |
+|------|-----------------|------|
+| 发明 | `type=PATENT`（界面 Patent） | `country:CN` + 关键词；可加 `CPC=小类/low`（可选，被墙跳过） |
+| 实用新型 | **无**独立 Utility Model 类型 | 仍用 PATENT 域 + 关键词 `实用新型` 或公开号 …U；**优先国知局 `--type utility_model`** |
+| 外观 | `type=DESIGN` | `country:CN` + DESIGN；可把 LOC 号当补充词 |
+
+无独立 Google Patents 爬虫时，Agent 用 WebSearch；查询串可参考 `patent_type.google_patents_websearch_query()`。
+
+## Google 学术（scholar.google.com）
+
+**不支持**按发明/实用新型/外观过滤（面向论文等非专利文献）。  
+类型指定后：学术检索仍按技术关键词；**专利文献类型过滤以国知局 / Google Patents 为准**。
+
+## 映射摘要
+
+```yaml
+invention:
+  cnipa: [--type, invention]
+  google_patents: { type: PATENT, extra: "country:CN" }
+  google_scholar: { patent_type_filter: false }
+utility_model:
+  cnipa: [--type, utility_model]
+  google_patents: { type: PATENT, extra: "country:CN 实用新型" }
+  google_scholar: { patent_type_filter: false }
+design:
+  cnipa: [--type, design]
+  google_patents: { type: DESIGN, extra: "country:CN" }
+  google_scholar: { patent_type_filter: false }
+```

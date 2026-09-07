@@ -1,0 +1,44 @@
+# StructureCalloutAnchors — 结构线稿件号锚点合同
+#
+# 大模型查看“拼装后的无号图 / 轮廓图”后填写 anchor / label；Python/SVG 只负责
+# 精确绘制，不再让生图模型二次改写结构。坐标均按画布宽高归一化到 0..1。
+# 有 base_svg_path 时注入拼装 SVG 的零件图层，不把零件压成一张扁图。
+#
+# 落盘：案件目录 structure_callout_anchors.yaml
+
+$schema: structure_callout_anchors
+version: 1
+coordinate_system: normalized
+structure_ref: structure_schema.yaml
+views:
+  - view_name: 总装立体图
+    base_svg_path: lineart_assist/总装立体图_composed.svg
+    image_path: lineart_assist/总装立体图_structure_lineart.png
+    output_svg_path: lineart_assist/总装立体图_structure_lineart_callouts.svg
+    style:
+      label_style: plain       # plain（参考专利图常用）| circle
+      font_size: 24            # 可省略，按原图尺寸自动计算
+      line_width: 2            # 可省略
+      circle_radius: 18        # 仅 circle 使用
+    callouts:
+      - id: "1"
+        name: 壳体
+        anchor: [0.62, 0.72]   # 引出线接触对应部件的位置
+        label: [0.78, 0.68]    # 序号中心；应就近、分散、避开结构
+        route: horizontal      # auto | horizontal | vertical
+        confidence: 0.95
+        evidence: 壳体右上缘
+
+# 硬约束：
+# - id/name 必须与 StructureSchema.parts 一致；同一视图不得重复 id。
+# - anchor/label 必须为 [x,y] 且每个值在 0..1。
+# - confidence 不得低于 0.60；不确定时先重看图，禁止猜坐标。
+# - anchor 必须落在**该 id 对应名称的构造**轮廓上或紧邻该轮廓（不是邻件）；label 放在附近留白区。
+# - 不把全部 label 排在画布边缘；优先围绕结构分布。
+# - 多条线应从不同方向引出；必要时显式设置 route。
+#
+# 叠标后语义自查（技能步骤，非 Python 能代劳）：
+# 1. Read 叠标后的 PNG/SVG，按 parts 名称核对每条引出线末端。
+# 2. 易混对：腔体↔腔内件、轴↔转子、法兰/止口↔冷却接头、剖切符号↔零件。
+# 3. 错位只改本文件坐标后重跑 overlay；禁止为纠号而二次生图改轮廓。
+# 4. 最多 2 轮校正；仍不确定则降低 confidence 并从本视去掉该号，写入 uncertain。

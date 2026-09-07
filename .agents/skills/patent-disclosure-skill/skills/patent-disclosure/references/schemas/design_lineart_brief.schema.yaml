@@ -1,0 +1,59 @@
+# DesignLineartBrief — 外观线稿描述合同
+
+仅用于**外观设计**交底：固化「按图可核验的造型描述」，再按 `prompts/image_gen.md` 选用已有合格线稿或大模型生成。  
+**成文前必做**；不问用户。CAD 投影 / 实拍不是线稿，不得入文。
+
+落盘：案件目录 **`design_lineart_brief.yaml`**（与 `appearance_schema.*` / `figure_plan.yaml` 同级，常见 `outputs/{案件标识}/`）。
+
+```yaml
+$schema: design_lineart_brief
+version: 1
+enabled: true
+patent_type: design
+appearance_ref: appearance_schema.yaml
+figure_plan_ref: figure_plan.yaml
+product_name: ""
+overall_shape: ""             # 与 AppearanceSchema 对齐，可略作线稿强调改写
+product_form: solid           # 与 AppearanceSchema 对齐：solid | planar
+claimed_faces: []             # 与 schema 要点落面一致；只为这些面 + 立体图出线稿
+design_points: []             # 须在参考图上可看见；无参考图则来自 schema
+forbid:
+  - 内部结构 / 电路 / 受力
+  - 品牌 LOGO / 广告文案
+  - 无依据的背面或底面臆造
+  - 彩色渲染 / 阴影棚拍风
+  - 尺寸线 / 中心线 / 定位线 / 件号引出线 / 工程剖面阴影
+uncertain: []                 # 看不清、不得画死的特征
+views:                        # 仅 claimed_faces 对应正投影 + 立体图；勿为 omitted_views 生图
+  - view_name: 立体图
+    source_figs: [1]          # 材料图 fig；可空（文生图）
+    source_paths: []          # 参考图路径，可空；CAD/实拍可作参考，不得当入文线稿
+    relates_hint: []
+    lineart_goal: ""
+    gen_prompt: ""            # 须含「黑白线稿」；有参考则写「参照附图」
+    output_path: ""           # 如 lineart_assist/view_perspective_lineart.png
+```
+
+## 必填
+
+- `enabled: true`  
+- `appearance_ref`、`figure_plan_ref`  
+- `views`：至少 1 条；`source_paths` **可空**（无参考图则文生图）；若填写则文件须存在  
+- `overall_shape` 或非空 `design_points`  
+- `views` 不得包含 AppearanceSchema `omitted_views` 中的面；无依据背面/底面不画
+
+## 硬禁止
+
+- 把 CAD 投影标成 `kind: lineart` 或入文  
+- 把实拍标成 `kind: lineart`（外观实拍仍须 `use_in_disclosure: true`，只是 kind 保持 `photo_clean`）  
+- 为 `uncertain` 中的特征画出确定线条并当作设计要点  
+- 将生成线稿写成「已按国知局规范绘制的正式视图」
+
+## 与 figure_plan
+
+生成或选用后：
+
+- `kind: lineart`  
+- `use_in_disclosure`: **默认 true**（这是入文线稿）  
+- `relevance` / `quality` / `score` 按 `image_gen.md` 打分  
+- CAD 条保持不入文。干净实拍条 **入文**，用 `relates_to` 链到对应线稿  

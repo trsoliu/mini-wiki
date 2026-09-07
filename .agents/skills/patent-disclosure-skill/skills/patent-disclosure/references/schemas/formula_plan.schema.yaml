@@ -1,0 +1,57 @@
+# FormulaPlan — 发明交底公式提纲（来源标记 + 可选起草）
+
+成文写 **3.4.1** 之前固化：材料里的式优先转录，按专利点勾选；材料没有的式才用范式库起草。  
+范式菜单：`references/formulas/paradigms.yaml`（及用户覆盖），**只约束 `origin: agent`**。
+
+落盘：案件工作目录 **`formula_plan.yaml`**（或 `.json`），常见 `outputs/{案件标识}/`。  
+**有公式或形式化变量的发明交底必写**；纯文字流程且全文无 LaTeX 主式时可省略，并在自检注明「无公式」。
+
+```yaml
+$schema: formula_plan
+version: 1
+updated_at: ""                 # 可选 ISO 本地时间
+theme_summary: ""              # 与交底主题一句对齐
+combo_id: ""                   # 可选；仅 agent 起草时用来自 paradigms.combos[].id
+paradigm_ids: []               # 仅 origin: agent 必填；须∈合并后的范式库。全为 source 时可空
+plain_zh: ""                   # 主关系人话
+equations:
+  - tag: 1                     # 对应式 (1)
+    origin: source             # source = 材料转录；agent = 技能补写
+    source_ref: "设计说明 p.12 式(3)"
+    latex: ""                  # 成文用 LaTeX；source 须对材料
+    original_latex: ""         # 可选；仅当成文相对材料做了机械体例改动时保留原文
+    role: score                # score | trigger | smooth | assign | constraint | other
+  - tag: 2
+    origin: agent
+    paradigm_id: dual_threshold
+    latex: ""
+    role: trigger
+omitted:                       # 材料里扫到但不进 3.4.1
+  - ref: "论文 式(8)"
+    reason: "对照实验，与本专利点无关"
+symbols:
+  - symbol: "s_{ij}"
+    meaning_zh: 任务i在节点j上的匹配分
+    unit_zh: 无量纲
+numeric_example:
+  given:
+    "b_{i,\\\\mathrm{cpu}}": 0.8
+  compute_zh: ""
+  result:
+    "s_{ij}": 0.72
+notes_zh: ""
+```
+
+## 硬性规则
+
+- 每条 `equations[]` **须标 `origin`**：`source` 或 `agent`（旧计划无 origin 且已填 `paradigm_id` 时，校验按 agent）。
+- `origin: source`：`latex` 对材料；`paradigm_id` 可不填；禁止为套范式而改写。只允许分隔符、`\le`→`\leq`、把「且」挪到公式外等机械体例；改过则填 `original_latex`。`source_ref` 建议填写。
+- `origin: agent`：材料没有对应式才允许；`paradigm_id` / 根级 `paradigm_ids` 必须能在合并后的范式库中找到。遵守禁 `\tilde`/`\hat`/`\bar` 等。
+- 材料式子多：按**已选专利点 / 3.3 / 3.4** 勾选进 `equations`；不采用的写入 `omitted`（`ref` + `reason`），禁止静默丢掉。
+- `numeric_example`：含 agent 式时须给主式一组输入与结果。全为 source 时鼓励给，复杂式可手算或从缺（校验警告、不阻断）。
+- 写 3.4.1 前执行：`python tools/check_formula_plan.py -i path/to/formula_plan.yaml --eval`。简单 agent 式可代算；source 复杂式跳过并手算，**不得**改成库内简单式以通过 `--eval`。
+- 写 3.4.1 时**只展开本计划**中的式与符号；改公式须先改本文件再联动正文 / 3.5 / 第六章。
+
+## 多轮同步
+
+迭代若改打分逻辑、触发条件或关键参数，须重评本文件并重跑自检 §8.2。

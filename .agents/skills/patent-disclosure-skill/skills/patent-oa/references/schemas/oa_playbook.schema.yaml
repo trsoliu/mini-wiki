@@ -1,0 +1,26 @@
+# OA Playbook — 审查答复经验手册（与案例分仓）
+#
+# 落盘：{vault}/oa/playbooks/{slug}/_playbook.md
+# 指令：skills/patent-oa/prompts/ingest_playbook.md
+# 实现：skills/patent-oa/tools/ingest_playbook.py
+# 不进 search_cases / 案例向量。
+
+$schema: oa_playbook
+version: 1
+kind: playbook
+verified: false          # 人可事后改为 true；不影响检索隔离
+force: false             # 预读拒绝后用户强烈要求才为 true
+peek_decision: accept    # accept | force
+slug: oa-tactics
+title: 审查意见答复实务手册
+source_path: ""          # 本地书路径
+skill_dir: ""            # book-to-skill 蒸馏输出目录
+distilled_at: ""
+tags:
+  - oa/playbook
+
+# 同目录常见文件（由蒸馏转写，非本 schema 必填）
+# - cheatsheet.md  决策表（写答复时优先 Read）
+# - patterns.md    模式 / 反模式
+# - SKILL.md       蒸馏核心模型
+# - chapters/      按需章节
