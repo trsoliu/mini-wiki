@@ -1,0 +1,5 @@
+# CNIPA gazette crawl (cnipa_epub_crawler.py / cnipa_epub_parse.py).
+# Same playwright as root requirements.txt.
+# System Chrome/Edge is enough; no need for `playwright install chromium`.
+# Probe: python tools/browser.py --probe
+playwright>=1.40.0

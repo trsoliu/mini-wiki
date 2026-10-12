@@ -1,0 +1,3 @@
+# 可选：仅专利地图需要。不要装进通俗解读。
+# onnxruntime 由 fastembed 带入。禁止为本技能安装 torch / sentence-transformers。
+fastembed>=0.4.2

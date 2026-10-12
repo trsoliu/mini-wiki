@@ -1,0 +1,2 @@
+# Optional PDF deps for skills/patent-disclosure/tools/pdf_to_md.py
+pymupdf>=1.24.0

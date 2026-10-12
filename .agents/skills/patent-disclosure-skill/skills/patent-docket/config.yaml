@@ -1,0 +1,3 @@
+# 案卷会稿。改轮次上限只动这里；对话里用户说「再来一轮」仍不得超过本值。
+max_rounds: 3
+output_subdir: docket

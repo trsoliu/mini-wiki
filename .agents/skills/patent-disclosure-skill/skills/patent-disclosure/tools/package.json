@@ -1,0 +1,9 @@
+{
+  "name": "patent-disclosure-skill-tools",
+  "private": true,
+  "description": "Optional legacy mmdc install; mermaid_render.py now uses Playwright + vendor/mermaid.min.js and does not require this package.",
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.4.0",
+    "puppeteer": "^23.1.1"
+  }
+}

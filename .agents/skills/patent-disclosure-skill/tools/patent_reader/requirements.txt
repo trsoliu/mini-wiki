@@ -1,2 +1,0 @@
-# 专利解读可选依赖（tools/patent_reader/ 处理 PDF）
-pymupdf>=1.24.0

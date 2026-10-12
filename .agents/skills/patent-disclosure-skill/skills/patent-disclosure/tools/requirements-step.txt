@@ -1,0 +1,7 @@
+# CadQuery/OCP: STEP -> SVG. Install ONLY into tools/cad-env
+#   python tools/bootstrap_cad_venv.py
+# Official wheels: Python 3.10-3.12 (NOT 3.13+). ASCII comments only:
+# Windows venv pip may decode this file as the system code page (GBK) and fail
+# on UTF-8 non-ASCII. Keep this file ASCII.
+cadquery>=2.4.0
+cairosvg>=2.7.0

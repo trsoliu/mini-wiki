@@ -1,0 +1,80 @@
+# Update star history (orphan branch)
+#
+# 方案说明：
+# - 用本仓 GITHUB_TOKEN 拉取 stargazer 时间戳，生成本地静态 SVG（避免第三方
+#   api.star-history.com 因 GitHub API 限制而空白）。
+# - 图表只 force-push 到 orphan 分支 `star-history`（分支上仅有 SVG，无项目源码），
+#   不往默认分支提交，避免 main 被每日 bot commit 刷屏。
+# - README 通过 raw.githubusercontent.com/.../star-history/star-history.svg 引用。
+# - 首次运行会自动创建该 orphan 分支；无需预先建分支，也无需额外 PAT。
+#
+name: Update star history
+
+on:
+  schedule:
+    # Daily 11:48 Beijing (UTC 03:48). Avoid :00 to reduce schedule drop under load.
+    - cron: "56 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-star-history
+  cancel-in-progress: true
+
+jobs:
+  update-star-history:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate static star history
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/star-history-out
+          python3 scripts/generate-star-history.py \
+            --repo "$GITHUB_REPOSITORY" \
+            --output /tmp/star-history-out/star-history.svg
+
+      - name: Publish SVG to orphan branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: star-history
+          SVG: /tmp/star-history-out/star-history.svg
+        run: |
+          set -euo pipefail
+          test -f "$SVG"
+
+          SHOULD_PUSH=1
+          if git fetch --depth=1 origin "$BRANCH"; then
+            if git show "origin/${BRANCH}:star-history.svg" > /tmp/star-history-old.svg 2>/dev/null; then
+              if python3 scripts/generate-star-history.py \
+                --same-chart "$SVG" /tmp/star-history-old.svg; then
+                echo "Star history chart unchanged; skip orphan-branch push."
+                SHOULD_PUSH=0
+              fi
+            fi
+          else
+            echo "Orphan branch '$BRANCH' not found yet; will create on first publish."
+          fi
+
+          if [ "$SHOULD_PUSH" -eq 0 ]; then
+            exit 0
+          fi
+
+          WORK="$(mktemp -d)"
+          cp "$SVG" "$WORK/star-history.svg"
+          cd "$WORK"
+          git init
+          git checkout --orphan "$BRANCH"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add star-history.svg
+          git commit -m "chore: update star history"
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git push -f origin "HEAD:${BRANCH}"
+          echo "Published star-history.svg to orphan branch '$BRANCH'."

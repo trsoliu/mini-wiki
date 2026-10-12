@@ -1,0 +1,6 @@
+# 技术分解（保护型 1+N 底稿）
+# outputs/{案}/fence/decompose.yaml
+version: 1
+
+# layers: principle | module | chain | scenario
+# 每条须有 source（交底章节或材料路径），禁止无出处节点
