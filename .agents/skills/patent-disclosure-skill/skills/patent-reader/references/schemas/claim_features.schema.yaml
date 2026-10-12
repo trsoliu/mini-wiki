@@ -1,0 +1,23 @@
+# 独权技术特征清单（对照表左列）。规范文件：workdir/claim_features.json
+# 也接受同结构的 claim_features.yaml（无 PyYAML 时只认 JSON）。
+
+type: object
+required: [features]
+properties:
+  pub_number: { type: string }
+  source: { type: string }  # agent | human
+  features:
+    type: array
+    items:
+      type: object
+      required: [feature_id, claim_no, text]
+      properties:
+        feature_id: { type: string }   # F1, F2… 全局唯一
+        claim_no: { type: integer }
+        text: { type: string }         # 权要原文短语，不许意译
+        plain: { type: string }        # 大白话，仅供第四节
+        desc_paras:                    # 说明书段号，四位
+          type: array
+          items: { type: string }
+        part_ids: { type: array, items: { type: string } }
+        figures: { type: array, items: { type: string } }

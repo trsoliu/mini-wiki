@@ -1,0 +1,22 @@
+# 国知局公布公告高级查询：分页与退避（对话或 --max-pages 可覆盖）
+#
+# 默认不要爬完全部分页。普通多条件检索按 max_pages 停，并报告 complete=false。
+# 仅当用户明确要求穷举清单时，才用 --complete。
+# 第一页若读到「共 N 页」，--complete 按总页数翻完（硬上限随总页数）。
+# 读不到总页数时，才启用下面的 max_pages_hard。
+
+# 每条查询默认最多翻多少页（含当前结果页第 1 页）；普通检索用
+max_pages: 3
+
+# 探测不到「共 N 页」时，--complete 的回退硬上限
+max_pages_hard: 20
+
+# 翻页间隔，降低公布站 400 / WAF
+page_delay_ms: 800
+
+# HTTP 400 等错误的重试次数与退避
+http_error_retries: 2
+http_error_backoff_ms: 1500
+
+# 仅当页面探测不到 #pageSize /「每页 N 条」时回退（站点当前默认常为 3）
+page_size: 3

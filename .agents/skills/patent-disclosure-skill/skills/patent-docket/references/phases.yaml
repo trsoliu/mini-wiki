@@ -1,0 +1,47 @@
+# 案卷阶段。validate_docket.py 按 transitions 校验，不要在 prompt 里发明新 phase。
+schema: patent-docket-phases
+version: 1
+
+start_modes:
+  from_zero: 无交底、无申请；intake 后进入 bootstrap_disclosure
+  from_disclosure: 已有交底目录、尚无申请；intake 后进入 bootstrap_application
+  from_application: 已有申请目录与问题清单；intake 后进入 triage
+  resume: 已有 docket.yaml；按文件里的 phase 续跑，不重置 round
+
+phases:
+  - intake
+  - bootstrap_disclosure
+  - wait_disclosure
+  - bootstrap_application
+  - wait_application
+  - triage
+  - ask_human
+  - dispatch_disclosure
+  - wait_disclosure_fix
+  - dispatch_application
+  - round_close
+  - terminal_complete
+  - terminal_max_rounds
+  - terminal_blocked
+
+transitions:
+  intake: [bootstrap_disclosure, bootstrap_application, triage]
+  bootstrap_disclosure: [wait_disclosure, ask_human, terminal_blocked]
+  wait_disclosure: [bootstrap_application, ask_human, terminal_blocked]
+  bootstrap_application: [wait_application, ask_human, terminal_blocked]
+  wait_application: [triage, ask_human, terminal_blocked]
+  triage: [ask_human, dispatch_disclosure, dispatch_application, round_close, terminal_complete]
+  ask_human: [triage, terminal_blocked]
+  dispatch_disclosure: [wait_disclosure_fix, ask_human, terminal_blocked]
+  wait_disclosure_fix: [dispatch_application, ask_human, terminal_blocked]
+  dispatch_application: [wait_application, ask_human, terminal_blocked]
+  round_close: [triage, dispatch_disclosure, dispatch_application, terminal_complete, terminal_max_rounds]
+  terminal_complete: []
+  terminal_max_rounds: []
+  terminal_blocked: []
+
+notes:
+  - 交底初稿未完成不得进入 bootstrap_application
+  - 交底纠正后必须 dispatch_application，禁止只改交底就 round_close
+  - 存在 blocking 且 status=open 的 ask_human 条目时，只能停留 ask_human 或 terminal_blocked
+  - 终端阶段禁止再派工

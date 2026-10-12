@@ -1,0 +1,2 @@
+# 仅维护 ipc_subclasses_{version}.csv 时需要。不要装进通俗解读或地图服务。
+pymupdf>=1.24

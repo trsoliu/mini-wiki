@@ -1,0 +1,176 @@
+# 政策简报官方种子（给人打开，不是爬虫清单）。
+# 优先栏目首页；正文用当次最终 URL。WAF 挡住就记失败，不要假装读过。
+# layer: A = 可进主表、可支撑「对交底写法」；B = 官方但不得单独作为改技能依据；另议 = 只记、不写成全国交底硬性要求。
+# kind: column = 列表首页（每趟必开）；document = 现行文本锚点（核现行有效全文时打开）。
+
+# ---------- A · 栏目（先开这些列表） ----------
+columns:
+  - id: dept_rules
+    layer: A
+    kind: column
+    title: 部门规章（局令）
+    url: https://www.cnipa.gov.cn/col/col99/index.html
+    track: 程序通识
+    topics: [专利法与实施细则, 实用新型明显创造性, 局部外观与GUI, 相似外观]
+  - id: policy_explain
+    layer: A
+    kind: column
+    title: 政策解读
+    url: https://www.cnipa.gov.cn/col/col66/index.html
+    track: 申请客体
+    topics: [充分公开, 申请客体, 实用新型明显创造性, 局部外观与GUI]
+  - id: notices
+    layer: A
+    kind: column
+    title: 通知（政策文件）
+    url: https://www.cnipa.gov.cn/col/col75/index.html
+    track: 程序通识
+    topics: [专利法与实施细则]
+  - id: announcements
+    layer: A
+    kind: column
+    title: 公告（政策文件）
+    url: https://www.cnipa.gov.cn/col/col74/index.html
+    track: 程序通识
+    topics: [专利法与实施细则]
+  - id: patent_law_col
+    layer: A
+    kind: column
+    title: 法律法规 · 专利 · 法律
+    url: https://www.cnipa.gov.cn/col/col97/index.html
+    track: 程序通识
+    topics: [专利法与实施细则, 局部外观与GUI]
+  - id: admin_regs_col
+    layer: A
+    kind: column
+    title: 法律法规 · 专利 · 行政法规
+    url: https://www.cnipa.gov.cn/col/col98/index.html
+    track: 程序通识
+    topics: [专利法与实施细则, 局部外观与GUI]
+  - id: guide_qna
+    layer: A
+    kind: column
+    title: 你问我答（指南修改解读，含局部外观 / GUI）
+    url: https://www.cnipa.gov.cn/col/col2199/index.html
+    track: 外观设计
+    topics: [局部外观与GUI, 相似外观, 外观设计要点]
+
+# ---------- A · 现行文本锚点（核全文 / 施行日时打开，勿当唯一列表源） ----------
+documents:
+  - id: patent_law_2020
+    layer: A
+    kind: document
+    title: 中华人民共和国专利法（2020年修正）
+    url: https://www.cnipa.gov.cn/art/2020/11/23/art_97_155167.html
+    track: 程序通识
+    topics: [专利法与实施细则, 局部外观与GUI]
+  - id: implementing_regs_2023
+    layer: A
+    kind: document
+    title: 中华人民共和国专利法实施细则（2023年修订）
+    url: https://www.cnipa.gov.cn/art/2023/12/21/art_98_189197.html
+    track: 程序通识
+    topics: [专利法与实施细则, 局部外观与GUI, 相似外观]
+  - id: npc_patent_law_amend_2020
+    layer: A
+    kind: document
+    title: 全国人大常委会关于修改专利法的决定（2020）
+    url: https://www.npc.gov.cn/npc/c2/c30834/202010/t20201019_308327.html
+    track: 程序通识
+    topics: [专利法与实施细则, 局部外观与GUI]
+  - id: guide_2023
+    layer: A
+    kind: document
+    title: 《专利审查指南》（2023）（局令第78号）
+    url: https://www.cnipa.gov.cn/art/2023/12/21/art_99_189202.html
+    track: 程序通识
+    topics: [充分公开, 创造性叙事, 实用新型明显创造性, 局部外观与GUI, 相似外观]
+  - id: guide_amend_84
+    layer: A
+    kind: document
+    title: 关于修改《专利审查指南》的决定（局令第84号，施行日 2026-01-01）
+    url: https://www.cnipa.gov.cn/art/2025/11/13/art_99_202568.html
+    track: 申请客体
+    topics: [申请客体, 充分公开, 创造性叙事]
+    calendar_example: true
+  - id: guide_amend_84_gov
+    layer: A
+    kind: document
+    title: 国务院公报转载 · 局令第84号
+    url: https://www.gov.cn/gongbao/2026/issue_12526/202601/content_7056486.html
+    track: 申请客体
+    topics: [申请客体]
+    calendar_example: true
+
+# ---------- B · 官方，但当 B 或只进「另议」；不得单独作为改技能依据 ----------
+layer_b:
+  - id: press_live
+    layer: B
+    kind: column
+    title: 新闻 · 图文直播（例行新闻发布会）
+    url: https://www.cnipa.gov.cn/col/col226/index.html
+    track: 程序通识
+    topics: [审查工具]
+    note: 条法司 / 审查业务管理部答记者问须能对到原话；解读非条文。
+  - id: press_desk
+    layer: B
+    kind: column
+    title: 新闻发布（新闻发言人页）
+    url: https://www.cnipa.gov.cn/col/col2486/index.html
+    track: 程序通识
+    topics: [审查工具]
+  - id: moj_regs_qa
+    layer: B
+    kind: document
+    title: 司法部、国知局负责人就修改专利法实施细则答记者问
+    url: https://www.moj.gov.cn/pub/sfbgw/zcjd/202312/t20231221_492075.html
+    track: 程序通识
+    topics: [专利法与实施细则]
+    note: 修订说明 / 答问，不是细则正文。
+  - id: reexam_top10
+    layer: B
+    kind: column
+    title: 复审无效十大案件（典型案例）
+    url: https://www.cnipa.gov.cn/col/col2648/index.html
+    track: 程序通识
+    topics: [创造性叙事, 实用新型明显创造性, 局部外观与GUI]
+    note: 典型案例阐释标准，不能代替指南条文单独改技能。
+  - id: ipc_court
+    layer: B
+    kind: column
+    title: 最高人民法院知识产权法庭
+    url: https://ipc.court.gov.cn/zh-cn/index
+    track: 程序通识
+    topics: [创造性叙事, 实用新型明显创造性]
+    note: 司法口径 ≠ 审查指南。指导性案例 / 司法解释 / 年度白皮书只作对照，默认进另议。
+
+# ---------- 另议（不设全国硬种子） ----------
+# 各地知识产权保护中心预审须知：只影响预审格式时写入简报「另议」，不要写成全国交底硬性要求。
+# 不要把 WIPO / USPTO / EPO、需登录检索站、代办处地址类公告默认当 A。
+
+# 施行日历样板（简报 §2 必填；以当次打开的局令列表为准，不要只抄本条）。
+# 第84号：2025-11-13 公布，2026-01-01 施行。简报日已过施行日 → 可作为交底硬性要求；未到则只入日历。
+calendar_examples:
+  - id: order_84
+    title: 国家知识产权局关于修改《专利审查指南》的决定（局令第84号）
+    published_on: 2025-11-13
+    effective_on: 2026-01-01
+    source_ids: [guide_amend_84, guide_amend_84_gov]
+
+search_hints:
+  - 国家知识产权局 专利审查指南 修改
+  - 国家知识产权局 智能审查 大模型
+  - 国家知识产权局 人工智能 发明专利申请
+  - 国家知识产权局 充分公开 创造性
+  - 国家知识产权局 实用新型 明显创造性
+  - 国家知识产权局 实用新型 初步审查 创造性
+  - 国家知识产权局 局部外观设计
+  - 国家知识产权局 图形用户界面 外观设计 GUI
+  - 国家知识产权局 相似外观设计
+  - 国家知识产权局 外观设计 明显区别
+  - 专利法实施细则 修订 国务院 司法部
+  - 全国人民代表大会 专利法 修改决定
+  - 最高人民法院知识产权法庭 指导性案例 专利
+  - 最高人民法院 专利 司法解释
+  - 最高人民法院知识产权法庭 年度报告
+  - 知识产权保护中心 预审须知 专利申请

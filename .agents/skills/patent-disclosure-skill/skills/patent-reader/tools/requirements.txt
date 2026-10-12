@@ -1,0 +1,2 @@
+# Optional PDF deps for skills/patent-reader/tools/
+pymupdf>=1.24.0

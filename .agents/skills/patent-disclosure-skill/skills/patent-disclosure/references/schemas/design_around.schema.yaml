@@ -1,0 +1,8 @@
+# 突围路径（全面覆盖 / 等同列表，不改稿）
+# outputs/{案}/fence/design_around.yaml
+version: 1
+
+# 对拟定核心独权逐特征：replace / omit / equivalent
+# commercial: yes | no | unknown
+# disposition: dependent | satellite | drop
+# unknown 默认 dependent；材料不够 drop；核心独权下位不得 satellite

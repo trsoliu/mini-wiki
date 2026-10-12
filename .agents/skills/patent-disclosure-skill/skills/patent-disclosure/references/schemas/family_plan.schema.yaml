@@ -1,0 +1,13 @@
+# 保护型 1+N 族树
+# outputs/{案}/fence/family.yaml
+version: 1
+
+# title 须含「专利布局」，并点明保护型 1+N
+# strategy: 仅 protective（护自己的核心；禁止制衡型围别人）
+# geography_note: 本趟只出中国交底
+# nodes[].role: core | satellite
+# nodes[].n_class（仅 satellite）: scenario | improve | chain
+# nodes[].matrix_density: dense | sparse | unchecked | ""
+# dense 不得 write_this_round
+# 这一轮核心最多 2 件、外围最多 3 件
+# 给人看的说明稿是同目录 专利布局.md（模型直写；立项校验章由 score.md 回写，禁止脚本从本文件生成）
