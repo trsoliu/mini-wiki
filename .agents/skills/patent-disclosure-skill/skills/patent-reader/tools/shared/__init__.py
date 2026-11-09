@@ -1,0 +1,2 @@
+﻿# patent_reader.shared
+

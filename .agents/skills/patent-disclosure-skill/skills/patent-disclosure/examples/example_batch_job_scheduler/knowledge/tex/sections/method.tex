@@ -1,0 +1,16 @@
+\section{匹配打分}
+任务 $i$ 在节点 $j$ 上的匹配分由需求向量与节点画像加权得到：
+\begin{equation}
+\MatchScore = w_{\mathrm{cpu}}\,d_{\mathrm{cpu}}\,p_{\mathrm{cpu}}
+  + w_{\mathrm{mem}}\min\Bigl(1,\frac{p_{\mathrm{mem}}}{\max(\varepsilon,d_{\mathrm{mem}})}\Bigr)
+  + w_{\mathrm{io}}(1-p_{\mathrm{io}})\,d_{\mathrm{io}}
+  - \lambda\, n_{\mathrm{inflight}}.
+\end{equation}
+
+\section{限频重排队}
+仅当距上次重排间隔与分数签名变化同时满足时，才对队列窗口重排：
+\begin{equation}
+t - t_{\mathrm{last}} \ge \MinInterval
+\quad\land\quad
+\lvert \sigma_{\mathrm{now}} - \sigma_{\mathrm{last}} \rvert \ge \ScoreDelta.
+\end{equation}

@@ -1,0 +1,44 @@
+# 案卷机器合同（docket.yaml）
+schema: patent-docket
+version: 1
+
+required:
+  - schema
+  - version
+  - case_id
+  - patent_type
+  - start_mode
+  - phase
+  - round
+  - max_rounds
+  - paths
+  - issues
+  - rounds
+
+patent_type: [invention, utility_model, design]
+start_mode: [from_zero, from_disclosure, from_application, resume]
+issue_kind:
+  - machine_format
+  - claim_form
+  - scope_strategy
+  - disclosure_gap
+  - human_fact
+  - noise
+issue_status: [open, done, deferred]
+
+paths_keys:
+  - docket_dir
+  - materials_dir
+  - disclosure_dir
+  - disclosure_md
+  - application_dir
+  - issues_md
+
+issue_item:
+  - id
+  - summary
+  - kind
+  - disposition
+  - status
+  - blocking
+  - round_opened

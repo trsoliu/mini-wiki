@@ -1,0 +1,42 @@
+# AppearanceSchema — 外观设计事实合同
+
+用于外观专利解读。写入工作目录 `appearance_schema.json`，供笔记「外观要点」与 Canvas。
+
+```yaml
+$schema: appearance.schema
+version: 1
+mode: reader
+source_images: []          # 看过的取证图
+product_name: ""
+overall_shape: ""      # 整体造型一句话
+product_form: solid    # solid 立体产品 | planar 平面产品；先判此项再选正投影
+claimed_faces: []      # 设计要点落面。立体：主视/后视/左视/右视/俯视/仰视；平面：正面/背面
+omitted_views:         # 公报未给或说明书标明省略的正投影（相同/对称/无要点）
+  - name: ""           # 如 仰视
+    reason: ""         # 如 底面无设计要点
+views:                 # 已见视图（含立体图）；勿为 omitted 面凑条目
+  - name: 立体图       # 主视/俯视/左视/立体等
+    notes: ""
+    source_image: ""   # 可选；取证图路径
+ornament: []           # 图案、线条、纹理
+color: []              # 色彩搭配；不明则 uncertain
+design_points: []      # 公报强调的外观要点
+contrast_to_prior: []  # 与常见外观差异（假设须标）
+uncertain: []          # 材料看不清，或要点落面缺少可用源图（非故意省略）
+not_design_signals: [] # 若更像结构功能/方法，列于此
+```
+
+## 正投影怎么定
+
+1. 先判 `product_form`。  
+2. 按 `design_points` 列出 `claimed_faces`。  
+3. 正投影清单 = 要点落面；立体产品宜加立体图。**仅当要点涉及六个面**才收齐六面正投影。平面产品一面或两面即可。  
+4. 相同、对称或看不到要点的面写入 `omitted_views`，**不要**标成缺六视。  
+5. 要点落面没有源图 → `uncertain`，与故意省略分开。
+
+## 必填
+
+- `overall_shape`  
+- `product_form`、`claimed_faces`（可空则须在 `omitted_views` 或 `uncertain` 说明）  
+- `views`（可空数组但须在 `uncertain` 说明缺图）  
+- `uncertain`

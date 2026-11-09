@@ -1,9 +1,25 @@
-# 使用 tools/md_to_docx.py、docx_to_md.py、pptx_to_md.py、math_render.py 时安装
+# Used by skills/patent-disclosure/tools/md_to_docx.py, docx_to_md.py, pptx_to_md.py,
+# mermaid_render.py, formula_plan.
 python-docx>=1.1.0
-# 定稿图示（mermaid → PNG）须 Node：在 tools/ 执行 npm install 或 npx，见 tools/README.md
+# Word editable math (LaTeX -> MathML -> OMML); keep source text on failure
+latex2mathml>=3.77.0
+# formula_plan / paradigms.yaml
+PyYAML>=6.0
+# mermaid -> PNG via Playwright; shares browser with CNIPA crawl
+# (skills/patent-disclosure/tools/browser.py)
+playwright>=1.40.0
 mammoth>=1.6.0
 python-pptx>=0.6.21
-matplotlib>=3.8.0
 
-# 可选：Step 5 国知局 epub.cnipa.gov.cn 抓取（Playwright，体积较大；未写入本文件以免默认全量安装）
-#   pip install -r tools/requirements-cnipa.txt && python -m playwright install chromium
+# Optional: formula PNG (OMML fail AND user says yes; ~100MB incl numpy)
+#   pip install matplotlib
+#   python skills/patent-disclosure/tools/md_to_docx.py -i a.md -o a.docx --math-render
+
+# Optional: CNIPA epub.cnipa.gov.cn (Playwright; system Chrome/Edge)
+#   pip install playwright
+#   python skills/patent-disclosure/tools/browser.py --probe
+#   only if no system browser: python -m playwright install chromium
+
+# Optional: STEP views (CadQuery inside skills/patent-disclosure/tools/cad-env; Python 3.10-3.12)
+#   python skills/patent-disclosure/tools/cad_venv.py
+#   python skills/patent-disclosure/tools/run_step_to_views.py --enable-step-parse -i model.step -o outputs/case/cad_views

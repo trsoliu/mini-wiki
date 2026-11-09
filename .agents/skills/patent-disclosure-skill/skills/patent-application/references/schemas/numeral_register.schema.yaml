@@ -1,0 +1,19 @@
+# NumeralRegister — 件号 / 图号登记（图 ↔ 权要 ↔ 说明书）
+
+实用新型与写了装置件号的发明使用 `parts`。发明仅有流程图时，`parts` 可空，改填 `figures`。
+
+```yaml
+$schema: numeral_register
+version: 1
+parts:
+  - id: "1"              # 与 structure_schema.parts.id 同一套
+    name: ""             # 与 schema 部件名一致
+    figures: [1]         # 出现的 figure_plan.fig
+    claims: [1]          # 出现的权项编号
+    specification: true  # 说明书是否出现该件名称或（id）
+figures:
+  - fig: 1               # 与 figure_plan 或交底「如图 N」一致
+    title: ""            # 附图说明用的一句
+    kind: lineart        # lineart | mermaid | source_image | photo_clean | other
+    disclosure_only: false  # true=仍是交底原图。外观一律 true（不升格）
+```
