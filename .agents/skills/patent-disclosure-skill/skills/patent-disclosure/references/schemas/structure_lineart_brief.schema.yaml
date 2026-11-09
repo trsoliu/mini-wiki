@@ -1,0 +1,73 @@
+# StructureLineartBrief — 实用新型结构线稿描述合同
+
+仅用于**实用新型**交底：按 `prompts/image_gen.md` 选用已有合格线稿或大模型生成轮廓，并按 **StructureSchema.parts** 叠部件序号。  
+**成文前必做**；不问用户。CAD 投影不是线稿，不得入文。  
+与外观 `design_lineart_brief` **分文件**，勿混用。
+
+落盘：案件目录 **`structure_lineart_brief.yaml`**（与 `structure_schema.*` / `figure_plan.yaml` 同级）。
+
+```yaml
+$schema: structure_lineart_brief
+version: 1
+enabled: true
+patent_type: utility_model
+structure_ref: structure_schema.yaml
+figure_plan_ref: figure_plan.yaml
+product_name: ""
+structure_summary: ""
+parts_legend:
+  - id: "1"
+    name: ""
+callout_mode: overlay         # overlay（推荐）| in_prompt | contour_only
+forbid:
+  - 无依据的内部剖视臆造
+  - 品牌 LOGO / 广告文案
+  - 彩色渲染 / 阴影棚拍风
+  - 与 structure.parts 不一致的件号
+  - 轮廓层绘制件号 / 引出线 / 尺寸线 / 中心线 / 点划剖切线 / 剖切箭头
+uncertain: []
+views:
+  - view_name: 总装立体图
+    source_figs: [1]
+    source_paths: []          # 可空（文生图）；CAD/实拍可作参考
+    visible_part_ids: ["1", "2"]
+    relates_hint: []
+    lineart_goal: ""
+    gen_prompt: ""
+    output_path: ""
+    callout_output_path: ""
+```
+
+## 必填
+
+- `enabled: true`  
+- `structure_ref`、`figure_plan_ref`  
+- `parts_legend`：至少 1 条，且与 StructureSchema `parts` 的 `id`/`name` 一致（允许为本视子集，但不得改号改名）  
+- `views`：至少 1 条；`source_paths` **可空**；若填写则文件须存在  
+- `structure_summary` 或非空 `parts_legend`
+
+## 分层纪律（硬）
+
+1. **轮廓层**：合格已有线稿直接用，否则大模型生成（图生图 → 失败则先描述再文生图 → 无参考则文生图）。  
+2. **拼装层**：按 `structure_lineart_compose.yaml` 每件一个子 SVG `parts/{视}_{id}.svg`，总图 `<g id="part-N">` 相对引用（总装 `crop` 或爆炸单件图）；粒度止于本视可见件号，禁止再拆筋/齿/螺栓或自创子件号。可编辑源是子文件 + 总图引用，PNG 只是预览。见 `structure_lineart_compose.schema.yaml`。  
+3. **锚点层**：大模型只查看拼装后的图，按 `parts_legend` / `visible_part_ids` 定位；归一化坐标持久化到 `structure_callout_anchors.yaml`（合同见 `structure_callout_anchors.schema.yaml`），并写 `base_svg_path`。  
+4. **序号层**：`structure_callout_overlay.py` 校验 StructureSchema 后把引出曲线与件号**注入**拼装 SVG；禁止生图模型二次改图或自创编号。  
+5. **叠标后语义自查**：Read 叠标图，按 `parts` 名称核对引出线是否点在该件（邻件对调、漏号、剖切符号当零件均须改 YAML 后重叠标；最多 2 轮）。Python 合法 ≠ 图面对。  
+6. `callout_mode: in_prompt`：仅当宿主无法叠图时；仍须逐条列出可见件号与名称。  
+7. `callout_mode: contour_only`：只出无号轮廓；正文靠部件表指认。
+
+## 硬禁止
+
+- 把 CAD 投影或实拍标成合格线稿或入文  
+- 为 `uncertain` 中的部件画出确定序号  
+- 跨图同一部件使用不同件号  
+- 为画图自创子件号，或把同一 `parts.id` 拆成多块拼装组（筋/齿/螺栓圈/剖面线）  
+- 将线稿写成「已按国知局规范绘制的正式附图」  
+- 套用 `design_lineart_*` 处理实用新型（反之亦然）  
+- 在外形轮廓层画剖切箭头、点划中心线、尺寸线或件号（剖视用 `figure_plan.relates_to`）
+
+## 与 figure_plan
+
+- `kind: lineart`；`use_in_disclosure`: **默认 true**  
+- `reason`: `大模型生成的结构线稿（件号对齐 StructureSchema）` 或 `材料已有合格线稿`  
+- CAD 条：`kind: cad`，**禁止** `use_in_disclosure: true`  

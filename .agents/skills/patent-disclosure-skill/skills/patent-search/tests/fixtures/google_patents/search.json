@@ -1,0 +1,200 @@
+{
+ "results": {
+  "total_num_results": 16820,
+  "total_num_pages": 95,
+  "num_page": 0,
+  "cluster": [
+   {
+    "result": [
+     {
+      "id": "patent/US12394859B2/en",
+      "rank": 0,
+      "patent": {
+       "title": " <b>Battery</b>, power consumption device, method and device for producing <b>battery</b>",
+       "snippet": " 7. The <b>battery</b> according to claim 1 , wherein a structure of the support is a strip structure. 8. The <b>battery</b> according to claim 7 , wherein a width of an intermediate region of the strip structure is greater than that of two end regions of the strip structure. 9. The <b>battery</b> according to claim 1 ,",
+       "priority_date": "2021-03-31",
+       "filing_date": "2021-08-31",
+       "grant_date": "2025-08-19",
+       "publication_date": "2025-08-19",
+       "inventor": "Piaopiao Yang",
+       "assignee": "Contemporary Amperex Technology (Hong Kong) Limited",
+       "publication_number": "US12394859B2",
+       "language": "en",
+       "pdf": "",
+       "family_metadata": {
+        "aggregated": {
+         "country_status": [
+          {
+           "country_code": "WO",
+           "best_patent_stage": {
+            "state": "NOT_ACTIVE"
+           }
+          },
+          {
+           "country_code": "EP",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "US",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "CN",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "JP",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "KR",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "id": "patent/US20240213573A1/en",
+      "rank": 2,
+      "patent": {
+       "title": " <b>Battery</b> and electrical device",
+       "snippet": " 8 . The <b>battery</b> according to claim 1 , wherein the box further comprises a second box wall, the second box wall being configured to be fixed to the third wall such that the <b>battery</b> cell is fixed to the box. 9 . The <b>battery</b> according to claim 8 , wherein the third wall is fixed to the second box wall &hellip;",
+       "priority_date": "2022-01-12",
+       "filing_date": "2024-01-23",
+       "publication_date": "2024-06-27",
+       "inventor": "Ou Qian",
+       "assignee": "Contemporary Amperex Technology Co., Limited",
+       "publication_number": "US20240213573A1",
+       "language": "en",
+       "pdf": "75/cd/41/da4b3be93ffc21/US20240213573A1.pdf",
+       "family_metadata": {
+        "aggregated": {
+         "country_status": [
+          {
+           "country_code": "WO",
+           "best_patent_stage": {
+            "state": "NOT_ACTIVE"
+           }
+          },
+          {
+           "country_code": "EP",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "US",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "CN",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "JP",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "KR",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "CA",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          }
+         ]
+        }
+       }
+      }
+     },
+     {
+      "id": "patent/JP2025503941A/en",
+      "rank": 4,
+      "patent": {
+       "title": " <b>Battery</b> cells, <b>batteries</b> and power consuming devices",
+       "snippet": " The <b>battery</b> cell according to any one of claims 2 to 29, wherein a notch (22) is provided in the second end wall (14), and the area of the second end wall (14) surrounded by the notch (22) forms the pressure relief member (21). The <b>battery</b> cell according to claim 30, wherein the thickness l1 of the &hellip;",
+       "priority_date": "2022-06-28",
+       "filing_date": "2023-06-28",
+       "publication_date": "2025-02-06",
+       "inventor": "志生 柴",
+       "assignee": "寧徳時代新能源科技股▲分▼有限公司",
+       "publication_number": "JP2025503941A",
+       "language": "en",
+       "pdf": "4c/f2/1d/a221732793fe05/JP2025503941A.pdf",
+       "family_metadata": {
+        "aggregated": {
+         "country_status": [
+          {
+           "country_code": "WO",
+           "best_patent_stage": {
+            "state": "NOT_ACTIVE"
+           }
+          },
+          {
+           "country_code": "EP",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "US",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "CN",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "JP",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "KR",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          },
+          {
+           "country_code": "DE",
+           "best_patent_stage": {
+            "state": "ACTIVE"
+           }
+          }
+         ]
+        }
+       }
+      }
+     }
+    ]
+   }
+  ]
+ }
+}

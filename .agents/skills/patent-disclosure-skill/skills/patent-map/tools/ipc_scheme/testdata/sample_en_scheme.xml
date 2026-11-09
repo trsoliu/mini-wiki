@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<IPCScheme xmlns="http://www.wipo.int/classifications/ipc/masterfiles">
+  <ipcEntry kind="s" symbol="H">
+    <ipcEntry kind="t" symbol="H01">
+      <ipcEntry kind="u" symbol="H01M">
+        <textBody>
+          <title>
+            <titlePart>
+              <text>PROCESSES OR MEANS FOR THE DIRECT CONVERSION OF CHEMICAL ENERGY INTO ELECTRICAL ENERGY</text>
+            </titlePart>
+          </title>
+        </textBody>
+      </ipcEntry>
+      <ipcEntry kind="u" symbol="H02K">
+        <textBody>
+          <title>
+            <titlePart>
+              <text>DYNAMO-ELECTRIC MACHINES</text>
+            </titlePart>
+          </title>
+        </textBody>
+      </ipcEntry>
+    </ipcEntry>
+  </ipcEntry>
+</IPCScheme>

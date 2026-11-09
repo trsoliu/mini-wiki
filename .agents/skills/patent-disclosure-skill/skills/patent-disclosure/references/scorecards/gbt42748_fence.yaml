@@ -1,0 +1,172 @@
+# 默认评分表（可整表替换）
+# 题目分组对齐 GB/T 42748《专利评估指引》的法律 / 技术 / 经济价值度，
+# 另加「围栏」维：保护型 1+N 立项后弱校验（不是第一道门）。
+# 这不是资产评估报告，也不是国知局「高价值发明专利」统计口径
+# （海外同族 / 维持十年 / 质押 / 金奖交底阶段全是空的，禁止打正分）。
+id: gbt42748_fence
+title_zh: 保护型1+N 立项后校验（法律·技术·经济·围栏）
+version: 1
+disclaimer_zh: >
+  本表在分解、突围、矩阵、族树之后做弱校验：有没有至少一篇可写外围、材料够不够。
+  不决定要不要问用户做布局。未决不得给正分。不是质押、入账或许可用的评估报告。
+
+groups:
+  - id: legal
+    name_zh: 法律价值
+    weight: 1
+  - id: technical
+    name_zh: 技术价值
+    weight: 1
+  - id: economic
+    name_zh: 经济价值
+    weight: 1
+  - id: fence
+    name_zh: 围栏可行性
+    weight: 1
+
+items:
+  - id: L1
+    group: legal
+    prompt_zh: 独立保护点是否已收成可辨认的必要技术特征（不是功能口号清单）？
+    look_in_zh: 交底第五章 + 第三章对应机制
+    missing: unscored
+    scores:
+      0: 只有效果或产品名，看不出卡住哪一层
+      1: 有特征但夹杂优选参数、实施例细节
+      2: 必要特征可单独指出，优选已留给从属/实施例
+  - id: L2
+    group: legal
+    prompt_zh: 第五章保护点是否能被第三章（及附图）支撑，而不是交底里没有的概括？
+    look_in_zh: 第五 ↔ 第三；实用/外观对照 schema 与 figure_plan
+    missing: unscored
+    scores:
+      0: 保护点在正文找不到对应步骤/结构/视图
+      1: 部分能对上，部分是上位空话
+      2: 每条保护点都能指到章节或图
+  - id: L3
+    group: legal
+    prompt_zh: 查新后，与最接近文献的区别是否写得清、且不是换皮？
+    look_in_zh: 第一章 1.1 与 Step 5 检索；无查新则未决
+    missing: unscored
+    scores:
+      0: 无检索，或最接近文献已基本盖住本稿
+      1: 有区别但弱（参数、习惯设计）
+      2: 区别可写入对比，且落在必要特征上
+  - id: L4
+    group: legal
+    prompt_zh: 独权是否过宽到交底自己都实施不了，或过窄到只剩一个实施例？
+    look_in_zh: 第五章 vs 第六章实施例
+    missing: unscored
+    scores:
+      0: 过宽无法实施，或过窄等于抄实施例
+      1: 范围勉强，缺从属退路
+      2: 独权一层、从属/实施例有退路，不编事实
+
+  - id: T1
+    group: technical
+    prompt_zh: 做同类产品时，用便宜替换/省略一两个特征，是否仍很难避开核心层？
+    look_in_zh: 第五章必要特征；可抽样 2～3 个替换作证据，不改稿
+    missing: unscored
+    scores:
+      0: 换外壳、换参数或省略一步即可绕开
+      1: 部分替换仍要用到核心，但有明显漏洞
+      2: 抽样替换后仍必须落到核心特征
+  - id: T2
+    group: technical
+    prompt_zh: 方案是否可实施（流程闭环 / 结构可装配 / 外观视图可确定）？
+    look_in_zh: 第三、六章；实用结构图；外观视图清单
+    missing: unscored
+    scores:
+      0: 缺关键步骤、件或视图，无法实施
+      1: 主路径可走，分支或附图缺口明显
+      2: 主路径+已写分支可实施，图或流程闭环
+  - id: T3
+    group: technical
+    prompt_zh: 是否明显超出「局部习惯设计 / 常规改参」？
+    look_in_zh: 与 1.1 最接近文献的差异段落
+    missing: unscored
+    scores:
+      0: 常规改参或常见结构改个尺寸
+      1: 有组合创新，但单点弱
+      2: 组合或结构关系本身构成区别
+
+  - id: E1
+    group: economic
+    prompt_zh: 产品或平台是否会跨代存在（不是一次性工装/内部脚本）？
+    look_in_zh: 交底背景与材料；没写则未决
+    missing: unscored
+    scores:
+      0: 材料写明一次性、内部工具、很快改版
+      1: 像系列产品但证据弱
+      2: 材料明确平台/系列/多年产品线
+  - id: E2
+    group: economic
+    prompt_zh: 是否存在跟进、仿制或 FTO 压力（竞品会做同类）？
+    look_in_zh: 材料中的市场/竞品表述；没写则未决
+    missing: unscored
+    scores:
+      0: 材料写明无跟进场景
+      1: 有竞品迹象但不清
+      2: 材料点名竞品或公开仿制风险
+  - id: E3
+    group: economic
+    prompt_zh: 是否已有许可、标准、出口或质押等运用线索？
+    look_in_zh: 材料；交底阶段通常未决
+    missing: unscored
+    scores:
+      0: 无，且与本案无关
+      1: 仅口头意向
+      2: 材料中有合同、标准必要或出口布局事实
+
+  - id: F1
+    group: fence
+    prompt_zh: 除核心点外，是否还有至少 1 个能单独实施、互不吞并的点？
+    look_in_zh: 分解稿与 family.yaml；不是同一独权的下位
+    missing: unscored
+    scores:
+      0: 拆开只剩从属或同一独权换说法
+      1: 勉强可拆，独立性弱
+      2: ≥1 个外围点可单独写交底
+  - id: F2
+    group: fence
+    prompt_zh: 拟拆的外围是否落在场景 / 改进 / 上下游之一，且不是再讲一遍核心？
+    look_in_zh: family.yaml 的 n_class 与核心必要特征
+    missing: unscored
+    scores:
+      0: 外围=核心复述，或没有 n_class
+      1: 有分类但不清
+      2: 每条外围能指认 scenario|improve|chain，且不吞并核心
+  - id: F3
+    group: fence
+    prompt_zh: 现有材料（文、图、schema）是否撑得住至少一篇外围交底而不必编结构/效果？
+    look_in_zh: 项目材料、附图、schema
+    missing: unscored
+    scores:
+      0: 外围只有口号
+      1: 能写大纲，缺图或步骤
+      2: 至少一篇外围可按对应类型成文
+
+thresholds:
+  open_fence:
+    # 立项后弱校验：至少一篇独立外围 + 材料够（F1+F3=4）
+    min_earned_on:
+      groups: [fence]
+      value: 4
+    require_scored_groups: [fence]
+    min_item:
+      F1: 2
+      F3: 2
+    economic_unscored_ok: true
+    economic_cannot_open_alone: true
+  borderline:
+    min_earned_on:
+      groups: [fence]
+      value: 2
+
+max_write:
+  core: 2
+  fence: 3
+
+overlay:
+  env: PATENT_DISCLOSURE_SCORECARD
+  case_file: fence_scorecard.yaml

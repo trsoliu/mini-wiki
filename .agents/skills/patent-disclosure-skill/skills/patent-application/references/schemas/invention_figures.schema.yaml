@@ -1,0 +1,55 @@
+# InventionFigures — 发明申请附图（框图 / 流程图）
+
+```yaml
+$schema: invention_figures
+version: 1
+figures:
+  - fig: 1
+    kind: block_diagram          # 框内模块名，无件号、无引出线
+    caption: 系统模块关系示意图
+    columns:                     # 从左到右
+      - id: worker
+        label: 工作节点
+        nodes:
+          - id: n31
+            label: 指标采集
+      - id: scheduler
+        label: 调度器
+        nodes:
+          - id: n21
+            label: 资源画像聚合
+    extras:                      # 放在某列上方的配置类分组
+      - id: cfg
+        label: 配置中心
+        above: scheduler
+        nodes:
+          - id: n11
+            label: 静态优先级与阈值
+    edges:
+      - {from: n31, to: n21}
+      - {from: n11, to: n21}
+  - fig: 2
+    kind: flowchart              # 框内步骤一…，与独权同序
+    caption: 调度主流程示意图
+    abstract: true               # 同时写出 摘要附图.png
+    nodes:
+      - {id: step1, row: 0, col: 0, shape: rect, label: "步骤一，采集节点指标并生成资源画像"}
+      - {id: step2, row: 1, col: 0, shape: rect, label: "步骤二，计算各节点匹配分"}
+      - {id: step3, row: 2, col: 0, shape: rect, label: "步骤三，按双阈值对队首窗口重排或保持队序"}
+      - {id: step4, row: 3, col: 0, shape: rect, label: "步骤四，按序派发至匹配分最大的可行节点"}
+    edges:
+      - {from: step1, to: step2}
+      - {from: step2, to: step3}
+      - {from: step3, to: step4}
+```
+
+`col`：0 中列，-1 左，1 右。`route: left|right` 表示沿页面侧边走折线（循环回到起点）。独权主图不要用 S1。`mark` 字段可省略，脚本即使写了也不画出引出线。
+
+点名示意图（不重画）：
+
+```yaml
+  - fig: 3
+    kind: source_image
+    caption: 待导航多楼层建筑物示意图
+    source: ../../batch_job_scheduler/assets/floor.png
+```

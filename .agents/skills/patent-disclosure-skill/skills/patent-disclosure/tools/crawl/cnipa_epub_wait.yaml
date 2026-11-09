@@ -1,0 +1,46 @@
+# 国知局公布公告（epub.cnipa.gov.cn）Playwright 等待与第二轮收口上限。
+# 改这里的数字即可微调，不必改 Python。
+# 程序启动时读取本文件；缺文件、缺键、类型非法或未装 PyYAML 时，回退到
+# cnipa_epub_wait.py 里写死的 DEFAULTS（与下列默认值一致）。
+# 指定其它路径：环境变量 EPUB_WAIT_YAML。
+# 旧变量 EPUB_WAF_MAX_WAIT_SEC 若已设置，仍覆盖 gate_poll_sec（秒）。
+
+# --- 打开页面（「会不会来」的第一段）---
+# 打开首页或 /Advanced。只等文档开始提交，不等整页资源 load。
+# 调大：网络很慢仍能打开；调小：整站进不去时更快放弃。单位毫秒。
+goto_timeout_ms: 30000
+
+# Playwright page.goto 的 wait_until：commit | domcontentloaded | load
+# 建议 commit（与首页提交一致）。load 最慢，站点挂资源时会空等到满。
+goto_wait_until: commit
+
+# --- 检索框（页面到了，框还没出来）---
+# 轮询 #searchStr（首页）或 #e51（高级查询分类号）的最长时间，单位秒。
+# 框已在则立刻继续，不会先空等一轮。放行加首页渲染通常 6–15 秒，偶有更长的长尾
+# （长尾由检索循环换新会话重试一次兜底）。
+# 调大：偶发 JS 慢；调小：门闩一直不放时更快判失败。
+gate_poll_sec: 30
+
+# 轮询间隔，单位秒。过小打 DOM 过勤；过大浪费时间。
+gate_poll_step_sec: 1
+
+# --- 提交之后（「会不会来」的第二段，不是「来了没有结果」）---
+# 等标题变成「专利查询结果展示」或「无查询结果」。
+# 0 条是成功导航后的空 JSON，通常很快返回，不会走到这个上限。
+# 调大：公布站高峰仍能出页；调小：提交后挂起时更快失败。单位毫秒。
+submit_timeout_ms: 40000
+
+# --- 连坐控制 ---
+# 高级查询默认最多几个分类号、几个名称词（笛卡尔积）。
+# 默认 1×1，避免 3×3 每次都可能再等满。需要扩召回时由 Agent 再发一条命令。
+# 命令行传多了会截断并在 stderr 提示，不会直接报 usage 错误。
+advanced_max_class_codes: 1
+advanced_max_terms: 1
+
+# 首页（无 --class）最多几个词，一词一页再合并。超过则拒绝。
+# 交底查新宜 3～4 个手段短语，不要堆 8 个泛词。
+home_max_terms: 4
+
+# 任一跳 goto / gate / submit 失败后是否停止后续词和分类号。
+# true：已完成的跳仍输出 JSON；后面不再跑。
+stop_on_first_nav_failure: true

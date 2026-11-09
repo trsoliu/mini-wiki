@@ -1,0 +1,21 @@
+# 交底旁路：立项校验 / 围栏可行性评分表合同（不是高价值达标认定）
+# 表定义在 references/scorecards/；案件作答在 outputs/{案}/fence/scorecard.yaml
+version: 1
+
+# 表定义（scorecards/*.yaml）须含：
+#   id, title_zh, disclaimer_zh, groups[], items[], thresholds
+# item: id, group, prompt_zh, look_in_zh, scores{0,1,2}, missing: unscored|zero
+# 作答：items.<id>.score 为 0|1|2 或 null（未决）+ evidence
+
+required_table_keys:
+  - id
+  - title_zh
+  - disclaimer_zh
+  - groups
+  - items
+  - thresholds
+
+required_answer_keys:
+  - scorecard_id
+  - disclosure_md
+  - items

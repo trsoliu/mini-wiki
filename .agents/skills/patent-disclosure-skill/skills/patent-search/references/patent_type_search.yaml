@@ -1,0 +1,20 @@
+# 著录检索的专利类型过滤
+
+本包 `cnipa_search.py --type` 对应公布站高级查询勾选。类型由用户给出；个人清单场景常用 `all`。
+
+| `--type` | 勾选 |
+|----------|------|
+| `invention` | 发明公布 `#fmgb` + 发明授权 `#fmsq` |
+| `utility_model` | 实用新型 `#xxsq` |
+| `design` | 外观设计 `#wgsq` |
+| `all`（默认） | 四类全选 |
+
+```bash
+python skills/patent-search/tools/cnipa_search.py --inventor "姓名" --type all
+python skills/patent-search/tools/cnipa_search.py --title "数据处理" --abstract "吸附 and 再生" --type invention --class B01J20
+python skills/patent-search/tools/cnipa_search.py --abstract "折叠 and 杯盖" --type design --class 09-03 --derived-from image --type-inferred
+```
+
+实现：`tools/patent_type.py`（`epub_checkbox_states`）+ `cnipa_crawler.py` 高级查询勾选。
+
+**不做**：交底一词一页查新、公开号解读挂钩、Google Patents / 学术降级。

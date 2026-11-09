@@ -1,0 +1,15 @@
+# Optional: office-action case vectors
+sqlite-vec>=0.1.6
+PyYAML>=6.0
+numpy>=1.24.0
+
+# Local embeddings (provider=local)
+sentence-transformers>=2.2.0
+
+python-docx>=1.1.0
+
+# PDF text extract (office actions / past responses)
+pymupdf>=1.24.0
+
+# openai_compatible / minimax use stdlib urllib; no extra packages
+# MiniMax: MINIMAX_API_KEY + MINIMAX_GROUP_ID (see config.py --preset minimax)

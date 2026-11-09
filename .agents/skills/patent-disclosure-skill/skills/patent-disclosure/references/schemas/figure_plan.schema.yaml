@@ -1,0 +1,133 @@
+# FigurePlan — 交底附图选用与排序合同
+
+用于实用新型 / 外观设计交底：在成文前固化「贴哪些图、图序、为何选用、**图与图如何关联**」。  
+与 StructureSchema / AppearanceSchema **配套**；成文与迭代**只读本清单**中 `use_in_disclosure: true` 的条目，勿再扫全 `assets/` 临场挑图。
+
+落盘约定（交底）：案件工作目录 **`figure_plan.yaml`**（或等价 `figure_plan.json`），与 `structure_schema.*` / `appearance_schema.*` 同级（常见 `outputs/{案件标识}/`）。
+
+```yaml
+$schema: figure_plan
+version: 1
+patent_type: utility_model   # utility_model | design
+theme_summary: ""            # 当前交底主题一句话；主题变了须重评本清单
+schema_ref: ""               # 相对路径，如 structure_schema.yaml / appearance_schema.json
+updated_at: ""               # 可选，ISO 本地时间
+figures:
+  - fig: 1                   # 交底「如图 N」；不入文则为 null
+    role: assembly           # 见下方枚举
+    path: ""                 # 相对案件根或 knowledge 的路径
+    covers: []               # 实用新型：parts.id；外观：官方视图全称（主视图、后视图…、立体图）或要点短标签
+    kind: lineart            # lineart | cad | photo_clean | photo_scene | other
+    relevance: 0             # 0–100，与本案是否同一对象
+    quality: 0               # 0–100：清晰、少遮挡；外观另须过 design_view_cnipa.md（未过则 ≤69）
+    score: 0                 # 可与 0.5*relevance+0.5*quality 一致
+    use_in_disclosure: true  # 入文才 true。cad 禁止。外观：实拍+线稿都可 true；实用：仅合格 lineart
+    reason: ""               # 选用或剔除的一句话
+    relates_to: []           # 可选；图际关联，见下
+  - fig: 2
+    role: detail
+    path: ""
+    covers: []
+    kind: lineart
+    score: 0
+    use_in_disclosure: true
+    reason: ""
+    relates_to:
+      - fig: 1                 # 指向本清单中另一条的 fig 号
+        relation: detail_of    # 见下方枚举
+        note: ""               # 可选短注，如「图1卡扣局部放大」
+```
+
+## `role` 枚举
+
+| role | 实用新型 | 外观 |
+|------|----------|------|
+| `assembly` | 总装/装配关系 | — |
+| `detail` | 局部（卡扣、缺口等） | 造型局部 |
+| `ortho` | 正交/投影结构图 | 正投影（主视图/后视图/左视图/右视图/俯视图/仰视图，按要点落面，非默认六视） |
+| `perspective` | 立体结构示意 | 立体图 |
+| `reference` | 仅参考、默认不入正文 | 场景/包装等参考 |
+| `rejected` | 明确不入文 | 同左 |
+
+## `relates_to[].relation` 枚举
+
+多图联读时填写；**机械/实用新型**有总装+局部时**强烈建议**写清。
+
+| relation | 含义 | 典型用法 |
+|----------|------|----------|
+| `detail_of` | 本图是目标图的局部放大/细节 | 卡扣局部 ← 总装 |
+| `section_of` | 本图是目标图的剖视/断面 | 装配剖 ← 立体总装 |
+| `exploded_of` | 本图是目标图的爆炸/分解 | 爆炸图 ← 装配图 |
+| `same_state` | 同一产品状态、不同角度 | 外观多视互指 |
+| `alternate_view` | 另一投影/视角（非放大关系） | 主视 ↔ 俯视、立体 ↔ 正交 |
+| `sequence` | 使用/拆装步骤前后图 | 步骤图 1→2 |
+
+约定：
+
+- `relates_to[].fig` 必须是本清单中**已分配**的 `fig`（入文图）；勿指向 `null`。  
+- 局部图 `role: detail` 对总装 `assembly`：**至少一条** `detail_of`（或 `section_of` / `exploded_of`）。  
+- 外观多视：可用 `same_state` / `alternate_view` 互链；场景参考图可不写。  
+- 成文时：「如图 N…如图 M 为其局部…」须与 `relates_to` 一致。
+
+## 扫描打分（填表强制）
+
+对每张候选图 **Read 识图**，写 `kind` + `relevance` + `quality` + `score`。细则见 `prompts/image_gen.md`。
+
+- `kind: lineart` **仅当**材料本来就是结构/外观线稿（专利附图、干净黑白轮廓），且内容匹配、不是瞎画。  
+- CAD / STEP 投影写 `kind: cad`，实拍写 `photo_clean` / `photo_scene`。  
+- **合格已有线稿**（可入文、可跳过生成）：`kind: lineart` 且 `score>=70`；若写了分项则 **relevance 与 quality 均 >=70**。外观还须过 `references/design_view_cnipa.md`；未过则 `quality`≤69，必须重画。  
+- `kind: cad`：**禁止** `use_in_disclosure: true`。`reason` 写明「CAD 投影，仅作生图材料」。  
+- 实拍不得标成 `kind: lineart`。外观的干净实拍（`photo_clean`）须符合 4.2.3（单一背景、少透视、少阴影）才入文；透视棚拍为 `photo_scene`，只作参考。实用新型实拍默认不入文。
+
+## 排序启发式（填表时打分）
+
+**实用新型（高→低）**
+
+1. 合格 `lineart` + `assembly` 或关键 `detail`，且 `covers` 命中保护相关件号 → 可入文  
+2. `cad` / `photo_clean`：只打分，作图生图参考，**不入文**  
+3. `photo_scene` / 与主题无关 → `use_in_disclosure: false`，`role: rejected` 或 `reference`
+
+**外观（高→低）**
+
+先读 AppearanceSchema：`product_form` → `claimed_faces` → 正投影清单（要点落面；立体宜加立体图；**勿默认六视**）。`omitted_views` 面不入文、不生线稿。
+
+1. 清单内合格 `lineart` 的立体/正投影 **与** 对应 `photo_clean` 实拍 → **都入文**（md + Word）  
+2. `cad`：只打分，作图生图参考，**不入文**  
+3. 重场景、广告包装（`photo_scene`）→ 默认 `reference` 或不入文  
+4. 要点落面缺源图 → AppearanceSchema `uncertain`；故意省略面只写 `omitted_views`，不要默补六视、不要写成「缺六视」
+
+## 跨图核对（填表强制）
+
+1. 同一 `parts.id` / 设计要点若出现在多张图，各图 `covers` 均应列入。  
+2. 局部图与总装图的件号命名须一致（禁止图1叫「卡扣臂」、图2另起「弹片」且无映射）。  
+3. 有 `assembly`+`detail` 入文对时，detail 侧须有 `relates_to`。  
+4. 联读后仍对不上的写入 Structure/Appearance 的 `uncertain`，勿静默忽略。
+
+## 必填
+
+- `patent_type`、`theme_summary`、`figures`（可空数组，但空则须在 schema `uncertain` 说明无可用图）  
+- 每条：`path`、`role`、`kind`、`score`、`use_in_disclosure`、`reason`（建议同时写 `relevance` / `quality`）  
+- 凡 `use_in_disclosure: true` 须有唯一正整数 `fig`（从 1 连续编号为佳）  
+- `relates_to` 可空数组；满足「总装+局部」条件时不得空置（见上）
+
+## 多轮同步（强制）
+
+下列任一发生时，**先更新本文件再改交底正文附图**（**无文件则新建，禁止跳过**）：
+
+- 新增 / 删除 / 替换原材料图  
+- 用户调整专利主题、保护侧重点或选定候选点  
+- 部件表 / 设计要点变更导致 `covers` 失效  
+- 图际关系变化（如新增局部图、拆分总装）→ 同步改 `relates_to`
+
+更新动作：重评 `score` / `use_in_disclosure` / `fig` 序号 / `relates_to`，改写 `theme_summary` 与 `reason`；已剔除图保留条目并设 `use_in_disclosure: false`（便于审计），勿默默丢路径；被删图若仍被 `relates_to` 引用须改写或清除。
+
+## 线稿（必做）
+
+实用新型 / 外观成文前必须有入文线稿，来源只有两条（见 `prompts/image_gen.md`）：
+
+1. 材料里已有合格 `kind: lineart`  
+2. 大模型生成（图生图，或降级「先描述再文生图」/ 文生图）
+
+生成的线稿追加为 `kind: lineart`、`use_in_disclosure: true`。  
+**外观**：干净实拍同样入文，与线稿成对出现在 Markdown 和 Word。CAD 投影始终不入文。详见 `design_lineart_assist.md`。  
+**实用新型**：按件写出子 SVG、总图相对引用后再叠序号；入文 PNG 为预览。详见 `structure_lineart_assist.md` / `structure_lineart_compose.md`。CAD 投影始终不入文。

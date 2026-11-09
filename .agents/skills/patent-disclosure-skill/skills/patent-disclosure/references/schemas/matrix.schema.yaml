@@ -1,0 +1,7 @@
+# 技术功效矩阵
+# outputs/{案}/fence/matrix.yaml
+version: 1
+
+# means[] / effects[]：id + label
+# cells[]: mean, effect, density: dense | sparse | unchecked, 可选 node_id
+# unchecked 不得当成空白/蓝海

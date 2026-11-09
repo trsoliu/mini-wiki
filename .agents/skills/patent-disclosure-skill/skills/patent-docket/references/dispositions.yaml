@@ -1,0 +1,28 @@
+# 条目处置。validate_docket.py 按此校验，不要自创枚举。
+schema: patent-docket-dispositions
+version: 1
+
+dispositions:
+  ignore:
+    meaning: 不是真问题或已过时
+    next_phase_hint: triage 后可 round_close 或忽略该条
+  application_fix:
+    meaning: 只改申请文件包（书式、出图、对照、摘要字数）
+    next_phase_hint: dispatch_application
+    read: skills/patent-application/SKILL.md
+  disclosure_fix:
+    meaning: 交底事实缺口或查新；禁止编造
+    next_phase_hint: dispatch_disclosure 然后必须 dispatch_application
+    read: skills/patent-disclosure/SKILL.md
+  ask_human:
+    meaning: 只有发明人/用户能定
+    next_phase_hint: 仅 blocking 时停留 ask_human；非阻塞可继续轮次
+    blocking_default: false
+  defer:
+    meaning: 本轮不做，记到案卷，满 3 轮仍打开则写入终态说明
+    next_phase_hint: round_close
+
+statuses:
+  - open
+  - done
+  - deferred
